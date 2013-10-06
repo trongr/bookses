@@ -1,0 +1,63 @@
+var bok = (function(){
+    var api = (function(){
+        var api = {}
+
+        api.get_book = function(url, done){
+            $.ajax({
+                url: url,
+                type: "get",
+                success: function(re){
+                    done(null, re)
+                },
+                error: function(xhr, status, er){
+                    done({error:"api getting book", xhr:xhr, status:status, er:er})
+                }
+            })
+        }
+
+        return api
+    })()
+
+    var views = (function(){
+        var views = {}
+
+        views.load_book = function(box, text, done){
+            box.html(text)
+            done(null)
+        }
+
+        return views
+    })()
+
+    var bok = function(x){
+        var src = x.src
+        var box = x.box
+
+        this.next_chapter = function(){
+
+        }
+
+        this.prev_chapter = function(){
+
+        }
+
+        (function(x){
+            async.waterfall([
+                function(done){
+                    api.get_book(x.src, function(er, text){
+                        done(er, text)
+                    })
+                },
+                function(text, done){
+                    views.load_book(x.box, text, function(er){
+                        done(er)
+                    })
+                },
+            ], function(er, re){
+                if (er) console.log(JSON.stringify({error:"book setup", x:x, er:er}, 0, 2))
+            })
+        })(x)
+    }
+
+    return bok
+}())

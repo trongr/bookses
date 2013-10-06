@@ -1,0 +1,35 @@
+button {
+    background-color: #ddd;
+}
+
+button:hover {
+    background-color: #eee;
+}
+
+button.clip {
+    border: none;
+    padding: 10px 20px 10px 20px;
+    font-size: 1em;
+    position: fixed;
+    top: 10px;
+}
+
+.book {
+    margin-top: 60px;
+    padding: 20px;
+    white-space: pre;
+}
+
+.reader {
+    display: table;
+}
+
+.reader_left {
+    display: table-cell;
+    width: 50%;
+}
+
+.reader_right {
+    display: table-cell;
+    width: 50%;
+}
