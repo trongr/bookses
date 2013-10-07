@@ -63,7 +63,9 @@ var bok = function(x){
         var views = {}
 
         views.load_book = function(box, text, done){
-            box.html(templates.reader(text)).on("click", "button", bindings.clip)
+            box.html(templates.reader(text))
+                .on("click", "button", bindings.clip)
+                .on("click", ".book p", bindings.onclick_paragraph)
             done(null)
         }
 
@@ -78,12 +80,23 @@ var bok = function(x){
     var bindings = (function(){
         var bindings = {}
 
+        // todo now
+        // todo: selection is null of nothing selected
         bindings.clip = function(){
             var quotes = $(this).closest(".reader").find(".quotes")
             var s = window.getSelection()
+            var r = s.getRangeAt(0)
+            var node = r.startContainer.parentNode // todo: there's some error checking here depending on browser
+            console.log($(node).index())
+            // todo now: get bounding box of dom element rather than getboundingclientrect
             var quote = s.toString()
-            var top = s.getRangeAt(0).getBoundingClientRect().top + window.pageYOffset
+            var top = r.getBoundingClientRect().top + window.pageYOffset
             views.load_quote(quotes, quote, top, function(er){})
+        }
+
+        // todo: one click clip paragraph
+        bindings.onclick_paragraph = function(){
+            var p = $(this)
         }
 
         return bindings

@@ -39,7 +39,7 @@ jQuery(function($){
 
         app.init = function(){
             var book = new bok({
-                src: "/static/public/tempest.txt",
+                src: "/static/public/tempest.html",
                 box: dom.book
             })
         }
