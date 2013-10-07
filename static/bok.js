@@ -32,7 +32,9 @@ var bok = function(x){
 
         templates.reader = function(text){
             var html = "<div class='reader'>"
-                + "         <button class='clip' type='button'>clip</button>"
+                + "         <div class='reader_menu'>"
+                + "             <button class='clip' type='button'>clip</button>"
+                + "         </div>"
                 + "         <div class='reader_left'>"
                 + "             <div class='book'>" + text + "</div>"
                 + "         </div>"
@@ -81,17 +83,16 @@ var bok = function(x){
         var bindings = {}
 
         // todo now
-        // todo: selection is null of nothing selected
         bindings.clip = function(){
-            var quotes = $(this).closest(".reader").find(".quotes")
             var s = window.getSelection()
-            var r = s.getRangeAt(0)
-            var node = r.startContainer.parentNode // todo: there's some error checking here depending on browser
-            console.log($(node).index())
-            // todo now: get bounding box of dom element rather than getboundingclientrect
-            var quote = s.toString()
-            var top = r.getBoundingClientRect().top + window.pageYOffset
-            views.load_quote(quotes, quote, top, function(er){})
+            if (s.rangeCount > 0){
+                var quotes = $(this).closest(".reader").find(".quotes")
+                var quote = s.toString()
+                var node = $(s.getRangeAt(0).startContainer.parentNode) // todo: error checking for different browsers
+                var top = node.get(0).offsetTop
+                views.load_quote(quotes, quote, top, function(er){})
+                var pos = node.index()
+            }
         }
 
         // todo: one click clip paragraph

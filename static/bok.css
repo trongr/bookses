@@ -3,33 +3,44 @@ button {
 }
 
 button:hover {
-    background-color: #eee;
+    background-color: #000;
+    color: #fff;
+}
+
+.reader_menu {
+    background-color: rgba(255, 255, 255, 0.7);
+    width: 100%;
+    position: fixed;
+    top: 0px;
+    left: -10px;
+    padding: 10px 10px 10px 20px;
+    z-index: 1;
 }
 
 button.clip {
     border: none;
     padding: 10px 20px 10px 20px;
     font-size: 1em;
-    position: fixed;
-    top: 10px;
+    opacity: 0.8;
 }
 
 .book {
     margin-top: 60px;
     padding: 20px;
-    white-space: pre;
+    white-space: pre-wrap;
 }
 
 .reader {
-    display: table;
+
 }
 
 .reader_left {
-    display: table-cell;
+    clear: both;
+    float: left;
     width: 50%;
 }
 
 .reader_right {
-    display: table-cell;
+    float: left;
     width: 50%;
 }
