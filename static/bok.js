@@ -1,6 +1,6 @@
 var bok = function(x){
     var o = {
-        src: x.src,
+        bID: x.bID,
         box: x.box,
     }
 
@@ -8,18 +8,49 @@ var bok = function(x){
         box: o.box,
     }
 
+    var k = {
+        static_public: "/static/public",
+    }
+
     var api = (function(){
         var api = {}
 
-        api.get_book = function(url, done){
+        api.get_book = function(bID, done){
             $.ajax({
-                url: url,
+                url: k.static_public + "/" + bID + ".html",
                 type: "get",
                 success: function(re){
                     done(null, re)
                 },
                 error: function(xhr, status, er){
                     done({error:"api getting book", xhr:xhr, status:status, er:er})
+                }
+            })
+        }
+
+        api.get_book_quotes = function(bID, done){
+            $.ajax({
+                url: "/book/" + bID + "/quotes",
+                type: "get",
+                success: function(re){
+                    if (re.quotes) done(null, re.quotes)
+                    else done({error:"api.get_book_quotes",re:re})
+                }
+            })
+        }
+
+        api.create_quote = function(bID, quote, done){
+            $.ajax({
+                url: "/book/" + bID + "/quote",
+                type: "post",
+                data: {
+                    quote: quote.quote,
+                    comment: quote.comment,
+                    p: quote.p
+                },
+                success: function(re){
+                    if (re.quote) done(null, re.quote)
+                    else done({error:"api.create_quote",re:re})
                 }
             })
         }
@@ -31,15 +62,17 @@ var bok = function(x){
         var templates = {}
 
         templates.reader = function(text){
-            var html = "<div class='reader'>"
-                + "         <div class='reader_menu'>"
-                + "             <button class='clip' type='button'>clip</button>"
+            var html = "<div id='" + o.bID + "' class='boks_reader'>"
+                + "         <div class='boks_reader_menu'>"
+                + "             <button class='boks_clip' type='button'>clip</button>"
                 + "         </div>"
-                + "         <div class='reader_left'>"
-                + "             <div class='book'>" + text + "</div>"
+                + "         <div class='boks_reader_content'>"
+                + "         <div class='boks_reader_left'>"
+                + "             <div class='boks_book'>" + text + "</div>"
                 + "         </div>"
-                + "         <div class='reader_right'>"
-                + "             <div class='quotes'></div>"
+                + "         <div class='boks_reader_right'>"
+                + "             <div class='boks_quotes'></div>"
+                + "         </div>"
                 + "         </div>"
                 + "     </div>"
             return html
@@ -64,16 +97,66 @@ var bok = function(x){
     var views = (function(){
         var views = {}
 
-        views.load_book = function(box, text, done){
-            box.html(templates.reader(text))
-                .on("click", "button", bindings.clip)
-                .on("click", ".book p", bindings.onclick_paragraph)
-            done(null)
+        views.init = function(){
+            views.load_book(function(er){
+                if (er) api.bug(er)
+                else views.load_quotes() // need to finish loading book to get paragraph positions
+            })
+        }
+
+        views.load_book = function(done){
+            async.waterfall([
+                function(done){
+                    api.get_book(o.bID, function(er, text){
+                        done(er, text)
+                    })
+                },
+                function(text, done){
+                    o.box.html(templates.reader(text))
+                        .on("click", "button", bindings.clip)
+                        .on("click", ".boks_book p", bindings.onclick_paragraph)
+                    done(null)
+                },
+            ], function(er, re){
+                if (er) done({error:"views.load_book",er:er})
+                else done(null)
+            })
+        }
+
+        views.load_quotes = function(){
+            async.waterfall([
+                function(done){
+                    api.get_book_quotes(o.bID, function(er, quotes){
+                        done(er, quotes)
+                    })
+                },
+                function(quotes, done){
+                    views.render_quotes(quotes)
+                    done(null)
+                },
+            ], function(er, re){
+                if (er) console.log(JSON.stringify({error:"views.load_quotes",er:er}, 0, 2))
+            })
+        }
+
+        views.render_quotes = function(quotes){
+            var paragraphs = $("#" + o.bID + " .boks_book p")
+            var html = ""
+            for (var i = 0; i < quotes.length; i++){
+                var top = paragraphs.eq(quotes[i].p).get(0).offsetTop
+                html += templates.quote(quotes[i].quote, top)
+            }
+            $("#" + o.bID + " .boks_quotes").html(html)
         }
 
         views.load_quote = function(box, quote, top, done){
             box.append(templates.quote(quote, top))
             done(null)
+        }
+
+        views.clear_selection = function(){
+            if (window.getSelection().empty) window.getSelection().empty()
+            else if (window.getSelection().removeAllRanges) window.getSelection().removeAllRanges()
         }
 
         return views
@@ -82,16 +165,21 @@ var bok = function(x){
     var bindings = (function(){
         var bindings = {}
 
-        // todo now
         bindings.clip = function(){
             var s = window.getSelection()
             if (s.rangeCount > 0){
-                var quotes = $(this).closest(".reader").find(".quotes")
-                var quote = s.toString()
+                var quotes = $(this).closest(".boks_reader").find(".boks_quotes")
                 var node = $(s.getRangeAt(0).startContainer.parentNode) // todo: error checking for different browsers
-                var top = node.get(0).offsetTop
-                views.load_quote(quotes, quote, top, function(er){})
-                var pos = node.index()
+                var quote = {
+                    quote: s.toString(),
+                    comment: "",
+                    p: node.index()
+                }
+                api.create_quote(o.bID, quote, function(er, quote){
+                    if (er) console.log(JSON.stringify(er, 0, 2))
+                })
+                views.load_quote(quotes, quote.quote, node.get(0).offsetTop, function(er){})
+                views.clear_selection()
             }
         }
 
@@ -104,20 +192,7 @@ var bok = function(x){
     }())
 
     this.init = function(){
-        async.waterfall([
-            function(done){
-                api.get_book(o.src, function(er, text){
-                    done(er, text)
-                })
-            },
-            function(text, done){
-                views.load_book(o.box, text, function(er){
-                    done(er)
-                })
-            },
-        ], function(er, re){
-            if (er) console.log(JSON.stringify({error:"bok setup", x:x, er:er}, 0, 2))
-        })
+        views.init()
     }
 
     this.next_chapter = function(){

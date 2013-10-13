@@ -1,3 +1,29 @@
 body {
+    background-color: #ddd;
+    font-family: helvetica, arial, sans;
+}
 
+.book {
+    padding: 20px;
+}
+
+.book_title {
+    font-size: 2em;
+}
+
+.book_title:hover {
+    background-color: #fff;
+}
+
+.book_description {
+    font-size: 1em;
+}
+
+.book_text {
+    display: none;
+    width: 100%;
+}
+
+.book_created {
+    color: #555;
 }

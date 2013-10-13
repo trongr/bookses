@@ -1,46 +1,56 @@
+p {
+    margin-top: -0.8em; /* cause we use white-space: pre-wrap below for boks_book, for poetry */
+    margin-bottom: -0.8em;
+}
+
 button {
     background-color: #ddd;
+    color: #555;
+    border: none;
+    font-family: georgia;
 }
 
 button:hover {
-    background-color: #000;
+    background-color: #0f0;
     color: #fff;
 }
 
-.reader_menu {
-    background-color: rgba(255, 255, 255, 0.7);
-    width: 100%;
-    position: fixed;
-    top: 0px;
-    left: -10px;
-    padding: 10px 10px 10px 20px;
-    z-index: 1;
+.boks_reader {
+    padding: 10px 0 10px 100px;
 }
 
-button.clip {
-    border: none;
+.boks_reader_menu {
+    background-color: #fff;
+    width: 100%;
+    padding: 5px;
+}
+
+button.boks_clip {
     padding: 10px 20px 10px 20px;
     font-size: 1em;
-    opacity: 0.8;
 }
 
-.book {
-    margin-top: 60px;
+.boks_book {
     padding: 20px;
     white-space: pre-wrap;
+    font-family: times, georgia, serif;
 }
 
-.reader {
-
+.boks_reader_content {
+    position: relative;
+    width: 100%;
+    height: 500px;
+    overflow-y: scroll;
+    background-color: #ccc;
 }
 
-.reader_left {
+.boks_reader_left {
     clear: both;
     float: left;
-    width: 50%;
+    width: 70%;
 }
 
-.reader_right {
+.boks_reader_right {
     float: left;
-    width: 50%;
+    width: 30%;
 }

@@ -2,6 +2,7 @@ var express = require('express')
 var server = express()
 var http = require("http")
 var app = http.createServer(server)
+var books = require("./noodles/books.js")
 
 server.configure(function(){
     server.use("/static", express.static(__dirname + "/static"))
@@ -46,6 +47,13 @@ server.post("/bug", function(req, res){
     console.log(JSON.stringify(req.body, 0, 2))
     res.send({a:1})
 })
+
+server.post("/book", books.create_book_validate, books.create_book)
+server.get("/books", books.get_all_books)
+server.get("/book/:id", books.get_book_by_id_validate, books.get_book_by_id)
+
+server.post("/book/:id/quote", books.create_quote_validate, books.create_quote)
+server.get("/book/:id/quotes", books.get_book_quotes_validate, books.get_book_quotes)
 
 var port = process.env.PORT || 8080
 app.listen(port, "127.0.0.1", function(){
