@@ -47,14 +47,24 @@ button.boks_clip {
 .boks_reader_left {
     clear: both;
     float: left;
-    width: 70%;
+    width: 60%;
 }
 
 .boks_reader_right {
     float: left;
-    width: 30%;
+    width: 40%;
 }
 
-.quote_box {
+.boks_quote_box {
+    overflow-x: scroll;
+    white-space: nowrap;
+}
 
+.boks_quote {
+    width: 80%;
+    display: inline-block;
+    padding: 10px;
+    background-color: #eee;
+    white-space: pre-line;
+    vertical-align: top;
 }

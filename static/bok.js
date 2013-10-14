@@ -78,24 +78,19 @@ var bok = function(x){
             return html
         }
 
-        templates.quote_box = function(p, top){
-            var html = "<div class='quote_box'"
+        templates.quote_box = function(quotes, p, top){
+            var html = "<div data-p='" + p + "' class='boks_quote_box'"
             + "             style='"
             + "                   position:absolute;"
             + "                   top:" + top + ";'>"
+            +               quotes
             + "         </div>"
             return html
         }
 
-        templates.quote = function(quote, top){
-            var html = "<div"
-                + "        style='"
-                + "              background-color:#eee;"
-                + "              padding:10px;"
-                + "              white-space:pre-line;"
-                + "              position:absolute;"
-                + "              top:" + top + ";'>"
-                +          quote
+        templates.quote = function(quote){
+            var html = "<div class='boks_quote'>"
+                +           quote
                 + "     </div>"
             return html
         }
@@ -151,15 +146,36 @@ var bok = function(x){
         views.render_quotes = function(quotes){
             var paragraphs = $("#" + o.bID + " .boks_book p")
             var html = ""
+            var prev_p = null
+            var box_quotes = ""
             for (var i = 0; i < quotes.length; i++){
-                var top = paragraphs.eq(quotes[i].p).get(0).offsetTop
-                html += templates.quote(quotes[i].quote, top)
+                var p = quotes[i].p
+                var quote = templates.quote(quotes[i].quote)
+                if (prev_p == p || prev_p == null){ // put a paragraph's quotes into one box
+                    box_quotes += quote
+                } else { // new paragraph: add the last one to html and restart box_quotes
+                    var top = paragraphs.eq(prev_p).get(0).offsetTop
+                    html += templates.quote_box(box_quotes, prev_p, top)
+                    box_quotes = quote
+                }
+                if (i == quotes.length - 1){ // put the last quote wherever it belongs
+                    var top = paragraphs.eq(prev_p).get(0).offsetTop
+                    html += templates.quote_box(box_quotes, prev_p, top)
+                    box_quotes = quote
+                }
+                prev_p = p
             }
             $("#" + o.bID + " .boks_quotes").html(html)
         }
 
-        views.load_quote = function(box, quote, top, done){
-            box.append(templates.quote(quote, top))
+        views.load_quote = function(quotes_box, quote, p, top, done){
+            var box = quotes_box.find(".boks_quote_box[data-p='" + p + "']")
+            var q = templates.quote(quote)
+            if (box.length){
+                box.append(q)
+            } else {
+                quotes_box.append(templates.quote_box(q, p, top))
+            }
             done(null)
         }
 
@@ -181,16 +197,18 @@ var bok = function(x){
                 var reader = $(this).closest(".boks_reader")
                 var node = $(s.getRangeAt(0).startContainer.parentNode) // todo: error checking for different browsers
                 if (reader.find(node).length){ // only allow highlight from this book
+                    var p = node.index()
+                    var top = node.get(0).offsetTop
                     var quotes = reader.find(".boks_quotes")
                     var quote = {
                         quote: s.toString(),
                         comment: "",
-                        p: node.index()
+                        p: p
                     }
                     api.create_quote(o.bID, quote, function(er, quote){
                         if (er) console.log(JSON.stringify(er, 0, 2))
                     })
-                    views.load_quote(quotes, quote.quote, node.get(0).offsetTop, function(er){})
+                    views.load_quote(quotes, quote.quote, p, top, function(er){})
                     views.clear_selection() // avoids consecutive clicks
                 }
             }
