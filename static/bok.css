@@ -56,15 +56,15 @@ button.boks_clip {
 }
 
 .boks_quote_box {
-    overflow-x: scroll;
-    white-space: nowrap;
+    box-shadow: 0 0 10px 5px #aaa;
+}
+
+.boks_quote_box:hover {
+    box-shadow: 0 0 20px 5px #999;
 }
 
 .boks_quote {
-    width: 80%;
-    display: inline-block;
     padding: 10px;
     background-color: #eee;
     white-space: pre-line;
-    vertical-align: top;
 }
