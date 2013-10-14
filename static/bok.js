@@ -78,6 +78,15 @@ var bok = function(x){
             return html
         }
 
+        templates.quote_box = function(p, top){
+            var html = "<div class='quote_box'"
+            + "             style='"
+            + "                   position:absolute;"
+            + "                   top:" + top + ";'>"
+            + "         </div>"
+            return html
+        }
+
         templates.quote = function(quote, top){
             var html = "<div"
                 + "        style='"
@@ -165,21 +174,25 @@ var bok = function(x){
     var bindings = (function(){
         var bindings = {}
 
+        // todo. limit quote length
         bindings.clip = function(){
             var s = window.getSelection()
             if (s.rangeCount > 0){
-                var quotes = $(this).closest(".boks_reader").find(".boks_quotes")
+                var reader = $(this).closest(".boks_reader")
                 var node = $(s.getRangeAt(0).startContainer.parentNode) // todo: error checking for different browsers
-                var quote = {
-                    quote: s.toString(),
-                    comment: "",
-                    p: node.index()
+                if (reader.find(node).length){ // only allow highlight from this book
+                    var quotes = reader.find(".boks_quotes")
+                    var quote = {
+                        quote: s.toString(),
+                        comment: "",
+                        p: node.index()
+                    }
+                    api.create_quote(o.bID, quote, function(er, quote){
+                        if (er) console.log(JSON.stringify(er, 0, 2))
+                    })
+                    views.load_quote(quotes, quote.quote, node.get(0).offsetTop, function(er){})
+                    views.clear_selection() // avoids consecutive clicks
                 }
-                api.create_quote(o.bID, quote, function(er, quote){
-                    if (er) console.log(JSON.stringify(er, 0, 2))
-                })
-                views.load_quote(quotes, quote.quote, node.get(0).offsetTop, function(er){})
-                views.clear_selection()
             }
         }
 
