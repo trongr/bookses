@@ -166,6 +166,9 @@ var bok = function(x){
                 prev_p = p
             }
             $("#" + o.bID + " .boks_quotes").html(html)
+                .on("mouseenter", ".boks_quote_box", bindings.mouseenter_quote_box)
+                .on("mouseleave", ".boks_quote_box", bindings.mouseleave_quote_box)
+            // mark
         }
 
         views.load_quote = function(quotes_box, quote, p, top, done){
@@ -217,6 +220,14 @@ var bok = function(x){
         // todo: one click clip paragraph
         bindings.onclick_paragraph = function(){
             var p = $(this)
+        }
+
+        bindings.mouseenter_quote_box = function(){
+            $(this).css("z-index", 1)
+        }
+
+        bindings.mouseleave_quote_box = function(){
+            $(this).css("z-index", 0)
         }
 
         return bindings
