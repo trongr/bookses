@@ -317,11 +317,17 @@ var bok = function(x){
         }
 
         bindings.mouseenter_quote_box = function(){
-            $(this).css("z-index", 1)
+            $(this).css({
+                "z-index": 1,
+                "margin-left": "-10px"
+            })
         }
 
         bindings.mouseleave_quote_box = function(){
-            $(this).css("z-index", 0)
+            $(this).css({
+                "z-index": 0,
+                "margin-left": 0
+            })
         }
 
         bindings.mouseenter_quote = function(){
@@ -381,12 +387,18 @@ var bok = function(x){
 
         bindings.mouseenter_p = function(){
             var p = $(this).index()
-            dom.quotes.find(".boks_quote_box[data-p='" + p + "']").css("z-index", 1)
+            dom.quotes.find(".boks_quote_box[data-p='" + p + "']").css({
+                "z-index": 1,
+                "margin-left": "-10px",
+            })
         }
 
         bindings.mouseleave_p = function(){
             var p = $(this).index()
-            dom.quotes.find(".boks_quote_box[data-p='" + p + "']").css("z-index", 0)
+            dom.quotes.find(".boks_quote_box[data-p='" + p + "']").css({
+                "z-index": 0,
+                "margin-left": "0",
+            })
         }
 
         bindings.mouseenter_comment = function(){
