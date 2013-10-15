@@ -269,9 +269,14 @@ var bok = function(x){
             done(null)
         }
 
-        // mark
         views.load_quote_comment = function(box, comment){
             box.prepend(templates.comment(comment))
+                .on("mouseenter", ".boks_quote_comment", bindings.mouseenter_comment)
+                .on("mouseleave", ".boks_quote_comment", bindings.mouseleave_comment)
+                .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
+                .on("click", ".boks_comment_menu_reply", bindings.click_comment_reply)
+                .on("click", ".boks_comment_menu_up", bindings.click_comment_up)
+                .on("click", ".boks_comment_menu_down", bindings.click_comment_down)
         }
 
         return views
@@ -369,7 +374,8 @@ var bok = function(x){
             var comments_box = quote_box.find(".boks_quote_comments")
             quote_box.find(".boks_quote_reply_box").hide()
             api.create_quote_comment(quote_id, comment, function(er, comment){
-                views.load_quote_comment(comments_box, comment)
+                if (er) console.log(JSON.stringify(er, 0, 2))
+                else views.load_quote_comment(comments_box, comment)
             })
         }
 
