@@ -55,6 +55,9 @@ server.get("/book/:id", books.get_book_by_id_validate, books.get_book_by_id)
 server.post("/book/:id/quote", books.create_quote_validate, books.create_quote)
 server.get("/book/:id/quotes", books.get_book_quotes_validate, books.get_book_quotes)
 
+server.post("/quote/:id/comment", books.create_comment_validate, books.create_comment)
+server.get("/quote/:id/comments", books.get_quote_comments_validate, books.get_quote_comments)
+
 var port = process.env.PORT || 8080
 app.listen(port, "127.0.0.1", function(){
     console.log("open for business on port " + port)

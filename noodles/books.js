@@ -88,6 +88,46 @@ var DB = (function(){
         })
     }
 
+    DB.get_quote_by_id = function(id, done){
+        var query = {
+            _id: new mongo.ObjectID(id)
+        }
+        db.collection("quotes", {safe:true}, function(er, docs){
+            if (er) done({error:"db.get_quote_by_id",id:id,er:er})
+            else docs.findOne(query, function(er, quote){
+                if (er) done({error:"db.get_quote_by_id",id:id,er:er})
+                else done(null, quote)
+            })
+        })
+    }
+
+    DB.create_comment = function(comment, done){
+        db.collection("comments", {safe:true}, function(er, docs){
+            if (er) done({error:"DB.create_comment",comment:comment,er:er})
+            else docs.insert(comment, {safe:true}, function(er, comments){
+                if (er) done({error:"DB.create_comment",comment:comment,er:er})
+                else if (comments[0]) done(null, comments[0])
+                else done({error:"DB.create_comment",er:"no comment returned"})
+            })
+        })
+    }
+
+    DB.get_quote_comments = function(id, done){
+        var query = {
+            quote: id
+        }
+        var aux = {
+            sort: [["created","asc"]],
+        }
+        db.collection("comments", {safe:true}, function(er, docs){
+            if (er) done({error:"db.get_quote_comments",id:id,er:er})
+            else docs.find(query, aux).toArray(function(er, comments){
+                if (er) done({error:"db.get_quote_comments",id:id,er:er})
+                else done(null, comments)
+            })
+        })
+    }
+
     return DB
 }())
 
@@ -168,7 +208,6 @@ var books = module.exports = (function(){
                 try {
                     var quote = {
                         quote: req.body.quote,
-                        comment: req.body.comment,
                         book: book._id.toString(),
                         p: parseInt(req.body.p),
                         created: new Date(),
@@ -203,6 +242,59 @@ var books = module.exports = (function(){
                 res.send({error:"get book quotes"})
             } else {
                 res.send({quotes:quotes})
+            }
+        })
+    }
+
+    books.create_comment_validate = function(req, res, next){
+        helpers.check_id(req.params.id, function(er){
+            next(er)
+        })
+    }
+
+    books.create_comment = function(req, res){
+        async.waterfall([
+            function(done){
+                DB.get_quote_by_id(req.params.id, function(er, quote){
+                    if (er) done(er)
+                    else if (quote) done(null, quote)
+                    else done({error:"no such quote"})
+                })
+            },
+            function(quote, done){
+                var comment = {
+                    comment: req.body.comment,
+                    quote: quote._id.toString(),
+                    created: new Date(),
+                }
+                DB.create_comment(comment, function(er, comment){
+                    done(er, comment)
+                })
+            },
+        ], function(er, comment){
+            if (er){
+                console.log(JSON.stringify({error:"books.create_comment",params:req.params.id,body:req.body,er:er}, 0, 2))
+                res.send({error:"create comment"})
+            } else {
+                res.send({comment:comment})
+            }
+        })
+    }
+
+    books.get_quote_comments_validate = function(req, res, next){
+        helpers.check_id(req.params.id, function(er){
+            next(er)
+        })
+    }
+
+    // mark
+    books.get_quote_comments = function(req, res){
+        DB.get_quote_comments(req.params.id, function(er, comments){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_quote_comments",id:req.params.id,er:er}, 0, 2))
+                res.send({error:"get quote comments"})
+            } else {
+                res.send({comments:comments})
             }
         })
     }
@@ -251,13 +343,11 @@ var test = (function(){
 
     test.create_quote = function(){
         var quote = process.argv[2]
-        var comment = process.argv[3]
-        var p = process.argv[4]
+        var p = process.argv[3]
         request.post({
             url: k.localhost + "/book/525a5c25b79c992d22000004/quote",
             form: {
                 quote: quote,
-                comment: comment,
                 p: p
             },
             json: true
@@ -277,12 +367,36 @@ var test = (function(){
         })
     }
 
+    test.create_comment = function(){
+        var comment = process.argv[2]
+        request.post({
+            url: k.localhost + "/quote/525ba6e2fc28df044f000070/comment",
+            form: {
+                comment: comment,
+            },
+            json: true
+        }, function(er, res, body){
+            if (er) console.log(JSON.stringify(er, 0, 2))
+            else console.log(JSON.stringify(body, 0, 2))
+        })
+    }
+
+    test.get_quote_comments = function(){
+        request.get({
+            url: k.localhost + "/quote/525b9685fc28df044f000036/comments",
+            json: true,
+        }, function(er, res, body){
+            if (er) console.log(JSON.stringify(er, 0, 2))
+            else console.log(JSON.stringify(body, 0, 2))
+        })
+    }
+
     return test
 }())
 
 console.log("requiring " + module.filename + " from " + require.main.filename)
 if (require.main == module){
-    test.get_book_quotes()
+    test.create_comment()
 } else {
 
 }

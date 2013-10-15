@@ -64,7 +64,43 @@ button.boks_clip {
 }
 
 .boks_quote {
-    padding: 10px;
-    background-color: #eee;
+    background-color: #ddd;
     white-space: pre-line;
+    padding: 2px;
+}
+
+.boks_quote:hover {
+    background-color: #eee;
+}
+
+.boks_quote_menu {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    padding-left: 3px;
+    left: -35px;
+}
+
+.boks_quote_edit, .boks_quote_up, .boks_quote_down {
+    font-size: 1em;
+    width: 35px;
+    height: 35px;
+}
+
+.boks_quote_text {
+    padding: 10px;
+}
+
+.boks_quote_comments {
+
+}
+
+.boks_quote_comment {
+    margin: 0 0 0 5px;
+    padding: 10px;
+}
+
+.boks_quote_comment:hover {
+    background-color: #fff;
+    border-left: 5px solid #0f0;
 }
