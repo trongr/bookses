@@ -115,15 +115,16 @@ var bok = function(x){
             return html
         }
 
+        // mark
         templates.quote = function(quote){
             var html = "<div data-id='" + quote._id + "' class='boks_quote'>"
+                + "         <div class='boks_quote_text'>"
+                +               quote.quote
+                + "         </div>"
                 + "         <div class='boks_quote_menu'>"
                 + "             <button class='boks_quote_reply'><i class='icon-comment'></i></button><br>"
                 + "             <button class='boks_quote_up'><i class='icon-chevron-up'></i></button><br>"
                 + "             <button class='boks_quote_down'><i class='icon-chevron-down'></i></button><br>"
-                + "         </div>"
-                + "         <div class='boks_quote_text'>"
-                +               quote.quote
                 + "         </div>"
                 + "         <div class='boks_quote_reply_box'>"
                 + "             <div class='boks_quote_reply_textarea_box'>"
@@ -229,8 +230,6 @@ var bok = function(x){
             $("#" + o.bID + " .boks_quotes").html(html)
                 .on("mouseenter", ".boks_quote_box", bindings.mouseenter_quote_box)
                 .on("mouseleave", ".boks_quote_box", bindings.mouseleave_quote_box)
-                .on("mouseenter", ".boks_quote", bindings.mouseenter_quote)
-                .on("mouseleave", ".boks_quote", bindings.mouseleave_quote)
                 .on("click", ".boks_quote_text", bindings.click_quote_text)
                 .on("click", ".boks_quote_up", bindings.click_quote_up)
                 .on("click", ".boks_quote_down", bindings.click_quote_down)
@@ -328,14 +327,6 @@ var bok = function(x){
                 "z-index": 0,
                 "margin-left": 0
             })
-        }
-
-        bindings.mouseenter_quote = function(){
-            $(this).find(".boks_quote_menu").show()
-        }
-
-        bindings.mouseleave_quote = function(){
-            $(this).find(".boks_quote_menu").hide()
         }
 
         bindings.click_quote_text = function(){

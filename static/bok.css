@@ -81,22 +81,30 @@ button:hover {
     background-color: #ddd;
     white-space: pre-line;
     padding: 2px;
+    position: relative;
 }
 
 .boks_quote:hover {
     background-color: #eee;
 }
 
+.boks_quote_text:hover ~ .boks_quote_menu {
+    display: block;
+}
+
 .boks_quote_menu {
     display: none;
     position: absolute;
     background-color: #fff;
-    padding-left: 5px;
+    padding-right: 5px;
+    top: 0;
     left: -35px;
+    z-index: 1;
 }
 
 .boks_quote_menu:hover {
     background-color: #0f0;
+    display: block;
 }
 
 .boks_quote_reply, .boks_quote_up, .boks_quote_down {
@@ -130,12 +138,13 @@ button:hover {
 
 .boks_comment_menu {
     display: none;
-    right: 0;
-    bottom: 0;
+    left: -42px;
+    top: -2px;
     margin: 2px;
     position: absolute;
     width: 40px;
     background-color: #fff;
+    z-index: 1;
 }
 
 .boks_comment_menu:hover {
