@@ -76,14 +76,15 @@ var bok = function(x){
             var html = "<div id='" + o.bID + "' class='boks_reader'>"
                 + "         <div class='boks_reader_menu'>"
                 + "             <button class='boks_clip' type='button'><i class='icon-quote-right'></i></button>"
+                + "             <button class='boks_twitter' type='button'><i class='icon-twitter'></i></button>"
                 + "         </div>"
                 + "         <div class='boks_reader_content'>"
-                + "         <div class='boks_reader_left'>"
-                + "             <div class='boks_book'>" + text + "</div>"
-                + "         </div>"
-                + "         <div class='boks_reader_right'>"
-                + "             <div class='boks_quotes'></div>"
-                + "         </div>"
+                + "             <div class='boks_reader_left'>"
+                + "                 <div class='boks_book'>" + text + "</div>"
+                + "             </div>"
+                + "             <div class='boks_reader_right'>"
+                + "                 <div class='boks_quotes'></div>"
+                + "             </div>"
                 + "         </div>"
                 + "     </div>"
             return html
@@ -102,9 +103,9 @@ var bok = function(x){
         templates.quote = function(quote){
             var html = "<div data-id='" + quote._id + "' class='boks_quote'>"
                 + "         <div class='boks_quote_menu'>"
+                + "             <button class='boks_quote_edit'><i class='icon-pencil'></i></button><br>"
                 + "             <button class='boks_quote_up'><i class='icon-chevron-up'></i></button><br>"
                 + "             <button class='boks_quote_down'><i class='icon-chevron-down'></i></button><br>"
-                + "             <button class='boks_quote_edit'><i class='icon-pencil'></i></button><br>"
                 + "         </div>"
                 + "         <div class='boks_quote_text'>"
                 +               quote.quote
@@ -207,7 +208,7 @@ var bok = function(x){
             var box = quotes_box.find(".boks_quote_box[data-p='" + p + "']")
             var q = templates.quote(quote)
             if (box.length){
-                box.append(q)
+                box.prepend(q)
             } else {
                 quotes_box.append(templates.quote_box(q, p, top))
             }

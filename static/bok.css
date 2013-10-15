@@ -19,21 +19,23 @@ button:hover {
     padding: 10px 0 10px 100px;
 }
 
-.boks_reader_menu {
-    background-color: #fff;
-    width: 100%;
-    padding: 5px;
-}
-
-button.boks_clip {
-    padding: 10px 20px 10px 20px;
-    font-size: 1em;
-}
-
 .boks_book {
     padding: 20px;
     white-space: pre-wrap;
     font-family: times, georgia, serif;
+}
+
+.boks_reader_menu {
+    background-color: #fff;
+    width: 40px;
+    position: absolute;
+    left: 85px;
+}
+
+.boks_reader_menu button {
+    width: 35px;
+    height: 35px;
+    font-size: 1em;
 }
 
 .boks_reader_content {
