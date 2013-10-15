@@ -92,7 +92,7 @@ button:hover {
     display: none;
     position: absolute;
     background-color: #fff;
-    padding-left: 3px;
+    padding-left: 5px;
     left: -35px;
 }
 
@@ -100,7 +100,7 @@ button:hover {
     background-color: #0f0;
 }
 
-.boks_quote_edit, .boks_quote_up, .boks_quote_down {
+.boks_quote_reply, .boks_quote_up, .boks_quote_down {
     font-size: 1em;
     width: 35px;
     height: 35px;
@@ -114,12 +114,91 @@ button:hover {
     border-left: 5px solid #0f0;
 }
 
+.boks_quote_comments {
+    border-left: 5px solid #bbb;
+    margin-left: 10px;
+}
+
 .boks_quote_comment {
     margin: 0 0 0 1px;
     padding: 10px;
+    position: relative;
 }
 
 .boks_quote_comment:hover {
     background-color: #fff;
+}
+
+.boks_comment_menu {
+    display: none;
+    right: 0;
+    bottom: 0;
+    margin: 2px;
+    position: absolute;
+    width: 40px;
+    background-color: #fff;
+}
+
+.boks_comment_menu:hover {
+    background-color: #0f0;
+}
+
+.boks_comment_menu button {
+    width: 35px;
+    height: 35px;
+    font-size: 1em;
+}
+
+.boks_quote_reply_box {
+    display: none;
+    width: 100%;
+    position: relative;
+}
+
+.boks_quote_reply_menu {
+    position: absolute;
+    height: 40px;
+    bottom: 0;
+    right: 0;
+    background-color: #0f0;
+}
+
+.boks_quote_reply_menu:hover {
+    background-color: #fff;
+}
+
+.boks_quote_reply_menu_post {
+    width: 35px;
+    height: 35px;
+    font-size: 1em;
+    font-weight: bolder;
+    color: #0f0;
+    background-color: #fff;
+}
+
+.boks_quote_reply_menu_post:focus {
+    background-color: #0f0;
+    color: #000;
+}
+
+.boks_quote_reply_textarea_box {
+    margin-left: 10px;
+}
+
+.boks_quote_reply_textarea {
+    font-family: georgia;
+    font-size: 1em;
+    width: 100%;
+    height: 6em;
+    border: none;
     border-left: 5px solid #0f0;
+    padding-left: 10px;
+    padding-right: 35px;
+    resize: none;
+    margin-bottom: 3px;
+    background-color: #ddd;
+}
+
+.boks_quote_reply_textarea:focus {
+    background-color: #eee;
 }

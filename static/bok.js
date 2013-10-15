@@ -67,6 +67,20 @@ var bok = function(x){
             })
         }
 
+        api.create_quote_comment = function(qID, comment, done){
+            $.ajax({
+                url: "/quote/" + qID + "/comment",
+                type: "post",
+                data: {
+                    comment: comment
+                },
+                success: function(re){
+                    if (re.comment) done(null, re.comment)
+                    else done({error:"api.create_quote_comment",re:re})
+                }
+            })
+        }
+
         return api
     }())
 
@@ -104,12 +118,20 @@ var bok = function(x){
         templates.quote = function(quote){
             var html = "<div data-id='" + quote._id + "' class='boks_quote'>"
                 + "         <div class='boks_quote_menu'>"
-                + "             <button class='boks_quote_edit'><i class='icon-pencil'></i></button><br>"
+                + "             <button class='boks_quote_reply'><i class='icon-comment'></i></button><br>"
                 + "             <button class='boks_quote_up'><i class='icon-chevron-up'></i></button><br>"
                 + "             <button class='boks_quote_down'><i class='icon-chevron-down'></i></button><br>"
                 + "         </div>"
                 + "         <div class='boks_quote_text'>"
                 +               quote.quote
+                + "         </div>"
+                + "         <div class='boks_quote_reply_box'>"
+                + "             <div class='boks_quote_reply_textarea_box'>"
+                + "                 <textarea class='boks_quote_reply_textarea'></textarea>"
+                + "             </div>"
+                + "             <div class='boks_quote_reply_menu'>"
+                + "                 <button class='boks_quote_reply_menu_post'><i class='icon-comment-alt'></i></button>"
+                + "             </div>"
                 + "         </div>"
                 + "         <div class='boks_quote_comments'>"
                 + "         </div>"
@@ -119,7 +141,14 @@ var bok = function(x){
 
         templates.comment = function(comment){
             var html = "<div class='boks_quote_comment'>"
-                +           comment.comment
+                + "         <div class='boks_quote_comment_text'>"
+                +               comment.comment
+                + "         </div>"
+                + "         <div class='boks_comment_menu'>"
+                + "             <button class='boks_comment_menu_up'><i class='icon-chevron-up'></i></button>"
+                + "             <button class='boks_comment_menu_down'><i class='icon-chevron-down'></i></button>"
+                + "             <button class='boks_comment_menu_reply'><i class='icon-comment'></i></button>"
+                + "         </div>"
                 + "     </div>"
             return html
         }
@@ -202,10 +231,11 @@ var bok = function(x){
                 .on("mouseleave", ".boks_quote_box", bindings.mouseleave_quote_box)
                 .on("mouseenter", ".boks_quote", bindings.mouseenter_quote)
                 .on("mouseleave", ".boks_quote", bindings.mouseleave_quote)
-                .on("click", ".boks_quote", bindings.click_quote)
+                .on("click", ".boks_quote_text", bindings.click_quote_text)
                 .on("click", ".boks_quote_up", bindings.click_quote_up)
                 .on("click", ".boks_quote_down", bindings.click_quote_down)
-                .on("click", ".boks_quote_edit", bindings.click_quote_edit)
+                .on("click", ".boks_quote_reply", bindings.click_quote_reply)
+                .on("click", ".boks_quote_reply_menu_post", bindings.click_quote_reply_post)
         }
 
         views.load_quote = function(quotes_box, quote, p, top, done){
@@ -230,6 +260,18 @@ var bok = function(x){
                 html += templates.comment(comments[i])
             }
             box.html(html)
+                .on("mouseenter", ".boks_quote_comment", bindings.mouseenter_comment)
+                .on("mouseleave", ".boks_quote_comment", bindings.mouseleave_comment)
+                .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
+                .on("click", ".boks_comment_menu_reply", bindings.click_comment_reply)
+                .on("click", ".boks_comment_menu_up", bindings.click_comment_up)
+                .on("click", ".boks_comment_menu_down", bindings.click_comment_down)
+            done(null)
+        }
+
+        // mark
+        views.load_quote_comment = function(box, comment){
+            box.prepend(templates.comment(comment))
         }
 
         return views
@@ -285,9 +327,10 @@ var bok = function(x){
             $(this).find(".boks_quote_menu").hide()
         }
 
-        bindings.click_quote = function(){
-            var quote_id = $(this).attr("data-id")
-            var box = $(this).find(".boks_quote_comments")
+        bindings.click_quote_text = function(){
+            var quote_box = $(this).closest(".boks_quote")
+            var quote_id = quote_box.attr("data-id")
+            var box = quote_box.find(".boks_quote_comments")
             async.waterfall([
                 function(done){
                     api.get_quote_comments(quote_id, function(er, comments){
@@ -304,16 +347,30 @@ var bok = function(x){
             })
         }
 
-        bindings.click_quote_up = function(e){
-            e.stopPropagation()
+        bindings.click_quote_up = function(){
+
         }
 
-        bindings.click_quote_down = function(e){
-            e.stopPropagation()
+        bindings.click_quote_down = function(){
+
         }
 
-        bindings.click_quote_edit = function(e){
-            e.stopPropagation()
+        bindings.click_quote_reply = function(){
+            var quote_box = $(this).closest(".boks_quote")
+            quote_box.find(".boks_quote_reply_box").show()
+                .find(".boks_quote_reply_textarea").focus()
+                .val("")
+        }
+
+        bindings.click_quote_reply_post = function(){
+            var quote_box = $(this).closest(".boks_quote")
+            var quote_id = quote_box.attr("data-id")
+            var comment = quote_box.find(".boks_quote_reply_textarea").val()
+            var comments_box = quote_box.find(".boks_quote_comments")
+            quote_box.find(".boks_quote_reply_box").hide()
+            api.create_quote_comment(quote_id, comment, function(er, comment){
+                views.load_quote_comment(comments_box, comment)
+            })
         }
 
         bindings.mouseenter_p = function(){
@@ -324,6 +381,30 @@ var bok = function(x){
         bindings.mouseleave_p = function(){
             var p = $(this).index()
             dom.quotes.find(".boks_quote_box[data-p='" + p + "']").css("z-index", 0)
+        }
+
+        bindings.mouseenter_comment = function(){
+            $(this).find(".boks_comment_menu").show()
+        }
+
+        bindings.mouseleave_comment = function(){
+            $(this).find(".boks_comment_menu").hide()
+        }
+
+        bindings.click_comment_text = function(){
+
+        }
+
+        bindings.click_comment_reply = function(){
+
+        }
+
+        bindings.click_comment_up = function(){
+
+        }
+
+        bindings.click_comment_down = function(){
+
         }
 
         return bindings
