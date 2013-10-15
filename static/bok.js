@@ -6,6 +6,7 @@ var bok = function(x){
 
     var dom = {
         box: o.box,
+        quotes: null,
     }
 
     var k = {
@@ -147,6 +148,9 @@ var bok = function(x){
                     o.box.html(templates.reader(text))
                         .on("click", "button", bindings.clip)
                         .on("click", ".boks_book p", bindings.click_paragraph)
+                        .on("mouseenter", ".boks_book p", bindings.mouseenter_p)
+                        .on("mouseleave", ".boks_book p", bindings.mouseleave_p)
+                    dom.quotes = o.box.find(".boks_quotes")
                     done(null)
                 },
             ], function(er, re){
@@ -260,6 +264,7 @@ var bok = function(x){
         }
 
         // todo: one click clip paragraph
+        // don't call click if selecting text
         bindings.click_paragraph = function(){
             var p = $(this)
         }
@@ -309,6 +314,16 @@ var bok = function(x){
 
         bindings.click_quote_edit = function(e){
             e.stopPropagation()
+        }
+
+        bindings.mouseenter_p = function(){
+            var p = $(this).index()
+            dom.quotes.find(".boks_quote_box[data-p='" + p + "']").css("z-index", 1)
+        }
+
+        bindings.mouseleave_p = function(){
+            var p = $(this).index()
+            dom.quotes.find(".boks_quote_box[data-p='" + p + "']").css("z-index", 0)
         }
 
         return bindings

@@ -1,6 +1,6 @@
 p {
-    margin-top: -0.8em; /* cause we use white-space: pre-wrap below for boks_book, for poetry */
-    margin-bottom: -0.8em;
+    margin-top: -0.5em; /* cause we use white-space: pre-wrap below for boks_book, for poetry */
+    margin-bottom: -0.5em;
 }
 
 button {
@@ -20,9 +20,18 @@ button:hover {
 }
 
 .boks_book {
-    padding: 20px;
+    padding: 10px;
     white-space: pre-wrap;
     font-family: times, georgia, serif;
+}
+
+.boks_book p {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.boks_book p:hover {
+    background-color: #ddd;
 }
 
 .boks_reader_menu {
@@ -30,6 +39,10 @@ button:hover {
     width: 40px;
     position: absolute;
     left: 85px;
+}
+
+.boks_reader_menu:hover {
+    background-color: #0f0;
 }
 
 .boks_reader_menu button {
@@ -83,6 +96,10 @@ button:hover {
     left: -35px;
 }
 
+.boks_quote_menu:hover {
+    background-color: #0f0;
+}
+
 .boks_quote_edit, .boks_quote_up, .boks_quote_down {
     font-size: 1em;
     width: 35px;
@@ -93,12 +110,12 @@ button:hover {
     padding: 10px;
 }
 
-.boks_quote_comments {
-
+.boks_quote:hover > .boks_quote_comments {
+    border-left: 5px solid #0f0;
 }
 
 .boks_quote_comment {
-    margin: 0 0 0 5px;
+    margin: 0 0 0 1px;
     padding: 10px;
 }
 
