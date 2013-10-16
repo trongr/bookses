@@ -146,9 +146,9 @@ var bok = function(x){
                 +               comment.comment
                 + "         </div>"
                 + "         <div class='boks_comment_menu'>"
+                + "             <button class='boks_comment_menu_reply'><i class='icon-comment'></i></button>"
                 + "             <button class='boks_comment_menu_up'><i class='icon-chevron-up'></i></button>"
                 + "             <button class='boks_comment_menu_down'><i class='icon-chevron-down'></i></button>"
-                + "             <button class='boks_comment_menu_reply'><i class='icon-comment'></i></button>"
                 + "         </div>"
                 + "     </div>"
             return html

@@ -194,7 +194,7 @@ button:hover {
 }
 
 .boks_quote_reply_textarea {
-    font-family: georgia;
+    font-family: helvetica, arial, sans;
     font-size: 1em;
     width: 100%;
     height: 6em;
