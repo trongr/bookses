@@ -81,6 +81,31 @@ var bok = function(x){
             })
         }
 
+        api.get_comment_comments = function(cID, done){
+            $.ajax({
+                url: "/comment/" + cID + "/comments",
+                type: "get",
+                success: function(re){
+                    if (re.comments) done(null, re.comments)
+                    else done({error:"api.get_comment_comments",re:re})
+                }
+            })
+        }
+
+        api.create_comment_comment = function(cID, comment, done){
+            $.ajax({
+                url: "/comment/" + cID + "/comment",
+                type: "post",
+                data: {
+                    comment: comment
+                },
+                success: function(re){
+                    if (re.comment) done(null, re.comment)
+                    else done({error:"api.create_comment_comment",re:re})
+                }
+            })
+        }
+
         return api
     }())
 
@@ -115,7 +140,6 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.quote = function(quote){
             var html = "<div data-id='" + quote._id + "' class='boks_quote'>"
                 + "         <div class='boks_quote_text'>"
@@ -140,8 +164,9 @@ var bok = function(x){
             return html
         }
 
+        // mark
         templates.comment = function(comment){
-            var html = "<div class='boks_quote_comment'>"
+            var html = "<div class='boks_quote_comment' data-id='" + comment._id + "'>"
                 + "         <div class='boks_quote_comment_text'>"
                 +               comment.comment
                 + "         </div>"
@@ -149,6 +174,16 @@ var bok = function(x){
                 + "             <button class='boks_comment_menu_reply'><i class='icon-comment'></i></button>"
                 + "             <button class='boks_comment_menu_up'><i class='icon-chevron-up'></i></button>"
                 + "             <button class='boks_comment_menu_down'><i class='icon-chevron-down'></i></button>"
+                + "         </div>"
+                + "         <div class='boks_comment_reply_box'>"
+                + "             <div class='boks_comment_reply_textarea_box'>"
+                + "                 <textarea class='boks_comment_reply_textarea'></textarea>"
+                + "             </div>"
+                + "             <div class='boks_comment_reply_menu'>"
+                + "                 <button class='boks_comment_reply_menu_post'><i class='icon-comment-alt'></i></button>"
+                + "             </div>"
+                + "         </div>"
+                + "         <div class='boks_comment_comments'>"
                 + "         </div>"
                 + "     </div>"
             return html
@@ -253,29 +288,37 @@ var bok = function(x){
             else if (window.getSelection().removeAllRanges) window.getSelection().removeAllRanges()
         }
 
+        // mark
         views.load_quote_comments = function(box, comments, done){
             var html = ""
             for (var i = 0; i < comments.length; i++){
                 html += templates.comment(comments[i])
             }
             box.html(html)
-                .on("mouseenter", ".boks_quote_comment", bindings.mouseenter_comment)
-                .on("mouseleave", ".boks_quote_comment", bindings.mouseleave_comment)
                 .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
                 .on("click", ".boks_comment_menu_reply", bindings.click_comment_reply)
                 .on("click", ".boks_comment_menu_up", bindings.click_comment_up)
                 .on("click", ".boks_comment_menu_down", bindings.click_comment_down)
+                .on("click", ".boks_comment_reply_menu_post", bindings.click_comment_reply_post)
             done(null)
         }
 
         views.load_quote_comment = function(box, comment){
+            box.prepend(templates.comment(comment)) // no need to bind events here: already bound in load_quote_comments
+        }
+
+        views.load_comment_comments = function(box, comments, done){
+            var html = ""
+            for (var i = 0; i < comments.length; i++){
+                html += templates.comment(comments[i])
+            }
+            box.html(html) // no need to bind events here: already bound in load_quote_comments
+            done(null)
+        }
+
+        // mark
+        views.load_comment_comment = function(box, comment){
             box.prepend(templates.comment(comment))
-                .on("mouseenter", ".boks_quote_comment", bindings.mouseenter_comment)
-                .on("mouseleave", ".boks_quote_comment", bindings.mouseleave_comment)
-                .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
-                .on("click", ".boks_comment_menu_reply", bindings.click_comment_reply)
-                .on("click", ".boks_comment_menu_up", bindings.click_comment_up)
-                .on("click", ".boks_comment_menu_down", bindings.click_comment_down)
         }
 
         return views
@@ -381,6 +424,7 @@ var bok = function(x){
             dom.quotes.find(".boks_quote_box[data-p='" + p + "']").css({
                 "z-index": 1,
                 "margin-left": "-10px",
+                "border-left": "5px solid #0f0"
             })
         }
 
@@ -389,23 +433,48 @@ var bok = function(x){
             dom.quotes.find(".boks_quote_box[data-p='" + p + "']").css({
                 "z-index": 0,
                 "margin-left": "0",
+                "border-left": "none"
             })
         }
 
-        bindings.mouseenter_comment = function(){
-            $(this).find(".boks_comment_menu").show()
-        }
-
-        bindings.mouseleave_comment = function(){
-            $(this).find(".boks_comment_menu").hide()
-        }
-
         bindings.click_comment_text = function(){
-
+            var comment_box = $(this).closest(".boks_quote_comment")
+            var comment_id = comment_box.attr("data-id")
+            var box = comment_box.find(".boks_comment_comments")
+            async.waterfall([
+                function(done){
+                    api.get_comment_comments(comment_id, function(er, comments){
+                        done(er, comments)
+                    })
+                },
+                function(comments, done){
+                    views.load_comment_comments(box, comments, function(er){
+                        done(er)
+                    })
+                },
+            ], function(er, re){
+                if (er) api.bug(er)
+            })
         }
 
         bindings.click_comment_reply = function(){
+            var comment_box = $(this).closest(".boks_quote_comment")
+            comment_box.find(".boks_comment_reply_box").eq(0).show()
+                .find(".boks_comment_reply_textarea").focus()
+                .val("")
+        }
 
+        // mark
+        bindings.click_comment_reply_post = function(){
+            var comment_box = $(this).closest(".boks_quote_comment")
+            var comment_id = comment_box.attr("data-id")
+            var comment = comment_box.find(".boks_comment_reply_textarea").eq(0).val()
+            var comments_box = comment_box.find(".boks_comment_comments").eq(0)
+            comment_box.find(".boks_comment_reply_box").hide()
+            api.create_comment_comment(comment_id, comment, function(er, comment){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+                else views.load_comment_comment(comments_box, comment)
+            })
         }
 
         bindings.click_comment_up = function(){
