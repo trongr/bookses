@@ -132,11 +132,21 @@ var bok = function(x){
 
         templates.quote_box = function(quotes, p, top){
             var html = "<div data-p='" + p + "' class='boks_quote_box'"
-            + "             style='"
-            + "                   position:absolute;"
-            + "                   top:" + top + ";'>"
-            +               quotes
-            + "         </div>"
+                + "             style='"
+                + "                   position:absolute;"
+                + "                   top:" + top + ";'>"
+                + "             <div class='boks_quote_new_quote_box'>"
+                + "                 <div class='boks_quote_new_quote_textarea_box'>"
+                + "                     <textarea class='boks_quote_new_quote_textarea'></textarea>"
+                + "                 </div>"
+                + "                 <div class='boks_quote_new_quote_menu'>"
+                + "                     <button class='boks_quote_new_quote_post'><i class='icon-comment-alt'></i></button>"
+                + "                 </div>"
+                + "             </div>"
+                + "             <div class='boks_quote_box_quotes'>"
+                +                  quotes
+                + "             </div>"
+                + "         </div>"
             return html
         }
 
@@ -164,7 +174,6 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.comment = function(comment){
             var html = "<div class='boks_quote_comment' data-id='" + comment._id + "'>"
                 + "         <div class='boks_quote_comment_text'>"
@@ -210,8 +219,8 @@ var bok = function(x){
                     })
                 },
                 function(text, done){
-                    o.box.html(templates.reader(text))
-                        .on("click", "button", bindings.clip)
+                    o.box.html(templates.reader(text)).off("click")
+                        .on("click", ".boks_clip", bindings.clip)
                         .on("click", ".boks_book p", bindings.click_paragraph)
                         .on("mouseenter", ".boks_book p", bindings.mouseenter_p)
                         .on("mouseleave", ".boks_book p", bindings.mouseleave_p)
@@ -262,9 +271,10 @@ var bok = function(x){
                 }
                 prev_p = p
             }
-            $("#" + o.bID + " .boks_quotes").html(html)
+            $("#" + o.bID + " .boks_quotes").html(html).off("click")
                 .on("mouseenter", ".boks_quote_box", bindings.mouseenter_quote_box)
                 .on("mouseleave", ".boks_quote_box", bindings.mouseleave_quote_box)
+                .on("click", ".boks_quote_new_quote_post", bindings.click_new_quote_post)
                 .on("click", ".boks_quote_text", bindings.click_quote_text)
                 .on("click", ".boks_quote_up", bindings.click_quote_up)
                 .on("click", ".boks_quote_down", bindings.click_quote_down)
@@ -272,13 +282,13 @@ var bok = function(x){
                 .on("click", ".boks_quote_reply_menu_post", bindings.click_quote_reply_post)
         }
 
-        views.load_quote = function(quotes_box, quote, p, top, done){
-            var box = quotes_box.find(".boks_quote_box[data-p='" + p + "']")
+        views.load_quote = function(quote, p, top, done){
+            var box = dom.quotes.find(".boks_quote_box[data-p='" + p + "'] .boks_quote_box_quotes")
             var q = templates.quote(quote)
             if (box.length){
                 box.prepend(q)
             } else {
-                quotes_box.append(templates.quote_box(q, p, top))
+                dom.quotes.append(templates.quote_box(q, p, top))
             }
             done(null)
         }
@@ -288,13 +298,12 @@ var bok = function(x){
             else if (window.getSelection().removeAllRanges) window.getSelection().removeAllRanges()
         }
 
-        // mark
         views.load_quote_comments = function(box, comments, done){
             var html = ""
             for (var i = 0; i < comments.length; i++){
                 html += templates.comment(comments[i])
             }
-            box.html(html)
+            box.html(html).off("click")
                 .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
                 .on("click", ".boks_comment_menu_reply", bindings.click_comment_reply)
                 .on("click", ".boks_comment_menu_up", bindings.click_comment_up)
@@ -304,7 +313,12 @@ var bok = function(x){
         }
 
         views.load_quote_comment = function(box, comment){
-            box.prepend(templates.comment(comment)) // no need to bind events here: already bound in load_quote_comments
+            box.prepend(templates.comment(comment)).off("click")
+                .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
+                .on("click", ".boks_comment_menu_reply", bindings.click_comment_reply)
+                .on("click", ".boks_comment_menu_up", bindings.click_comment_up)
+                .on("click", ".boks_comment_menu_down", bindings.click_comment_down)
+                .on("click", ".boks_comment_reply_menu_post", bindings.click_comment_reply_post)
         }
 
         views.load_comment_comments = function(box, comments, done){
@@ -316,9 +330,15 @@ var bok = function(x){
             done(null)
         }
 
-        // mark
         views.load_comment_comment = function(box, comment){
             box.prepend(templates.comment(comment))
+        }
+
+        views.load_new_quote_box = function(p, top){
+            var quote = $(templates.quote_box("", p, top))
+            dom.quotes.append(quote).find(quote) // have to find quote again, cause if you focus before appending it'll lose focus
+                .find(".boks_quote_new_quote_box").show()
+                .find(".boks_quote_new_quote_textarea").focus()
         }
 
         return views
@@ -330,32 +350,43 @@ var bok = function(x){
         // todo. limit quote length
         bindings.clip = function(){
             var s = window.getSelection()
-            if (s.rangeCount > 0){
+            if (s.rangeCount > 0 && s.toString().length){
                 var reader = $(this).closest(".boks_reader")
                 var book = reader.find(".boks_book")
                 var node = $(s.getRangeAt(0).startContainer.parentNode) // todo: error checking for different browsers
                 if (book.find(node).length){ // only allow highlight from this book
                     var p = node.index()
                     var top = node.get(0).offsetTop
-                    var quotes = reader.find(".boks_quotes")
                     var quote = {
                         quote: s.toString(),
-                        comment: "",
                         p: p
                     }
                     api.create_quote(o.bID, quote, function(er, quote){
                         if (er) console.log(JSON.stringify(er, 0, 2))
-                        else views.load_quote(quotes, quote, p, top, function(er){})
+                        else views.load_quote(quote, p, top, function(er){})
                     })
                     views.clear_selection() // avoids consecutive clicks
                 }
+            } else {
+                alert("select some text to quote")
             }
         }
 
-        // todo: one click clip paragraph
-        // don't call click if selecting text
         bindings.click_paragraph = function(){
-            var p = $(this)
+            var s = window.getSelection()
+            if (s.rangeCount > 0 && s.toString().length){
+                // selecting text
+            } else {
+                var p = $(this).index()
+                var top = $(this).get(0).offsetTop
+                var quote_box = dom.quotes.find(".boks_quote_box[data-p='" + p + "']")
+                if (quote_box.length){
+                    quote_box.find(".boks_quote_new_quote_box").show()
+                        .find(".boks_quote_new_quote_textarea").focus().val("")
+                } else {
+                    views.load_new_quote_box(p, top)
+                }
+            }
         }
 
         bindings.mouseenter_quote_box = function(){
@@ -403,8 +434,7 @@ var bok = function(x){
         bindings.click_quote_reply = function(){
             var quote_box = $(this).closest(".boks_quote")
             quote_box.find(".boks_quote_reply_box").show()
-                .find(".boks_quote_reply_textarea").focus()
-                .val("")
+                .find(".boks_quote_reply_textarea").focus().val("")
         }
 
         bindings.click_quote_reply_post = function(){
@@ -460,11 +490,9 @@ var bok = function(x){
         bindings.click_comment_reply = function(){
             var comment_box = $(this).closest(".boks_quote_comment")
             comment_box.find(".boks_comment_reply_box").eq(0).show()
-                .find(".boks_comment_reply_textarea").focus()
-                .val("")
+                .find(".boks_comment_reply_textarea").focus().val("")
         }
 
-        // mark
         bindings.click_comment_reply_post = function(){
             var comment_box = $(this).closest(".boks_quote_comment")
             var comment_id = comment_box.attr("data-id")
@@ -483,6 +511,22 @@ var bok = function(x){
 
         bindings.click_comment_down = function(){
 
+        }
+
+        bindings.click_new_quote_post = function(){
+            var quote_box = $(this).closest(".boks_quote_box")
+            var comment = quote_box.find(".boks_quote_new_quote_textarea").val()
+            var p = quote_box.attr("data-p")
+            var quote = {
+                quote: comment,
+                p: p
+            }
+            api.create_quote(o.bID, quote, function(er, quote){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+                else views.load_quote(quote, p, null, function(er){})
+            })
+            var quotes_box = quote_box.find(".boks_quote_box_quotes")
+            quote_box.find(".boks_quote_new_quote_box").hide()
         }
 
         return bindings
