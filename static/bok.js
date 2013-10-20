@@ -154,7 +154,7 @@ var bok = function(x){
             var exp = /\[\[(.*)\]\]/ig;
             return text.replace(exp,"<img class='boks_img' src='$1'/>");
         }
-        // mark
+
         templates.quote = function(quote){
             var text = templates.replace_text_with_img(quote.quote)
             var html = "<div data-id='" + quote._id + "' class='boks_quote'>"
@@ -193,7 +193,7 @@ var bok = function(x){
                 + "                 <button class='boks_comment_menu_reply'><i class='icon-comment'></i> " + comment.replies + "</button>"
                 + "                 <button class='boks_comment_menu_thumbs_up'><i class='icon-thumbs-up-alt'></i> " + comment.votes + "</button>"
                 + "             </div>"
-                + "             <div class='clear_both'></div>" // mark
+                + "             <div class='clear_both'></div>"
                 + "         </div>"
                 + "         <div class='boks_comment_reply_box'>"
                 + "             <div class='boks_comment_reply_textarea_box'>"
@@ -287,8 +287,6 @@ var bok = function(x){
                 .on("mouseleave", ".boks_quote_box", bindings.mouseleave_quote_box)
                 .on("click", ".boks_quote_new_quote_post", bindings.click_new_quote_post)
                 .on("click", ".boks_quote_text", bindings.click_quote_text)
-                .on("click", ".boks_quote_up", bindings.click_quote_up)
-                .on("click", ".boks_quote_down", bindings.click_quote_down)
                 .on("click", ".boks_quote_reply", bindings.click_quote_reply)
                 .on("click", ".boks_quote_reply_menu_post", bindings.click_quote_reply_post)
         }
@@ -317,8 +315,6 @@ var bok = function(x){
             box.html(html).off("click")
                 .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
                 .on("click", ".boks_comment_menu_reply", bindings.click_comment_reply)
-                .on("click", ".boks_comment_menu_up", bindings.click_comment_up)
-                .on("click", ".boks_comment_menu_down", bindings.click_comment_down)
                 .on("click", ".boks_comment_reply_menu_post", bindings.click_comment_reply_post)
             done(null)
         }
@@ -327,8 +323,6 @@ var bok = function(x){
             box.prepend(templates.comment(comment)).off("click")
                 .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
                 .on("click", ".boks_comment_menu_reply", bindings.click_comment_reply)
-                .on("click", ".boks_comment_menu_up", bindings.click_comment_up)
-                .on("click", ".boks_comment_menu_down", bindings.click_comment_down)
                 .on("click", ".boks_comment_reply_menu_post", bindings.click_comment_reply_post)
         }
 
@@ -434,14 +428,6 @@ var bok = function(x){
             })
         }
 
-        bindings.click_quote_up = function(){
-
-        }
-
-        bindings.click_quote_down = function(){
-
-        }
-
         bindings.click_quote_reply = function(){
             var quote_box = $(this).closest(".boks_quote")
             quote_box.find(".boks_quote_reply_box").show()
@@ -514,14 +500,6 @@ var bok = function(x){
                 if (er) console.log(JSON.stringify(er, 0, 2))
                 else views.load_comment_comment(comments_box, comment)
             })
-        }
-
-        bindings.click_comment_up = function(){
-
-        }
-
-        bindings.click_comment_down = function(){
-
         }
 
         bindings.click_new_quote_post = function(){
