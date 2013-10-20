@@ -150,10 +150,17 @@ var bok = function(x){
             return html
         }
 
+        templates.replace_text_with_img = function(text){
+            var exp = /\[\[(.*)\]\]/ig;
+            return text.replace(exp,"<img src='$1'/>");
+        }
+
+        // mark
         templates.quote = function(quote){
+            var text = templates.replace_text_with_img(quote.quote)
             var html = "<div data-id='" + quote._id + "' class='boks_quote'>"
                 + "         <div class='boks_quote_text'>"
-                +               quote.quote
+                +               text
                 + "         </div>"
                 + "         <div class='boks_quote_menu'>"
                 + "             <button class='boks_quote_reply'><i class='icon-comment'></i></button><br>"
