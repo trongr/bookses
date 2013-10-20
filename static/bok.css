@@ -90,7 +90,7 @@ button:hover {
     position: relative;
 }
 
-.boks_quote:hover {
+.boks_quote_text:hover {
     background-color: #eee;
 }
 
@@ -126,8 +126,11 @@ button:hover {
 }
 
 .boks_quote_comment:hover {
-    background-color: #fff;
     border-left: 5px solid #0f0;
+}
+
+.boks_quote_comment_text:hover {
+    background-color: #fff;
 }
 
 .boks_quote_comment_text {
