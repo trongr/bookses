@@ -152,20 +152,21 @@ var bok = function(x){
 
         templates.replace_text_with_img = function(text){
             var exp = /\[\[(.*)\]\]/ig;
-            return text.replace(exp,"<img src='$1'/>");
+            return text.replace(exp,"<img class='boks_img' src='$1'/>");
         }
 
-        // mark
         templates.quote = function(quote){
             var text = templates.replace_text_with_img(quote.quote)
             var html = "<div data-id='" + quote._id + "' class='boks_quote'>"
-                + "         <div class='boks_quote_text'>"
-                +               text
-                + "         </div>"
-                + "         <div class='boks_quote_menu'>"
-                + "             <button class='boks_quote_reply'><i class='icon-comment'></i></button><br>"
-                + "             <button class='boks_quote_up'><i class='icon-chevron-up'></i></button><br>"
-                + "             <button class='boks_quote_down'><i class='icon-chevron-down'></i></button><br>"
+                + "         <div class='boks_quote_text_box'>"
+                + "             <div class='boks_quote_text'>"
+                +                   text
+                + "             </div>"
+                + "             <div class='boks_quote_menu'>"
+                + "                 <button class='boks_quote_reply'><i class='icon-comment'></i></button><br>"
+                + "                 <button class='boks_quote_up'><i class='icon-chevron-up'></i></button><br>"
+                + "                 <button class='boks_quote_down'><i class='icon-chevron-down'></i></button><br>"
+                + "             </div>"
                 + "         </div>"
                 + "         <div class='boks_quote_reply_box'>"
                 + "             <div class='boks_quote_reply_textarea_box'>"
@@ -182,14 +183,17 @@ var bok = function(x){
         }
 
         templates.comment = function(comment){
+            var text = templates.replace_text_with_img(comment.comment)
             var html = "<div class='boks_quote_comment' data-id='" + comment._id + "'>"
-                + "         <div class='boks_quote_comment_text'>"
-                +               comment.comment
-                + "         </div>"
-                + "         <div class='boks_comment_menu'>"
-                + "             <button class='boks_comment_menu_reply'><i class='icon-comment'></i></button>"
-                + "             <button class='boks_comment_menu_up'><i class='icon-chevron-up'></i></button>"
-                + "             <button class='boks_comment_menu_down'><i class='icon-chevron-down'></i></button>"
+                + "         <div class='boks_quote_comment_text_box'>"
+                + "             <div class='boks_quote_comment_text'>"
+                +                   text
+                + "             </div>"
+                + "             <div class='boks_comment_menu'>"
+                + "                 <button class='boks_comment_menu_reply'><i class='icon-comment'></i></button>"
+                + "                 <button class='boks_comment_menu_up'><i class='icon-chevron-up'></i></button>"
+                + "                 <button class='boks_comment_menu_down'><i class='icon-chevron-down'></i></button>"
+                + "             </div>"
                 + "         </div>"
                 + "         <div class='boks_comment_reply_box'>"
                 + "             <div class='boks_comment_reply_textarea_box'>"
