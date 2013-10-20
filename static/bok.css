@@ -102,10 +102,10 @@ button:hover {
     width: 100%;
     height: auto;
 }
-/* mark */
+
 .boks_quote_menu {
     float: right;
-    margin-right: 10px;
+    margin: 0 10px 0 10px;
 }
 
 .boks_quote_menu button {
@@ -134,11 +134,9 @@ button:hover {
     padding: 15px 15px 15px 15px;
 }
 
-/* mark */
-
 .boks_comment_menu {
     float: right;
-    margin-right: 10px;
+    margin: 0 10px 0 10px;
 }
 
 .boks_comment_menu button {
