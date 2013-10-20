@@ -154,7 +154,7 @@ var bok = function(x){
             var exp = /\[\[(.*)\]\]/ig;
             return text.replace(exp,"<img class='boks_img' src='$1'/>");
         }
-
+        // mark
         templates.quote = function(quote){
             var text = templates.replace_text_with_img(quote.quote)
             var html = "<div data-id='" + quote._id + "' class='boks_quote'>"
@@ -163,10 +163,10 @@ var bok = function(x){
                 +                   text
                 + "             </div>"
                 + "             <div class='boks_quote_menu'>"
-                + "                 <button class='boks_quote_reply'><i class='icon-comment'></i></button><br>"
-                + "                 <button class='boks_quote_up'><i class='icon-chevron-up'></i></button><br>"
-                + "                 <button class='boks_quote_down'><i class='icon-chevron-down'></i></button><br>"
+                + "                 <button class='boks_quote_reply'><i class='icon-comment'></i> " + quote.replies + "</button>"
+                + "                 <button class='boks_quote_thumbs_up'><i class='icon-thumbs-up-alt'></i> " + quote.votes + "</button>"
                 + "             </div>"
+                + "             <div class='clear_both'></div>"
                 + "         </div>"
                 + "         <div class='boks_quote_reply_box'>"
                 + "             <div class='boks_quote_reply_textarea_box'>"
@@ -190,10 +190,10 @@ var bok = function(x){
                 +                   text
                 + "             </div>"
                 + "             <div class='boks_comment_menu'>"
-                + "                 <button class='boks_comment_menu_reply'><i class='icon-comment'></i></button>"
-                + "                 <button class='boks_comment_menu_up'><i class='icon-chevron-up'></i></button>"
-                + "                 <button class='boks_comment_menu_down'><i class='icon-chevron-down'></i></button>"
+                + "                 <button class='boks_comment_menu_reply'><i class='icon-comment'></i> " + comment.replies + "</button>"
+                + "                 <button class='boks_comment_menu_thumbs_up'><i class='icon-thumbs-up-alt'></i> " + comment.votes + "</button>"
                 + "             </div>"
+                + "             <div class='clear_both'></div>" // mark
                 + "         </div>"
                 + "         <div class='boks_comment_reply_box'>"
                 + "             <div class='boks_comment_reply_textarea_box'>"
@@ -275,12 +275,12 @@ var bok = function(x){
                     html += templates.quote_box(box_quotes, prev_p, top)
                     box_quotes = quote
                 }
+                prev_p = p
                 if (i == quotes.length - 1){ // put the last quote wherever it belongs
                     var top = paragraphs.eq(prev_p).get(0).offsetTop
                     html += templates.quote_box(box_quotes, prev_p, top)
                     box_quotes = quote
                 }
-                prev_p = p
             }
             $("#" + o.bID + " .boks_quotes").html(html).off("click")
                 .on("mouseenter", ".boks_quote_box", bindings.mouseenter_quote_box)

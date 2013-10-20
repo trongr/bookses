@@ -52,7 +52,6 @@ var DB = (function(){
         })
     }
 
-    // mark
     DB.get_entry_by_id = function(table, id, done){
         var query = {
             _id: new mongo.ObjectID(id)
@@ -61,6 +60,20 @@ var DB = (function(){
             if (er) done({error:"db.get_entry_by_id",table:table,id:id,er:er})
             else docs.findOne(query, function(er, entry){
                 if (er) done({error:"db.get_entry_by_id",table:table,id:id,er:er})
+                else done(null, entry)
+            })
+        })
+    }
+
+    DB.update_entry_by_id = function(table, id, update, done){
+        db.collection(table, {safe:true}, function(er, docs){
+            if (er) done({error:"db.update_entry_by_id",table:table,id:id,update:update,er:er})
+            else docs.update({
+                _id: new mongo.ObjectID(id),
+            }, update, {
+                safe: true
+            }, function(er, entry){
+                if (er) done({error:"db.update_entry_by_id",table:table,id:id,update:update,er:er})
                 else done(null, entry)
             })
         })
@@ -198,6 +211,8 @@ var books = module.exports = (function(){
                         book: book._id.toString(),
                         p: parseInt(req.body.p),
                         created: new Date(),
+                        votes: 1,
+                        replies: 0,
                     }
                     DB.create(k.tables.quotes, quote, function(er, quote){
                         done(er, quote)
@@ -253,8 +268,15 @@ var books = module.exports = (function(){
                     comment: req.body.comment,
                     quote: quote._id.toString(),
                     created: new Date(),
+                    votes: 1,
+                    replies: 0
                 }
                 DB.create(k.tables.comments, comment, function(er, comment){
+                    done(er, quote, comment)
+                })
+            },
+            function(quote, comment, done){
+                DB.update_entry_by_id("quotes", quote._id.toString(), {$inc:{replies:1}}, function(er, quote){
                     done(er, comment)
                 })
             },
@@ -285,7 +307,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.create_comment_comment_validate = function(req, res, next){
         helpers.check_id(req.params.id, function(er){
             next(er)
@@ -306,8 +327,15 @@ var books = module.exports = (function(){
                     comment: req.body.comment,
                     parent: parent._id.toString(),
                     created: new Date(),
+                    votes: 1,
+                    replies: 0
                 }
                 DB.create(k.tables.comments, comment, function(er, comment){
+                    done(er, parent, comment)
+                })
+            },
+            function(parent, comment, done){
+                DB.update_entry_by_id("comments", parent._id.toString(), {$inc:{replies:1}}, function(er, parent){
                     done(er, comment)
                 })
             },
@@ -327,7 +355,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.get_comment_comments = function(req, res){
         DB.get_comment_comments(req.params.id, function(er, comments){
             if (er){
@@ -431,7 +458,6 @@ var test = (function(){
         })
     }
 
-    // mark
     test.create_comment_comment = function(){
         var comment = process.argv[2]
         request.post({

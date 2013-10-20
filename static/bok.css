@@ -1,3 +1,4 @@
+
 p {
     margin-top: -0.5em; /* cause we use white-space: pre-wrap below for boks_book, for poetry */
     margin-bottom: -0.5em;
@@ -11,8 +12,7 @@ button {
 }
 
 button:hover {
-    background-color: #0f0;
-    color: #fff;
+    color: #0f0;
 }
 
 .boks_reader {
@@ -69,9 +69,14 @@ button:hover {
     width: 40%;
 }
 
+.boks_quotes {
+    position: relative;
+}
+
 .boks_quote_box {
     box-shadow: 0 0 10px 5px #aaa;
-    background-color: #ddd;
+    background-color: #ccc;
+    padding-bottom: 2048px;
 }
 
 .boks_quote_box:hover {
@@ -89,39 +94,25 @@ button:hover {
     background-color: #eee;
 }
 
-.boks_quote_text:hover ~ .boks_quote_menu {
-    display: block;
-}
-
 .boks_quote_text {
-    padding: 15px 50px 15px 15px;
+    padding: 15px 15px 15px 15px;
 }
 
 .boks_img {
     width: 100%;
     height: auto;
 }
-
+/* mark */
 .boks_quote_menu {
-    display: none;
-    background-color: #fff;
-    width: 45px;
-    position: absolute;
-    top: 0;
-    right: 0;
-    z-index: 1;
-}
-
-.boks_quote_menu:hover {
-    background-color: #0f0;
-    display: block;
+    float: right;
+    margin-right: 10px;
 }
 
 .boks_quote_menu button {
     font-size: 1em;
-    width: 40px;
-    height: 40px;
-    margin-left: 5px;
+    background: none;
+    font-family: helvetica, arial, sans;
+    margin: 10px 0 10px 0;
 }
 
 .boks_quote_comments {
@@ -140,32 +131,21 @@ button:hover {
 }
 
 .boks_quote_comment_text {
-    padding: 15px 50px 15px 15px;
+    padding: 15px 15px 15px 15px;
 }
 
-.boks_quote_comment_text:hover ~ .boks_comment_menu {
-    display: block;
-}
+/* mark */
 
 .boks_comment_menu {
-    display: none;
-    top: 0;
-    right: 0;
-    position: absolute;
-    width: 45px;
-    background-color: #fff;
-    z-index: 1;
-}
-
-.boks_comment_menu:hover {
-    background-color: #0f0;
+    float: right;
+    margin-right: 10px;
 }
 
 .boks_comment_menu button {
-    width: 40px;
-    height: 40px;
     font-size: 1em;
-    margin-left: 5px;
+    background: none;
+    font-family: helvetica, arial, sans;
+    margin: 10px 0 10px 0;
 }
 
 .boks_quote_reply_box {
@@ -220,11 +200,6 @@ button:hover {
 
 .boks_quote_reply_textarea:focus {
     background-color: #eee;
-}
-
-.boks_comment_menu:hover {
-    background-color: #0f0;
-    display: block;
 }
 
 .boks_comment_comments {
@@ -336,4 +311,8 @@ button:hover {
 .boks_quote_new_quote_post:focus {
     background-color: #0f0;
     color: #000;
+}
+
+.clear_both {
+    clear: both;
 }
