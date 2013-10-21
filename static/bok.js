@@ -117,6 +117,7 @@ var bok = function(x){
                 + "         <div class='boks_reader_menu'>"
                 + "             <button class='boks_clip' type='button'><i class='icon-quote-right'></i></button>"
                 + "             <button class='boks_twitter' type='button'><i class='icon-twitter'></i></button>"
+                + "             <button class='boks_close' type='button'><i class='icon-remove'></i></button>"
                 + "         </div>"
                 + "         <div class='boks_reader_content'>"
                 + "             <div class='boks_reader_left'>"
@@ -163,8 +164,8 @@ var bok = function(x){
                 +                   text
                 + "             </div>"
                 + "             <div class='boks_quote_menu'>"
-                + "                 <button class='boks_quote_reply'><i class='icon-comment'></i> " + quote.replies + "</button>"
-                + "                 <button class='boks_quote_thumbs_up'><i class='icon-thumbs-up-alt'></i> " + quote.votes + "</button>"
+                + "                 <button class='boks_quote_reply " + (quote.replies > 0 ? "boks_green_underline" : "") + "'><i class='icon-comment-alt'></i>" + quote.replies + "</button>"
+                + "                 <button class='boks_quote_thumbs_up'><i class='icon-thumbs-up-alt'></i>" + quote.votes + "</button>"
                 + "             </div>"
                 + "             <div class='clear_both'></div>"
                 + "         </div>"
@@ -190,8 +191,8 @@ var bok = function(x){
                 +                   text
                 + "             </div>"
                 + "             <div class='boks_comment_menu'>"
-                + "                 <button class='boks_comment_menu_reply'><i class='icon-comment'></i> " + comment.replies + "</button>"
-                + "                 <button class='boks_comment_menu_thumbs_up'><i class='icon-thumbs-up-alt'></i> " + comment.votes + "</button>"
+                + "                 <button class='boks_comment_menu_reply " + (comment.replies > 0 ? "boks_green_underline" : "") + "'><i class='icon-comment-alt'></i>" + comment.replies + "</button>"
+                + "                 <button class='boks_comment_menu_thumbs_up'><i class='icon-thumbs-up-alt'></i>" + comment.votes + "</button>"
                 + "             </div>"
                 + "             <div class='clear_both'></div>"
                 + "         </div>"
@@ -232,6 +233,7 @@ var bok = function(x){
                 function(text, done){
                     o.box.html(templates.reader(text)).off("click")
                         .on("click", ".boks_clip", bindings.clip)
+                        .on("click", ".boks_close", bindings.close)
                         .on("click", ".boks_book p", bindings.click_paragraph)
                         .on("mouseenter", ".boks_book p", bindings.mouseenter_p)
                         .on("mouseleave", ".boks_book p", bindings.mouseleave_p)
@@ -516,6 +518,10 @@ var bok = function(x){
             })
             var quotes_box = quote_box.find(".boks_quote_box_quotes")
             quote_box.find(".boks_quote_new_quote_box").hide()
+        }
+
+        bindings.close = function(){
+            $(this).closest(".boks_reader").parent().hide()
         }
 
         return bindings
