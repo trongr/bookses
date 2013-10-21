@@ -110,6 +110,7 @@ button:hover {
 
 .boks_quote_menu button {
     font-size: 1em;
+    font-weight: lighter;
     background: none;
     font-family: helvetica, arial, sans;
     margin: 10px 0 10px 0;
@@ -144,6 +145,7 @@ button:hover {
 
 .boks_comment_menu button {
     font-size: 1em;
+    font-weight: lighter;
     background: none;
     font-family: helvetica, arial, sans;
     margin: 10px 0 10px 0;
