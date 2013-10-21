@@ -72,9 +72,9 @@ var DB = (function(){
                 _id: new mongo.ObjectID(id),
             }, update, {
                 safe: true
-            }, function(er, entry){
+            }, function(er, num){
                 if (er) done({error:"db.update_entry_by_id",table:table,id:id,update:update,er:er})
-                else done(null, entry)
+                else done(null, num)
             })
         })
     }
@@ -276,7 +276,7 @@ var books = module.exports = (function(){
                 })
             },
             function(quote, comment, done){
-                DB.update_entry_by_id("quotes", quote._id.toString(), {$inc:{replies:1}}, function(er, quote){
+                DB.update_entry_by_id("quotes", quote._id.toString(), {$inc:{replies:1}}, function(er, num){
                     done(er, comment)
                 })
             },
@@ -335,7 +335,7 @@ var books = module.exports = (function(){
                 })
             },
             function(parent, comment, done){
-                DB.update_entry_by_id("comments", parent._id.toString(), {$inc:{replies:1}}, function(er, parent){
+                DB.update_entry_by_id("comments", parent._id.toString(), {$inc:{replies:1}}, function(er, num){
                     done(er, comment)
                 })
             },
