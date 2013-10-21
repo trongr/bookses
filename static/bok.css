@@ -86,7 +86,7 @@ button:hover {
 .boks_quote_box {
     box-shadow: 0 0 10px 5px #aaa;
     background-color: #ddd;
-    padding-bottom: 2048px;
+    padding-bottom: 640px;
 }
 
 .boks_quote_box:hover {
