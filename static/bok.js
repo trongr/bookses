@@ -138,7 +138,7 @@ var bok = function(x){
                 + "                   top:" + top + ";'>"
                 + "             <div class='boks_quote_new_quote_box'>"
                 + "                 <div class='boks_quote_new_quote_textarea_box'>"
-                + "                     <textarea class='boks_quote_new_quote_textarea' placeholder='Constructive comment goes here. Embed pictures like so: [[http://picture.com/cat.jpg]]'></textarea>"
+                + "                     <textarea class='boks_quote_new_quote_textarea' placeholder='Comment or add a picture, like so: [[http://example.com/cat.jpg]]'></textarea>"
                 + "                 </div>"
                 + "                 <div class='boks_quote_new_quote_menu'>"
                 + "                     <button class='boks_quote_new_quote_post'><i class='icon-comment-alt'></i></button>"
@@ -171,7 +171,7 @@ var bok = function(x){
                 + "         </div>"
                 + "         <div class='boks_quote_reply_box'>"
                 + "             <div class='boks_quote_reply_textarea_box'>"
-                + "                 <textarea class='boks_quote_reply_textarea' placeholder='Constructive comment goes here. Embed pictures like so: [[http://picture.com/cat.jpg]]'></textarea>"
+                + "                 <textarea class='boks_quote_reply_textarea' placeholder='Comment or add a picture, like so: [[http://example.com/cat.jpg]]'></textarea>"
                 + "             </div>"
                 + "             <div class='boks_quote_reply_menu'>"
                 + "                 <button class='boks_quote_reply_menu_post'><i class='icon-comment-alt'></i></button>"
@@ -198,7 +198,7 @@ var bok = function(x){
                 + "         </div>"
                 + "         <div class='boks_comment_reply_box'>"
                 + "             <div class='boks_comment_reply_textarea_box'>"
-                + "                 <textarea class='boks_comment_reply_textarea' placeholder='Constructive comment goes here. Embed pictures like so: [[http://picture.com/cat.jpg]]'></textarea>"
+                + "                 <textarea class='boks_comment_reply_textarea' placeholder='Comment or add a picture, like so: [[http://example.com/cat.jpg]]'></textarea>"
                 + "             </div>"
                 + "             <div class='boks_comment_reply_menu'>"
                 + "                 <button class='boks_comment_reply_menu_post'><i class='icon-comment-alt'></i></button>"
@@ -430,7 +430,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         bindings.click_quote_reply = function(){
             var quote_box = $(this).closest(".boks_quote")
             quote_box.find(".boks_quote_text").click()
@@ -487,7 +486,7 @@ var bok = function(x){
                 if (er) api.bug(er)
             })
         }
-        // mark
+
         bindings.click_comment_reply = function(){
             var comment_box = $(this).closest(".boks_quote_comment")
             comment_box.find(".boks_quote_comment_text").click()
