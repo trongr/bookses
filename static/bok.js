@@ -106,6 +106,34 @@ var bok = function(x){
             })
         }
 
+        api.upvote_quote = function(qID, done){
+            $.ajax({
+                url: "/quote/" + qID + "/upvote",
+                type: "post",
+                data: {
+
+                },
+                success: function(re){
+                    if (re.num) done(null, re.num)
+                    else done({error:"api.upvote_quote",re:re})
+                }
+            })
+        }
+
+        api.upvote_comment = function(cID, done){
+            $.ajax({
+                url: "/comment/" + cID + "/upvote",
+                type: "post",
+                data: {
+
+                },
+                success: function(re){
+                    if (re.num) done(null, re.num)
+                    else done({error:"api.upvote_comment",re:re})
+                }
+            })
+        }
+
         return api
     }())
 
@@ -165,7 +193,7 @@ var bok = function(x){
                 + "             </div>"
                 + "             <div class='boks_quote_menu'>"
                 + "                 <button class='boks_quote_reply " + (quote.replies > 0 ? "boks_green_underline" : "") + "'><i class='icon-comment-alt'></i>" + quote.replies + "</button>"
-                + "                 <button class='boks_quote_thumbs_up'><i class='icon-thumbs-up-alt'></i>" + quote.votes + "</button>"
+                + "                 <button class='boks_quote_thumbs_up'><i class='icon-thumbs-up-alt'></i><span class='boks_votes'>" + quote.votes + "</span></button>"
                 + "             </div>"
                 + "             <div class='clear_both'></div>"
                 + "         </div>"
@@ -192,7 +220,7 @@ var bok = function(x){
                 + "             </div>"
                 + "             <div class='boks_comment_menu'>"
                 + "                 <button class='boks_comment_menu_reply " + (comment.replies > 0 ? "boks_green_underline" : "") + "'><i class='icon-comment-alt'></i>" + comment.replies + "</button>"
-                + "                 <button class='boks_comment_menu_thumbs_up'><i class='icon-thumbs-up-alt'></i>" + comment.votes + "</button>"
+                + "                 <button class='boks_comment_menu_thumbs_up'><i class='icon-thumbs-up-alt'></i><span class='boks_votes'>" + comment.votes + "</span></button>"
                 + "             </div>"
                 + "             <div class='clear_both'></div>"
                 + "         </div>"
@@ -290,6 +318,7 @@ var bok = function(x){
                 .on("click", ".boks_quote_new_quote_post", bindings.click_new_quote_post)
                 .on("click", ".boks_quote_text", bindings.click_quote_text)
                 .on("click", ".boks_quote_reply", bindings.click_quote_reply)
+                .on("click", ".boks_quote_thumbs_up", bindings.click_quote_thumbs_up)
                 .on("click", ".boks_quote_reply_menu_post", bindings.click_quote_reply_post)
         }
 
@@ -317,6 +346,7 @@ var bok = function(x){
             box.html(html).off("click")
                 .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
                 .on("click", ".boks_comment_menu_reply", bindings.click_comment_reply)
+                .on("click", ".boks_comment_menu_thumbs_up", bindings.click_comment_menu_thumbs_up)
                 .on("click", ".boks_comment_reply_menu_post", bindings.click_comment_reply_post)
             done(null)
         }
@@ -325,6 +355,7 @@ var bok = function(x){
             box.prepend(templates.comment(comment)).off("click")
                 .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
                 .on("click", ".boks_comment_menu_reply", bindings.click_comment_reply)
+                .on("click", ".boks_comment_menu_thumbs_up", bindings.click_comment_menu_thumbs_up)
                 .on("click", ".boks_comment_reply_menu_post", bindings.click_comment_reply_post)
         }
 
@@ -524,6 +555,32 @@ var bok = function(x){
 
         bindings.close = function(){
             $(this).closest(".boks_reader").parent().hide()
+        }
+
+        bindings.click_quote_thumbs_up = function(){
+            try {
+                var id = $(this).closest(".boks_quote").attr("data-id")
+                var boks_votes = $(this).find(".boks_votes")
+                boks_votes.html(parseInt(boks_votes.html()) + 1)
+                api.upvote_quote(id, function(er, num){
+                    if (er) console.log(JSON.stringify(er, 0, 2))
+                })
+            } catch (e){
+                alert("something went wrong. couldn't upvote quote")
+            }
+        }
+
+        bindings.click_comment_menu_thumbs_up = function(){
+            try {
+                var id = $(this).closest(".boks_quote_comment").attr("data-id")
+                var boks_votes = $(this).find(".boks_votes")
+                boks_votes.html(parseInt(boks_votes.html()) + 1)
+                api.upvote_comment(id, function(er, num){
+                    if (er) console.log(JSON.stringify(er, 0, 2))
+                })
+            } catch (e){
+                alert("something went wrong. couldn't upvote comment")
+            }
         }
 
         return bindings

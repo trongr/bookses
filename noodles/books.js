@@ -366,6 +366,40 @@ var books = module.exports = (function(){
         })
     }
 
+    books.upvote_quote_validate = function(req, res, next){
+        helpers.check_id(req.params.id, function(er){
+            next(er)
+        })
+    }
+
+    books.upvote_quote = function(req, res){
+        DB.update_entry_by_id("quotes", req.params.id, {$inc:{votes:1}}, function(er, num){
+            if (er){
+                console.log(JSON.stringify({error:"books.upvote_quote",id:req.params.id,er:er}, 0, 2))
+                res.send({error:"upvote quote"})
+            } else {
+                res.send({num:num})
+            }
+        })
+    }
+    // mark
+    books.upvote_comment_validate = function(req, res, next){
+        helpers.check_id(req.params.id, function(er){
+            next(er)
+        })
+    }
+
+    books.upvote_comment = function(req, res){
+        DB.update_entry_by_id("comments", req.params.id, {$inc:{votes:1}}, function(er, num){
+            if (er){
+                console.log(JSON.stringify({error:"books.upvote_comment",id:req.params.id,er:er}, 0, 2))
+                res.send({error:"upvote comment"})
+            } else {
+                res.send({num:num})
+            }
+        })
+    }
+
     return books
 }())
 
