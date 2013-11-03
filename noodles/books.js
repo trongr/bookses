@@ -2,23 +2,25 @@ var request = require("request")
 var async = require("async")
 var mongo = require("mongodb")
 var server = new mongo.Server('localhost', 27017, {auto_reconnect:true})
-var db = new mongo.Db(process.env.DB || "boks", server)
-var helpers = require("./helpers.js")
+var db = new mongo.Db(process.env.DB || "bookses", server)
+var validate = require("./validate.js")
+var child = require("child_process")
 
 db.open(function(er, db) {
     if (er) throw er
-    console.log(module.filename + " connecting to " + (process.env.DB || "boks"))
+    console.log(module.filename + " connecting to " + (process.env.DB || "bookses"))
 })
 
 var k = {
-    static_public: "/static/public",
-    response_limit: 20,
+    tmp: "tmp",
+    static_public: "static/public",
     localhost: "http://localhost:8080",
     tables: {
         books: "books",
         quotes: "quotes",
         comments: "comments",
-    }
+    },
+    page_size: 10,
 }
 
 var DB = (function(){
@@ -41,7 +43,7 @@ var DB = (function(){
         }
         var aux = {
             sort: [["created", true ? "desc" : "asc"]],
-            limit: k.response_limit
+            limit: k.page_size
         }
         db.collection("books", {safe:true}, function(er, docs){
             if (er) done({error:"db.get_all_books",er:er})
@@ -79,56 +81,36 @@ var DB = (function(){
         })
     }
 
-    // todo. range by paragraph
-    DB.get_book_quotes = function(id, done){
-        var query = {
-            book: id
-        }
-        var aux = {
-            sort: [["p","asc"]],
-        }
-        db.collection("quotes", {safe:true}, function(er, docs){
-            if (er) done({error:"db.get_book_quotes",id:id,er:er})
-            else docs.find(query, aux).toArray(function(er, quotes){
-                if (er) done({error:"db.get_book_quotes",id:id,er:er})
-                else done(null, quotes)
-            })
-        })
-    }
-
-    DB.get_quote_comments = function(id, done){
-        var query = {
-            quote: id
-        }
-        var aux = {
-            sort: [["created","asc"]],
-        }
-        db.collection("comments", {safe:true}, function(er, docs){
-            if (er) done({error:"db.get_quote_comments",id:id,er:er})
-            else docs.find(query, aux).toArray(function(er, comments){
-                if (er) done({error:"db.get_quote_comments",id:id,er:er})
-                else done(null, comments)
-            })
-        })
-    }
-
-    DB.get_comment_comments = function(id, done){
-        var query = {
-            parent: id
-        }
-        var aux = {
-            sort: [["created","asc"]],
-        }
-        db.collection("comments", {safe:true}, function(er, docs){
-            if (er) done({error:"db.get_comment_comments",id:id,er:er})
-            else docs.find(query, aux).toArray(function(er, comments){
-                if (er) done({error:"db.get_comment_comments",id:id,er:er})
-                else done(null, comments)
+    DB.get_entries = function(table, query, aux, done){
+        db.collection(table, {safe:true}, function(er, docs){
+            if (er) done({error:"db.get_entries",table:table,query:query,aux:aux,er:er})
+            else docs.find(query, aux).toArray(function(er, entries){
+                if (er) done({error:"db.get_entries",table:table,query:query,aux:aux,er:er})
+                else done(null, entries)
             })
         })
     }
 
     return DB
+}())
+
+var parent_book = (function(){
+    var parent_book = {}
+
+    parent_book.process_book = function(book, done){
+        var id = book._id.toString()
+        var src = book.src
+        child.fork("noodles/child_book.js", [id, src])
+            .on("exit", function(code, signal){
+                if (code == 0) done(null)
+                else done({error:"parent_book.process_book",book:book,code:code,signal:signal})
+            })
+            .on("error", function(er){
+                done({error:"parent_book.process_book",book:book,er:er})
+            })
+    }
+
+    return parent_book
 }())
 
 var books = module.exports = (function(){
@@ -145,10 +127,31 @@ var books = module.exports = (function(){
             _id: id,
             title: req.body.title,
             description: req.body.description,
+            src: req.body.src,
+            url: k.static_public + "/" + id,
             created: new Date(),
-            src: k.static_public + "/" + id + ".html"
         }
-        DB.create(k.tables.books, book, function(er, book){
+        async.waterfall([
+            function(done){
+                DB.create(k.tables.books, book, function(er, book){
+                    done(er, book)
+                })
+            },
+            function(book, done){
+                done(null, book)
+                parent_book.process_book(book, function(er){
+                    if (er){
+                        console.log(JSON.stringify(er, 0, 2))
+                        var update = {
+                            $set: {error:"processing book"}
+                        }
+                        DB.update_entry_by_id(k.tables.books, book._id.toString(), update, function(er, num){
+                            if (er) console.log(JSON.stringify(er, 0, 2))
+                        })
+                    }
+                })
+            }
+        ], function(er, book){
             if (er){
                 console.log(JSON.stringify({error:"books.create_book",body:req.body,er:er}, 0, 2))
                 res.send({error:"create book"})
@@ -170,8 +173,11 @@ var books = module.exports = (function(){
     }
 
     books.get_book_by_id_validate = function(req, res, next){
-        helpers.check_id(req.params.id, function(er){
-            next(er)
+        validate.id(req.params.id, function(er){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_book_by_id_validate",er:er}, 0, 2))
+                res.send({error:"get book"})
+            } else next(null)
         })
     }
 
@@ -190,8 +196,11 @@ var books = module.exports = (function(){
 
     // todo. check other params
     books.create_quote_validate = function(req, res, next){
-        helpers.check_id(req.params.id, function(er){
-            next(er)
+        validate.id(req.params.id, function(er){
+            if (er){
+                console.log(JSON.stringify({error:"books.create_quote_validate",er:er}, 0, 2))
+                res.send({error:"create quote"})
+            } else next(null)
         })
     }
 
@@ -232,25 +241,61 @@ var books = module.exports = (function(){
     }
 
     books.get_book_quotes_validate = function(req, res, next){
-        helpers.check_id(req.params.id, function(er){
-            next(er)
+        async.parallel([
+            function(done){
+                try {
+                    req.query.p = parseInt(req.query.p)
+                    done(null)
+                } catch (er){
+                    done({error:"cannot parse p"})
+                }
+            },
+            function(done){
+                validate.id(req.params.id, function(er){
+                    done(er)
+                })
+            }
+        ], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_book_quotes_validate",er:er}, 0, 2))
+                res.send({error:"get book quotes"})
+            } else next(null)
         })
     }
 
     books.get_book_quotes = function(req, res){
-        DB.get_book_quotes(req.params.id, function(er, quotes){
+        var book = req.params.id
+        var p = req.query.p
+        var result = []
+        async.timesSeries(k.page_size, function(i, done){
+            var query = {
+                book: book,
+                p: p + i
+            }
+            var aux = {
+                sort: [["pop","desc"]],
+                limit: 5 // todo change to reasonable size, e.g. 5
+            }
+            DB.get_entries(k.tables.quotes, query, aux, function(er, entries){
+                result.push.apply(result, entries)
+                done(null)
+            })
+        }, function(er, re){
             if (er){
-                console.log(JSON.stringify({error:"books.get_book_quotes",id:req.params.id,er:er}, 0, 2))
+                console.log(JSON.stringify({error:"books.get_book_quotes",er:er}, 0, 2))
                 res.send({error:"get book quotes"})
             } else {
-                res.send({quotes:quotes})
+                res.send({quotes:result})
             }
         })
     }
 
     books.create_quote_comment_validate = function(req, res, next){
-        helpers.check_id(req.params.id, function(er){
-            next(er)
+        validate.id(req.params.id, function(er){
+            if (er){
+                console.log(JSON.stringify({error:"books.create_quote_comment_validate",er:er}, 0, 2))
+                res.send({error:"create quote comment"})
+            } else next(null)
         })
     }
 
@@ -269,14 +314,15 @@ var books = module.exports = (function(){
                     quote: quote._id.toString(),
                     created: new Date(),
                     votes: 1,
-                    replies: 0
+                    replies: 0,
+                    pop: 1, // pop is the sum of votes and replies, used to sort results
                 }
                 DB.create(k.tables.comments, comment, function(er, comment){
                     done(er, quote, comment)
                 })
             },
             function(quote, comment, done){
-                DB.update_entry_by_id("quotes", quote._id.toString(), {$inc:{replies:1}}, function(er, num){
+                DB.update_entry_by_id(k.tables.quotes, quote._id.toString(), {$inc:{replies:1,pop:1}}, function(er, num){
                     done(er, comment)
                 })
             },
@@ -291,25 +337,38 @@ var books = module.exports = (function(){
     }
 
     books.get_quote_comments_validate = function(req, res, next){
-        helpers.check_id(req.params.id, function(er){
-            next(er)
+        validate.id(req.params.id, function(er){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_quote_comments_validate",er:er}, 0, 2))
+                res.send({error:"get quote comments"})
+            } else next(null)
         })
     }
 
     books.get_quote_comments = function(req, res){
-        DB.get_quote_comments(req.params.id, function(er, comments){
+        var query = {
+            quote: req.params.id
+        }
+        var aux = {
+            sort: [["pop","desc"]],
+            limit: k.page_size
+        }
+        DB.get_entries(k.tables.comments, query, aux, function(er, entries){
             if (er){
                 console.log(JSON.stringify({error:"books.get_quote_comments",id:req.params.id,er:er}, 0, 2))
                 res.send({error:"get quote comments"})
             } else {
-                res.send({comments:comments})
+                res.send({comments:entries})
             }
         })
     }
 
     books.create_comment_comment_validate = function(req, res, next){
-        helpers.check_id(req.params.id, function(er){
-            next(er)
+        validate.id(req.params.id, function(er){
+            if (er){
+                console.log(JSON.stringify({error:"books.create_comment_comment_validate",er:er}, 0, 2))
+                res.send({error:"create comment comment"})
+            } else next(null)
         })
     }
 
@@ -328,14 +387,15 @@ var books = module.exports = (function(){
                     parent: parent._id.toString(),
                     created: new Date(),
                     votes: 1,
-                    replies: 0
+                    replies: 0,
+                    pop: 1, // pop = votes + replies, used to sort results
                 }
                 DB.create(k.tables.comments, comment, function(er, comment){
                     done(er, parent, comment)
                 })
             },
             function(parent, comment, done){
-                DB.update_entry_by_id("comments", parent._id.toString(), {$inc:{replies:1}}, function(er, num){
+                DB.update_entry_by_id("comments", parent._id.toString(), {$inc:{replies:1,pop:1}}, function(er, num){
                     done(er, comment)
                 })
             },
@@ -350,30 +410,43 @@ var books = module.exports = (function(){
     }
 
     books.get_comment_comments_validate = function(req, res, next){
-        helpers.check_id(req.params.id, function(er){
-            next(er)
+        validate.id(req.params.id, function(er){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_comment_comments_validate",er:er}, 0, 2))
+                res.send({error:"get comment comments"})
+            } else next(null)
         })
     }
 
     books.get_comment_comments = function(req, res){
-        DB.get_comment_comments(req.params.id, function(er, comments){
+        var query = {
+            parent: req.params.id
+        }
+        var aux = {
+            sort: [["pop","desc"]],
+            limit: k.page_size
+        }
+        DB.get_entries(k.tables.comments, query, aux, function(er, entries){
             if (er){
                 console.log(JSON.stringify({error:"books.get_comment_comments",id:req.params.id,er:er}, 0, 2))
                 res.send({error:"get comment comments"})
             } else {
-                res.send({comments:comments})
+                res.send({comments:entries})
             }
         })
     }
 
     books.upvote_quote_validate = function(req, res, next){
-        helpers.check_id(req.params.id, function(er){
-            next(er)
+        validate.id(req.params.id, function(er){
+            if (er){
+                console.log(JSON.stringify({error:"books.upvote_quote_validate",er:er}, 0, 2))
+                res.send({error:"upvote quote"})
+            } else next(null)
         })
     }
 
     books.upvote_quote = function(req, res){
-        DB.update_entry_by_id("quotes", req.params.id, {$inc:{votes:1}}, function(er, num){
+        DB.update_entry_by_id(k.tables.quotes, req.params.id, {$inc:{votes:1,pop:1}}, function(er, num){
             if (er){
                 console.log(JSON.stringify({error:"books.upvote_quote",id:req.params.id,er:er}, 0, 2))
                 res.send({error:"upvote quote"})
@@ -382,15 +455,18 @@ var books = module.exports = (function(){
             }
         })
     }
-    // mark
+
     books.upvote_comment_validate = function(req, res, next){
-        helpers.check_id(req.params.id, function(er){
-            next(er)
+        validate.id(req.params.id, function(er){
+            if (er){
+                console.log(JSON.stringify({error:"books.upvote_comment_validate",er:er}, 0, 2))
+                res.send({error:"upvote comment"})
+            } else next(null)
         })
     }
 
     books.upvote_comment = function(req, res){
-        DB.update_entry_by_id("comments", req.params.id, {$inc:{votes:1}}, function(er, num){
+        DB.update_entry_by_id("comments", req.params.id, {$inc:{votes:1,pop:1}}, function(er, num){
             if (er){
                 console.log(JSON.stringify({error:"books.upvote_comment",id:req.params.id,er:er}, 0, 2))
                 res.send({error:"upvote comment"})
@@ -409,11 +485,13 @@ var test = (function(){
     test.create_book = function(){
         var title = process.argv[2]
         var description = process.argv[3]
+        var src = process.argv[4]
         request.post({
             url: k.localhost + "/book",
             form: {
                 title: title,
                 description: description,
+                src: src
             },
             json: true
         }, function(er, res, body){
@@ -511,7 +589,7 @@ var test = (function(){
 
 console.log("requiring " + module.filename + " from " + require.main.filename)
 if (require.main == module){
-    test.create_comment_comment()
+    test.create_book()
 } else {
 
 }

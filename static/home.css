@@ -3,6 +3,97 @@ body {
     font-family: helvetica, arial, sans;
 }
 
+input {
+    border: none;
+}
+
+button {
+    font-family: helvetica, arial, sans;
+}
+
+.clear_both {
+    clear: both;
+}
+
+#banner button {
+    padding: 0;
+}
+
+#banner input {
+    padding-left: 5px;
+}
+
+#banner_left {
+    float: left;
+}
+
+#banner_left #search_bar {
+    width: 200px;
+}
+
+#banner_right {
+    float: right;
+}
+
+#banner_right input {
+    width: 150px;
+}
+
+#upload_page {
+    display: none;
+    margin: 10px;
+    padding: 20px 0 0 0;
+    width: 100%;
+}
+
+#upload_page_inner {
+    width: 60%;
+    min-width: 400px;
+    left: 20%;
+    position: relative;
+}
+
+#upload_page input {
+    width: 100%;
+    padding: 5px;
+    margin: 5px;
+}
+
+#upload_page textarea {
+    font-family: helvetica, arial, sans;
+    width: 100%;
+    height: 6em;
+    border: none;
+    padding: 5px;
+    margin: 5px;
+    resize: none;
+}
+
+#upload_page label {
+    float: right;
+}
+
+#upload_page button {
+    width: 100px;
+    height: 50px;
+    float: right;
+}
+
+#post_upload_button {
+    background-color: #0f0;
+    color: #fff;
+    font-size: 1.5em;
+}
+
+#post_upload_button:hover {
+    color: #fff;
+    background-color: #0e0;
+}
+
+#cancel_upload_button {
+
+}
+
 .book {
     padding: 20px 0 0 20px;
 }
@@ -23,9 +114,9 @@ body {
     display: none;
     position: absolute;
     top: 0;
-    bottom: 0;
     left: 0;
-    right: 0;
+    width: 100%;
+    height: 100%;
 }
 
 .book_created {

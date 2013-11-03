@@ -2,6 +2,7 @@ var bok = function(x){
     var o = {
         bID: x.bID,
         box: x.box,
+        error: x.error
     }
 
     var dom = {
@@ -10,15 +11,51 @@ var bok = function(x){
     }
 
     var k = {
-        static_public: "/static/public",
+        static_public: "static/public",
     }
+
+    var page = (function(){
+        var page = {}
+
+        page.k = {
+            p: 0,
+            page_size: 10, // should be same as on server
+            pages: {
+                0: true,
+            }, // pages already requested
+        }
+
+        page.get_p = function(p){
+            var q = p - p % page.k.page_size + page.k.page_size
+            if (page.k.pages[q]){
+                return null
+            } else {
+                page.k.pages[q] = true
+                return q
+            }
+        }
+
+        return page
+    }())
 
     var api = (function(){
         var api = {}
 
+        api.bug = function(error){
+            console.log(JSON.stringify(error, 0, 2))
+            $.ajax({
+                url: "bug",
+                type: "post",
+                data: {
+                    error: error
+                },
+                success: function(re){}
+            })
+        }
+
         api.get_book = function(bID, done){
             $.ajax({
-                url: k.static_public + "/" + bID + ".html",
+                url: k.static_public + "/" + bID,
                 type: "get",
                 success: function(re){
                     done(null, re)
@@ -29,10 +66,13 @@ var bok = function(x){
             })
         }
 
-        api.get_book_quotes = function(bID, done){
+        api.get_book_quotes = function(bID, p, done){
             $.ajax({
-                url: "/book/" + bID + "/quotes",
+                url: "book/" + bID + "/quotes",
                 type: "get",
+                data: {
+                    p: p
+                },
                 success: function(re){
                     if (re.quotes) done(null, re.quotes)
                     else done({error:"api.get_book_quotes",re:re})
@@ -42,7 +82,7 @@ var bok = function(x){
 
         api.create_quote = function(bID, quote, done){
             $.ajax({
-                url: "/book/" + bID + "/quote",
+                url: "book/" + bID + "/quote",
                 type: "post",
                 data: {
                     quote: quote.quote,
@@ -58,7 +98,7 @@ var bok = function(x){
 
         api.get_quote_comments = function(qID, done){
             $.ajax({
-                url: "/quote/" + qID + "/comments",
+                url: "quote/" + qID + "/comments",
                 type: "get",
                 success: function(re){
                     if (re.comments) done(null, re.comments)
@@ -69,7 +109,7 @@ var bok = function(x){
 
         api.create_quote_comment = function(qID, comment, done){
             $.ajax({
-                url: "/quote/" + qID + "/comment",
+                url: "quote/" + qID + "/comment",
                 type: "post",
                 data: {
                     comment: comment
@@ -83,7 +123,7 @@ var bok = function(x){
 
         api.get_comment_comments = function(cID, done){
             $.ajax({
-                url: "/comment/" + cID + "/comments",
+                url: "comment/" + cID + "/comments",
                 type: "get",
                 success: function(re){
                     if (re.comments) done(null, re.comments)
@@ -94,7 +134,7 @@ var bok = function(x){
 
         api.create_comment_comment = function(cID, comment, done){
             $.ajax({
-                url: "/comment/" + cID + "/comment",
+                url: "comment/" + cID + "/comment",
                 type: "post",
                 data: {
                     comment: comment
@@ -108,7 +148,7 @@ var bok = function(x){
 
         api.upvote_quote = function(qID, done){
             $.ajax({
-                url: "/quote/" + qID + "/upvote",
+                url: "quote/" + qID + "/upvote",
                 type: "post",
                 data: {
 
@@ -122,7 +162,7 @@ var bok = function(x){
 
         api.upvote_comment = function(cID, done){
             $.ajax({
-                url: "/comment/" + cID + "/upvote",
+                url: "comment/" + cID + "/upvote",
                 type: "post",
                 data: {
 
@@ -246,8 +286,8 @@ var bok = function(x){
 
         views.init = function(){
             views.load_book(function(er){
-                if (er) api.bug(er)
-                else views.load_quotes() // need to finish loading book to get paragraph positions
+                if (er) o.error({error:"loading book",er:er})
+                else views.load_quotes(0)
             })
         }
 
@@ -259,7 +299,7 @@ var bok = function(x){
                     })
                 },
                 function(text, done){
-                    o.box.html(templates.reader(text)).off("click")
+                    o.box.html(templates.reader(text)).off()
                         .on("click", ".boks_clip", bindings.clip)
                         .on("click", ".boks_close", bindings.close)
                         .on("click", ".boks_book p", bindings.click_paragraph)
@@ -274,10 +314,10 @@ var bok = function(x){
             })
         }
 
-        views.load_quotes = function(){
+        views.load_quotes = function(p){
             async.waterfall([
                 function(done){
-                    api.get_book_quotes(o.bID, function(er, quotes){
+                    api.get_book_quotes(o.bID, p, function(er, quotes){
                         done(er, quotes)
                     })
                 },
@@ -312,7 +352,7 @@ var bok = function(x){
                     box_quotes = quote
                 }
             }
-            $("#" + o.bID + " .boks_quotes").html(html).off("click")
+            $("#" + o.bID + " .boks_quotes").append(html).off()
                 .on("mouseenter", ".boks_quote_box", bindings.mouseenter_quote_box)
                 .on("mouseleave", ".boks_quote_box", bindings.mouseleave_quote_box)
                 .on("click", ".boks_quote_new_quote_post", bindings.click_new_quote_post)
@@ -343,7 +383,7 @@ var bok = function(x){
             for (var i = 0; i < comments.length; i++){
                 html += templates.comment(comments[i])
             }
-            box.html(html).off("click")
+            box.html(html).off()
                 .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
                 .on("click", ".boks_comment_menu_reply", bindings.click_comment_reply)
                 .on("click", ".boks_comment_menu_thumbs_up", bindings.click_comment_menu_thumbs_up)
@@ -352,7 +392,7 @@ var bok = function(x){
         }
 
         views.load_quote_comment = function(box, comment){
-            box.prepend(templates.comment(comment)).off("click")
+            box.prepend(templates.comment(comment)).off()
                 .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
                 .on("click", ".boks_comment_menu_reply", bindings.click_comment_reply)
                 .on("click", ".boks_comment_menu_thumbs_up", bindings.click_comment_menu_thumbs_up)
@@ -406,7 +446,7 @@ var bok = function(x){
                     views.clear_selection() // avoids consecutive clicks
                 }
             } else {
-                alert("select some text to quote")
+                alert("Please select some text to quote")
             }
         }
 
@@ -479,7 +519,7 @@ var bok = function(x){
                 else views.load_quote_comment(comments_box, comment)
             })
         }
-
+        // mark
         bindings.mouseenter_p = function(){
             var p = $(this).index()
             dom.quotes.find(".boks_quote_box[data-p='" + p + "']").css({
@@ -487,6 +527,8 @@ var bok = function(x){
                 "margin-left": "-10px",
                 "border-left": "5px solid #0f0"
             })
+            var q = page.get_p(p)
+            if (q) views.load_quotes(q)
         }
 
         bindings.mouseleave_p = function(){

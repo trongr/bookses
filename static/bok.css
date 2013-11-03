@@ -20,7 +20,9 @@ button:hover {
 }
 
 .boks_reader {
-
+    position: absolute;
+    width: 100%;
+    background-color: #eee;
 }
 
 .boks_reader_menu {
@@ -51,16 +53,17 @@ button:hover {
 
 .boks_reader_content {
     position: relative;
+    width: 100%;
 }
 
 .boks_reader_left {
-    clear: both;
     float: left;
     width: 60%;
+    background-color: #ddd;
 }
 
 .boks_reader_right {
-    float: left;
+    float: right;
     width: 40%;
 }
 
@@ -68,7 +71,6 @@ button:hover {
     padding: 20px 0 0 60px;
     white-space: pre-wrap;
     font-family: times, georgia, serif;
-    background-color: #ddd;
 }
 
 .boks_book p {
@@ -85,8 +87,8 @@ button:hover {
 
 .boks_quote_box {
     box-shadow: 0 0 10px 5px #aaa;
-    background-color: #ccc;
-    padding-bottom: 640px;
+    background-color: #eee;
+    /* padding-bottom: 64px; /\* maybe use this to stop users from falling over the bottom *\/ */
 }
 
 .boks_quote_box:hover {
@@ -302,9 +304,9 @@ button:hover {
 
 .boks_quote_new_quote_menu {
     position: absolute;
-    height: 40px;
     bottom: 0;
     right: 0;
+    height: 40px;
     background-color: #0f0;
 }
 

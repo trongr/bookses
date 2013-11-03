@@ -1,19 +1,50 @@
 <html>
 <head>
 
-    <script src="/static/jquery-2.0.3.js"></script>
-    <script src="/static/async.js"></script>
-    <script src="/static/moment.min.js"></script>
+    <script src="static/jquery-2.0.3.js"></script>
+    <script src="static/async.js"></script>
+    <script src="static/moment.min.js"></script>
     <link rel="stylesheet" href="static/font-awesome/css/font-awesome.min.css"/>
     <link rel="stylesheet" href="static/bok.css"/>
-    <script src="/static/bok.js"></script>
+    <script src="static/bok.js"></script>
     <link rel="stylesheet" href="static/home.css"/>
-    <script src="/static/home.js"></script>
+    <script src="static/home.js"></script>
 
-    <title>tldr</title>
+    <title>bookses</title>
 
 </head>
 <body>
+
+    <div id="banner">
+        <div id="banner_left">
+            <input id="search_bar" placeholder="search books">
+            <button id="search_button"><i class="icon-search"></i>search</button>
+            <button id="upload_button"><i class="icon-upload"></i>upload</button>
+        </div>
+        <div id="banner_right">
+            <input id="username" placeholder="username">
+            <input id="password" type="password" placeholder="password">
+            <button id="login"><i class="icon-key"></i>login</button>
+            <button id="register"><i class="icon-unlock"></i>register</button>
+            <button id="logout">logout</button>
+        </div>
+    </div>
+    <div class="clear_both"></div>
+
+    <div id="upload_page">
+        <div id="upload_page_inner">
+            <input id="upload_book_title" placeholder="title"><br>
+            <textarea id="upload_book_description" placeholder="description"></textarea><br>
+            <input id="url_book_upload" placeholder="paste book URL here"><br>
+            <!-- <label>or choose a file from your computer:</label><br> -->
+            <!-- <input id="local_book_upload" type="file"><br> -->
+            <label id="text_files_only">NOTE. We only support plain text files at the moment</label><br>
+            <div class="clear_both"></div>
+            <button id="post_upload_button"><i class="icon-upload"></i></button>
+            <button id="cancel_upload_button">cancel</button>
+            <div class="clear_both"></div>
+        </div>
+    </div>
 
     <div id="books"></div>
 
