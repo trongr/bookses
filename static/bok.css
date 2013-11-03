@@ -284,3 +284,15 @@ button:hover {
 .boks_green_underline {
     border-bottom: 5px solid #0f0;
 }
+
+.boks_red_underline {
+    border-bottom: 5px solid #f00;
+}
+
+button.boks_comment_menu_thumbs_up:hover {
+    color: #f00;
+}
+
+button.boks_quote_thumbs_up:hover {
+    color: #f00;
+}
