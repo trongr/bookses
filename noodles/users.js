@@ -29,6 +29,16 @@ var DB = (function(){
         })
     }
 
+    DB.get = function(table, query, done){
+        db.collection(table, {safe:true}, function(er, docs){
+            if (er) done({error:"db.get",query:query,er:er})
+            else docs.findOne(query, function(er, entry){
+                if (er) done({error:"db.get",query:query,er:er})
+                else done(null, entry)
+            })
+        })
+    }
+
     DB.get_user = function(username, password, done){
         var query = {
             username: username,
@@ -60,11 +70,21 @@ var users = module.exports = (function(){
                 validate.password(req.body.password, function(er){
                     done(er)
                 })
+            },
+            function(done){
+                var query = {
+                    username: req.params.username
+                }
+                DB.get(k.tables.users, query, function(er, entry){
+                    if (er) done(er)
+                    else if (entry) done({info:"user exists"})
+                    else done(null)
+                })
             }
         ], function(er, re){
             if (er){
                 console.log(JSON.stringify({error:"users.create_user_validate",er:er}, 0, 2))
-                res.send({error:"creating user"})
+                res.send({error:"creating user",info:er.info})
             } else next(null)
         })
     }
@@ -93,9 +113,10 @@ var users = module.exports = (function(){
         next(null)
     }
 
+    // mark
     users.login = function(req, res){
         var username = req.params.username
-        var password = req.query.password
+        var password = req.body.password
         DB.get_user(username, password, function(er, user){
             if (er){
                 console.log(JSON.stringify({error:"users.login",er:er}, 0, 2))
@@ -126,9 +147,17 @@ var users = module.exports = (function(){
             } else if (user){
                 next(null)
             } else {
-                res.send({error:"invalid credentials"})
+                res.send({loggedin:false})
             }
         })
+    }
+
+    users.is_logged_in = function(req, res){
+        if (req.session.username && req.session.password){
+            res.send({loggedin:true})
+        } else {
+            res.send({loggedin:false})
+        }
     }
 
     return users

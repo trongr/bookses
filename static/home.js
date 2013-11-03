@@ -36,7 +36,7 @@ jQuery(function($){
                 },
                 success: function(re){
                     if (re.book) done(null, re.book)
-                    else done({re:re})
+                    else done(re)
                 }
             })
         }
@@ -162,7 +162,8 @@ jQuery(function($){
                 description: $("#upload_book_description").val(),
                 src: $("#url_book_upload").val(),
             }, function(er, book){
-                if (er) alert(JSON.stringify(er, 0, 2))
+                if (er && er.loggedin == false) alert("You have to be logged in")
+                else if (er) alert(JSON.stringify(er, 0, 2))
                 else alert("Your book is being processed")
             })
         }
@@ -179,6 +180,7 @@ jQuery(function($){
 
         users.init = function(){
             users.bind()
+            users.init_login_boxes()
         }
 
         users.bind = function(){
@@ -190,6 +192,10 @@ jQuery(function($){
         users.click_logout = function(){
             users.api_logout(function(er){
                 if (er) alert("error logging out " + JSON.stringify(er, 0, 2))
+                else {
+                    $("#login_box").show()
+                    $("#logout_box").hide()
+                }
             })
         }
 
@@ -198,7 +204,10 @@ jQuery(function($){
             var password = $("#password").val()
             users.api_login(username, password, function(er, user){
                 if (er) alert(JSON.stringify(er, 0, 2))
-                else alert("Logged in " + JSON.stringify(user, 0, 2))
+                else {
+                    $("#login_box").hide()
+                    $("#logout_box").show()
+                }
             })
         }
 
@@ -207,13 +216,17 @@ jQuery(function($){
             var password = $("#password").val()
             users.api_create_user(username, password, function(er, user){
                 if (er) alert(JSON.stringify(er, 0, 2))
-                else alert("Registration complete. Your new identity: " + JSON.stringify(user, 0, 2))
+                else {
+                    $("#login_box").hide()
+                    $("#logout_box").show()
+                    alert("Registration complete. Your new identity: " + JSON.stringify(user, 0, 2))
+                }
             })
         }
 
         users.api_create_user = function(username, password, done){
             $.ajax({
-                url: "user/" + username,
+                url: "user/" + username + "/register",
                 type: "post",
                 data: {password:password},
                 success: function(re){
@@ -225,8 +238,8 @@ jQuery(function($){
 
         users.api_login = function(username, password, done){
             $.ajax({
-                url: "user/" + username,
-                type: "get",
+                url: "user/" + username + "/login",
+                type: "post",
                 data: {password:password},
                 success: function(re){
                     if (re.user) done(null, re.user)
@@ -237,11 +250,31 @@ jQuery(function($){
 
         users.api_logout = function(done){
             $.ajax({
-                url: "logout",
+                url: "user/logout",
                 type: "post",
                 success: function(re){
                     if (re.loggedout) done(null)
                     else done({error:"logging out",re:re})
+                }
+            })
+        }
+
+        users.init_login_boxes = function(){
+            users.api_is_logged_in(function(er, loggedin){
+                if (loggedin){
+                    $("#login_box").hide()
+                    $("#logout_box").show()
+                }
+            })
+        }
+
+        users.api_is_logged_in = function(done){
+            $.ajax({
+                url: "user/login",
+                type: "get",
+                success: function(re){
+                    if (re.loggedin) done(null, re.loggedin)
+                    else done({error:"may not be logged in",re:re})
                 }
             })
         }

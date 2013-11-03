@@ -91,7 +91,7 @@ var bok = function(x){
                 },
                 success: function(re){
                     if (re.quote) done(null, re.quote)
-                    else done({error:"api.create_quote",re:re})
+                    else done(re)
                 }
             })
         }
@@ -116,7 +116,7 @@ var bok = function(x){
                 },
                 success: function(re){
                     if (re.comment) done(null, re.comment)
-                    else done({error:"api.create_quote_comment",re:re})
+                    else done(re)
                 }
             })
         }
@@ -141,7 +141,7 @@ var bok = function(x){
                 },
                 success: function(re){
                     if (re.comment) done(null, re.comment)
-                    else done({error:"api.create_comment_comment",re:re})
+                    else done(re)
                 }
             })
         }
@@ -155,7 +155,7 @@ var bok = function(x){
                 },
                 success: function(re){
                     if (re.num) done(null, re.num)
-                    else done({error:"api.upvote_quote",re:re})
+                    else done(re)
                 }
             })
         }
@@ -169,7 +169,7 @@ var bok = function(x){
                 },
                 success: function(re){
                     if (re.num) done(null, re.num)
-                    else done({error:"api.upvote_comment",re:re})
+                    else done(re)
                 }
             })
         }
@@ -443,7 +443,8 @@ var bok = function(x){
                         p: p
                     }
                     api.create_quote(o.bID, quote, function(er, quote){
-                        if (er) console.log(JSON.stringify(er, 0, 2))
+                        if (er && er.loggedin == false) alert("You have to be logged in")
+                        else if (er) console.log(JSON.stringify(er, 0, 2))
                         else views.load_quote(quote, p, top, function(er){})
                     })
                     views.clear_selection() // avoids consecutive clicks
@@ -518,11 +519,12 @@ var bok = function(x){
             var comments_box = quote_box.find(".boks_quote_comments")
             quote_box.find(".boks_quote_reply_box").hide()
             api.create_quote_comment(quote_id, comment, function(er, comment){
-                if (er) console.log(JSON.stringify(er, 0, 2))
+                if (er && er.loggedin == false) alert("You have to be logged in")
+                else if (er) console.log(JSON.stringify(er, 0, 2))
                 else views.load_quote_comment(comments_box, comment)
             })
         }
-        // mark
+
         bindings.mouseenter_p = function(){
             var p = $(this).index()
             dom.quotes.find(".boks_quote_box[data-p='" + p + "']").css({
@@ -577,7 +579,8 @@ var bok = function(x){
             var comments_box = comment_box.find(".boks_comment_comments").eq(0)
             comment_box.find(".boks_comment_reply_box").hide()
             api.create_comment_comment(comment_id, comment, function(er, comment){
-                if (er) console.log(JSON.stringify(er, 0, 2))
+                if (er && er.loggedin == false) alert("You have to be logged in")
+                else if (er) console.log(JSON.stringify(er, 0, 2))
                 else views.load_comment_comment(comments_box, comment)
             })
         }
@@ -591,7 +594,8 @@ var bok = function(x){
                 p: p
             }
             api.create_quote(o.bID, quote, function(er, quote){
-                if (er) console.log(JSON.stringify(er, 0, 2))
+                if (er && er.loggedin == false) alert("You have to be logged in")
+                else if (er) console.log(JSON.stringify(er, 0, 2))
                 else views.load_quote(quote, p, null, function(er){})
             })
             var quotes_box = quote_box.find(".boks_quote_box_quotes")
@@ -608,7 +612,8 @@ var bok = function(x){
                 var boks_votes = $(this).find(".boks_votes")
                 boks_votes.html(parseInt(boks_votes.html()) + 1)
                 api.upvote_quote(id, function(er, num){
-                    if (er) console.log(JSON.stringify(er, 0, 2))
+                    if (er && er.loggedin == false) alert("You have to be logged in")
+                    else if (er) console.log(JSON.stringify(er, 0, 2))
                 })
             } catch (e){
                 alert("something went wrong. couldn't upvote quote")
@@ -621,7 +626,8 @@ var bok = function(x){
                 var boks_votes = $(this).find(".boks_votes")
                 boks_votes.html(parseInt(boks_votes.html()) + 1)
                 api.upvote_comment(id, function(er, num){
-                    if (er) console.log(JSON.stringify(er, 0, 2))
+                    if (er && er.loggedin == false) alert("You have to be logged in")
+                    else if (er) console.log(JSON.stringify(er, 0, 2))
                 })
             } catch (e){
                 alert("something went wrong. couldn't upvote comment")

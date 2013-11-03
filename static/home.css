@@ -16,10 +16,12 @@ button {
 }
 
 #banner button {
+    font-size: 1em;
     padding: 0;
 }
 
 #banner input {
+    font-size: 1em;
     padding-left: 5px;
 }
 
@@ -37,6 +39,14 @@ button {
 
 #banner_right input {
     width: 150px;
+}
+
+#login_box {
+
+}
+
+#logout_box {
+    display: none;
 }
 
 #upload_page {
@@ -57,6 +67,7 @@ button {
     width: 100%;
     padding: 5px;
     margin: 5px;
+    font-size: 1em;
 }
 
 #upload_page textarea {
@@ -91,7 +102,7 @@ button {
 }
 
 #cancel_upload_button {
-
+    font-size: 1em;
 }
 
 .book {

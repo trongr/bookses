@@ -71,9 +71,10 @@ server.post("/comment/:id/comment", users.authenticate, books.create_comment_com
 server.get("/comment/:id/comments", books.get_comment_comments_validate, books.get_comment_comments)
 server.post("/comment/:id/upvote", users.authenticate, books.upvote_comment_validate, books.upvote_comment)
 
-server.post("/user/:username", users.create_user_validate, users.create_user)
-server.get("/user/:username", users.login_validate, users.login)
-server.post("/logout", users.logout)
+server.post("/user/:username/register", users.create_user_validate, users.create_user)
+server.post("/user/:username/login", users.login_validate, users.login)
+server.post("/user/logout", users.logout) // clears session
+server.get("/user/login", users.is_logged_in) // tries to see if session is still open, without requiring user entering credentials
 
 var port = process.env.PORT || 8080
 app.listen(port, "127.0.0.1", function(){
