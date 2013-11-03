@@ -170,29 +170,12 @@ button:hover {
 }
 
 .boks_quote_reply_menu {
-    position: absolute;
-    height: 40px;
-    bottom: 0;
-    right: 0;
-    background-color: #0f0;
-}
-
-.boks_quote_reply_menu:hover {
-    background-color: #fff;
+    float: right;
 }
 
 .boks_quote_reply_menu_post {
-    width: 35px;
-    height: 35px;
     font-size: 1em;
-    font-weight: bolder;
-    color: #0f0;
-    background-color: #fff;
-}
-
-.boks_quote_reply_menu_post:focus {
-    background-color: #0f0;
-    color: #000;
+    padding: 20px;
 }
 
 .boks_quote_reply_textarea_box {
@@ -228,29 +211,12 @@ button:hover {
 }
 
 .boks_comment_reply_menu {
-    position: absolute;
-    height: 40px;
-    bottom: 0;
-    right: 0;
-    background-color: #0f0;
-}
-
-.boks_comment_reply_menu:hover {
-    background-color: #fff;
+    float: right;
 }
 
 .boks_comment_reply_menu_post {
-    width: 35px;
-    height: 35px;
     font-size: 1em;
-    font-weight: bolder;
-    color: #0f0;
-    background-color: #fff;
-}
-
-.boks_comment_reply_menu_post:focus {
-    background-color: #0f0;
-    color: #000;
+    padding: 20px;
 }
 
 .boks_comment_reply_textarea_box {
@@ -303,29 +269,12 @@ button:hover {
 }
 
 .boks_quote_new_quote_menu {
-    position: absolute;
-    bottom: 0;
-    right: 0;
-    height: 40px;
-    background-color: #0f0;
-}
-
-.boks_quote_new_quote_menu:hover {
-    background-color: #fff;
+    float: right;
 }
 
 .boks_quote_new_quote_post {
-    width: 35px;
-    height: 35px;
+    padding: 20px;
     font-size: 1em;
-    font-weight: bolder;
-    color: #0f0;
-    background-color: #fff;
-}
-
-.boks_quote_new_quote_post:focus {
-    background-color: #0f0;
-    color: #000;
 }
 
 .clear_both {
