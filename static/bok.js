@@ -489,6 +489,8 @@ var bok = function(x){
             var quote_box = $(this).closest(".boks_quote")
             var quote_id = quote_box.attr("data-id")
             var box = quote_box.find(".boks_quote_comments")
+            quote_box.find(".boks_quote_reply_box").show()
+                .find(".boks_quote_reply_textarea").focus().val("")
             async.waterfall([
                 function(done){
                     api.get_quote_comments(quote_id, function(er, comments){
@@ -508,8 +510,6 @@ var bok = function(x){
         bindings.click_quote_reply = function(){
             var quote_box = $(this).closest(".boks_quote")
             quote_box.find(".boks_quote_text").click()
-            quote_box.find(".boks_quote_reply_box").show()
-                .find(".boks_quote_reply_textarea").focus().val("")
         }
 
         bindings.click_quote_reply_post = function(){
@@ -549,6 +549,8 @@ var bok = function(x){
             var comment_box = $(this).closest(".boks_quote_comment")
             var comment_id = comment_box.attr("data-id")
             var box = comment_box.find(".boks_comment_comments")
+            comment_box.find(".boks_comment_reply_box").eq(0).show()
+                .find(".boks_comment_reply_textarea").focus().val("")
             async.waterfall([
                 function(done){
                     api.get_comment_comments(comment_id, function(er, comments){
@@ -568,8 +570,6 @@ var bok = function(x){
         bindings.click_comment_reply = function(){
             var comment_box = $(this).closest(".boks_quote_comment")
             comment_box.find(".boks_quote_comment_text").click()
-            comment_box.find(".boks_comment_reply_box").eq(0).show()
-                .find(".boks_comment_reply_textarea").focus().val("")
         }
 
         bindings.click_comment_reply_post = function(){
