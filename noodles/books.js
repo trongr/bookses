@@ -125,6 +125,7 @@ var books = module.exports = (function(){
         var id = new mongo.ObjectID()
         var book = {
             _id: id,
+            username: req.session.username,
             title: req.body.title,
             description: req.body.description,
             src: req.body.src,
@@ -216,6 +217,7 @@ var books = module.exports = (function(){
             function(book, done){
                 try {
                     var quote = {
+                        username: req.session.username,
                         quote: req.body.quote,
                         book: book._id.toString(),
                         p: parseInt(req.body.p),
@@ -310,6 +312,7 @@ var books = module.exports = (function(){
             },
             function(quote, done){
                 var comment = {
+                    username: req.session.username,
                     comment: req.body.comment,
                     quote: quote._id.toString(),
                     created: new Date(),
@@ -383,6 +386,7 @@ var books = module.exports = (function(){
             },
             function(parent, done){
                 var comment = {
+                    username: req.session.username,
                     comment: req.body.comment,
                     parent: parent._id.toString(),
                     created: new Date(),

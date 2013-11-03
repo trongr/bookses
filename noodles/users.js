@@ -113,7 +113,6 @@ var users = module.exports = (function(){
         next(null)
     }
 
-    // mark
     users.login = function(req, res){
         var username = req.params.username
         var password = req.body.password
