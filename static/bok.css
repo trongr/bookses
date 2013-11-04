@@ -299,15 +299,23 @@ button.boks_quote_thumbs_up:hover {
     color: #f00;
 }
 
+button.boks_quote_flag:hover {
+    color: #f0f;
+}
+
+button.boks_comment_menu_flag:hover {
+    color: #f0f;
+}
+
 .boks_comment_created, .boks_quote_created {
     float: left;
-    padding: 5px 0 0 20px;
+    padding: 5px 10px 0 20px;
     color: #555;
 }
 
 .boks_quote_username, .boks_comment_username {
     float: right;
-    padding: 5px 20px 0 0;
+    padding: 5px 20px 0 10px;
     font-size: 1em;
     font-weight: bolder;
     color: #555;
