@@ -12,6 +12,7 @@ var bok = function(x){
 
     var k = {
         static_public: "static/public",
+        date_format: "D MMMM YYYY",
     }
 
     var page = (function(){
@@ -232,6 +233,12 @@ var bok = function(x){
                 + "             <div class='boks_quote_text'>"
                 +                   text
                 + "             </div>"
+                + "             <div class='boks_quote_created'>"
+                +                   moment(quote.created).format(k.date_format)
+                + "             </div>"
+                + "             <div class='boks_quote_username'>"
+                +                   quote.username
+                + "             </div>"
                 + "             <div class='boks_quote_menu'>"
                 + "                 <button class='boks_quote_reply " + (quote.replies > 0 ? "boks_green_underline" : "") + "'><i class='icon-comments-alt'></i>" + quote.replies + "</button>"
                 + "                 <button class='boks_quote_thumbs_up " + (quote.votes > 1 ? "boks_red_underline" : "") + "'><i class='icon-thumbs-up-alt'></i><span class='boks_votes'>" + quote.votes + "</span></button>"
@@ -259,6 +266,12 @@ var bok = function(x){
                 + "         <div class='boks_quote_comment_text_box'>"
                 + "             <div class='boks_quote_comment_text'>"
                 +                   text
+                + "             </div>"
+                + "             <div class='boks_comment_created'>"
+                +                   moment(comment.created).format(k.date_format)
+                + "             </div>"
+                + "             <div class='boks_comment_username'>"
+                +                   comment.username
                 + "             </div>"
                 + "             <div class='boks_comment_menu'>"
                 + "                 <button class='boks_comment_menu_reply " + (comment.replies > 0 ? "boks_green_underline" : "") + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
@@ -308,6 +321,7 @@ var bok = function(x){
                         .on("click", ".boks_book p", bindings.click_paragraph)
                         .on("mouseenter", ".boks_book p", bindings.mouseenter_p)
                         .on("mouseleave", ".boks_book p", bindings.mouseleave_p)
+                        .scrollTop()
                     dom.quotes = o.box.find(".boks_quotes")
                     done(null)
                 },
