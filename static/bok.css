@@ -27,7 +27,6 @@ button:hover {
 
 .boks_reader_menu {
     background-color: #eee;
-    width: 40px;
     border-right: 5px solid #fff;
     position: fixed;
     top: 0;
@@ -40,9 +39,10 @@ button:hover {
 }
 
 .boks_reader_menu button {
-    width: 40px;
-    height: 40px;
+    float: left;
+    clear: both;
     font-size: 1em;
+    padding: 5px;
 }
 
 .boks_reader_menu .boks_close {

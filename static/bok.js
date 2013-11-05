@@ -181,12 +181,13 @@ var bok = function(x){
     var templates = (function(){
         var templates = {}
 
+        // mark
         templates.reader = function(text){
             var html = "<div id='" + o.bID + "' class='boks_reader'>"
                 + "         <div class='boks_reader_menu'>"
-                + "             <button class='boks_clip' type='button'><i class='icon-quote-right'></i></button>"
-                + "             <button class='boks_twitter' type='button'><i class='icon-twitter'></i></button>"
-                + "             <button class='boks_close' type='button'><i class='icon-remove'></i></button>"
+                + "             <button class='boks_book_upvote'><i class='icon-heart-empty'></i></button>"
+                + "             <button class='boks_clip'><i class='icon-quote-right'></i></button>"
+                + "             <button class='boks_close'><i class='icon-remove'></i></button>"
                 + "         </div>"
                 + "         <div class='boks_reader_content'>"
                 + "             <div class='boks_reader_left'>"
@@ -309,6 +310,7 @@ var bok = function(x){
             })
         }
 
+        // mark
         views.load_book = function(done){
             async.waterfall([
                 function(done){
@@ -323,6 +325,7 @@ var bok = function(x){
                         .on("click", ".boks_book p", bindings.click_paragraph)
                         .on("mouseenter", ".boks_book p", bindings.mouseenter_p)
                         .on("mouseleave", ".boks_book p", bindings.mouseleave_p)
+                        .on("click", ".boks_book_upvote", bindings.click_book_upvote)
                         .scrollTop()
                     dom.quotes = o.box.find(".boks_quotes")
                     done(null)
@@ -648,6 +651,13 @@ var bok = function(x){
             } catch (e){
                 alert("something went wrong. couldn't upvote comment")
             }
+        }
+
+        // mark
+        bindings.click_book_upvote = function(){
+            $(this).find("i").removeClass("icon-heart-empty").addClass("icon-heart")
+            var id = o.bID
+            // alert(id)
         }
 
         return bindings

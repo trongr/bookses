@@ -106,7 +106,23 @@ button {
 }
 
 .book {
+    clear: both;
     padding: 20px 0 0 20px;
+}
+
+.book_left_box {
+    float: left;
+    text-align: center;
+    margin: 0 10px 0 0;
+}
+
+.book_votes, .book_num_comments {
+    font-size: 1.5em;
+    color: #555;
+}
+
+.book_main_box {
+    float: left;
 }
 
 .book_title {
