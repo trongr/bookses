@@ -37,23 +37,6 @@ var DB = (function(){
         })
     }
 
-    DB.get_all_books = function(done){
-        var query = {
-
-        }
-        var aux = {
-            sort: [["created", true ? "desc" : "asc"]],
-            limit: k.page_size
-        }
-        db.collection("books", {safe:true}, function(er, docs){
-            if (er) done({error:"db.get_all_books",er:er})
-            else docs.find(query, aux).toArray(function(er, books){
-                if (er) done({error:"db.get_all_books",er:er})
-                else done(null, books)
-            })
-        })
-    }
-
     DB.get_entry_by_id = function(table, id, done){
         var query = {
             _id: new mongo.ObjectID(id)
@@ -131,6 +114,9 @@ var books = module.exports = (function(){
             src: req.body.src,
             url: k.static_public + "/" + id,
             created: new Date(),
+            votes: 1,
+            replies: 0,
+            pop: 1,
         }
         async.waterfall([
             function(done){
@@ -163,12 +149,17 @@ var books = module.exports = (function(){
     }
 
     books.get_all_books = function(req, res){
-        DB.get_all_books(function(er, books){
+        var query = {}
+        var aux = {
+            sort: [["pop","desc"]],
+            limit: k.page_size // todo change to reasonable size, e.g. 10
+        }
+        DB.get_entries(k.tables.books, query, aux, function(er, entries){
             if (er){
                 console.log(JSON.stringify({error:"books.get_all_books",er:er}, 0, 2))
                 res.send({error:"get all books"})
             } else {
-                res.send({books:books})
+                res.send({books:entries})
             }
         })
     }
@@ -474,6 +465,26 @@ var books = module.exports = (function(){
             if (er){
                 console.log(JSON.stringify({error:"books.upvote_comment",id:req.params.id,er:er}, 0, 2))
                 res.send({error:"upvote comment"})
+            } else {
+                res.send({num:num})
+            }
+        })
+    }
+
+    books.like_book_validate = function(req, res, next){
+        validate.id(req.params.id, function(er){
+            if (er){
+                console.log(JSON.stringify({error:"books.like_book_validate",er:er}, 0, 2))
+                res.send({error:"like book",er:"invalid id"})
+            } else next(null)
+        })
+    }
+    // mark
+    books.like_book = function(req, res){
+        DB.update_entry_by_id(k.tables.books, req.params.id, {$inc:{votes:1,pop:1}}, function(er, num){
+            if (er){
+                console.log(JSON.stringify({error:"books.like_book",id:req.params.id,er:er}, 0, 2))
+                res.send({error:"like book"})
             } else {
                 res.send({num:num})
             }

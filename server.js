@@ -63,6 +63,8 @@ server.get("/book/:id", books.get_book_by_id_validate, books.get_book_by_id)
 server.post("/book/:id/quote", users.authenticate, books.create_quote_validate, books.create_quote)
 server.get("/book/:id/quotes", books.get_book_quotes_validate, books.get_book_quotes)
 
+server.post("/book/:id/like", users.authenticate, books.like_book_validate, books.like_book)
+
 server.post("/quote/:id/comment", users.authenticate, books.create_quote_comment_validate, books.create_quote_comment)
 server.get("/quote/:id/comments", books.get_quote_comments_validate, books.get_quote_comments)
 server.post("/quote/:id/upvote", users.authenticate, books.upvote_quote_validate, books.upvote_quote)

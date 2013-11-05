@@ -175,13 +175,23 @@ var bok = function(x){
             })
         }
 
+        api.like_book = function(id, done){
+            $.ajax({
+                url: "book/" + id + "/like",
+                type: "post",
+                success: function(re){
+                    if (re.num) done(null, re.num)
+                    else done(re)
+                }
+            })
+        }
+
         return api
     }())
 
     var templates = (function(){
         var templates = {}
 
-        // mark
         templates.reader = function(text){
             var html = "<div id='" + o.bID + "' class='boks_reader'>"
                 + "         <div class='boks_reader_menu'>"
@@ -310,7 +320,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         views.load_book = function(done){
             async.waterfall([
                 function(done){
@@ -325,7 +334,7 @@ var bok = function(x){
                         .on("click", ".boks_book p", bindings.click_paragraph)
                         .on("mouseenter", ".boks_book p", bindings.mouseenter_p)
                         .on("mouseleave", ".boks_book p", bindings.mouseleave_p)
-                        .on("click", ".boks_book_upvote", bindings.click_book_upvote)
+                        .on("click", ".boks_book_upvote", bindings.click_book_like)
                         .scrollTop()
                     dom.quotes = o.box.find(".boks_quotes")
                     done(null)
@@ -653,11 +662,12 @@ var bok = function(x){
             }
         }
 
-        // mark
-        bindings.click_book_upvote = function(){
-            $(this).find("i").removeClass("icon-heart-empty").addClass("icon-heart")
-            var id = o.bID
-            // alert(id)
+        bindings.click_book_like = function(){
+            $(this).attr("disabled", true)
+                .find("i").removeClass("icon-heart-empty").addClass("icon-heart")
+            api.like_book(o.bID, function(er, num){
+                if (er) alert("couldn't like book " + JSON.stringify(er, 0, 2))
+            })
         }
 
         return bindings

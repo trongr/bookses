@@ -74,7 +74,7 @@ jQuery(function($){
                 + "        <div class='book_left_box'>"
                 + "            <div class='book_votes' title='likes'>" + book.votes + "</div>"
                 + "            <hr>"
-                + "            <div class='book_num_comments' title='comments'>" + book.comments + "</div>"
+                + "            <div class='book_num_comments' title='comments'>" + book.replies + "</div>"
                 + "        </div>"
                 + "        <div class='book_main_box'>"
                 + "            <div class='book_title'>"
