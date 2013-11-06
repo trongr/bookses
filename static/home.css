@@ -49,6 +49,19 @@ button {
     display: none;
 }
 
+#logo {
+    font-size: 1.5em;
+    padding: 5px;
+    color: #333;
+}
+
+#tagline {
+    font-size: 3em;
+    padding: 20px;
+    color: #666;
+    text-align: center;
+}
+
 #upload_page {
     display: none;
     margin: 10px;
@@ -138,6 +151,7 @@ button {
 
 .book_description {
     font-size: 1em;
+    padding: 0 20px 0 20px;
 }
 
 .book_text {

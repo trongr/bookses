@@ -8,7 +8,9 @@ var books = require("./noodles/books.js")
 var users = require("./noodles/users.js")
 
 server.configure(function(){
-    // server.use("/static", express.static(__dirname + "/static")) // letting nginx serve static files
+    if (process.env.ENV == "local"){
+        server.use("/static", express.static(__dirname + "/static"))
+    }
     server.set('views', __dirname + '/static')
     server.engine('html', require('ejs').renderFile)
 
