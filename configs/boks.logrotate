@@ -1,0 +1,6 @@
+/home/nahn/boks/logs/o.log /home/nahn/boks/logs/e.log {
+    copytruncate
+    daily
+    rotate 7
+    missingok
+}

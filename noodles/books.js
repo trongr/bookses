@@ -223,6 +223,12 @@ var books = module.exports = (function(){
                     done({er:"parse int paragraph"})
                 }
             },
+            function(quote, done){
+                done(null, quote)
+                DB.update_entry_by_id(k.tables.books, req.params.id, {$inc:{replies:1,pop:1}}, function(er, num){
+                    if (er) console.log(JSON.stringify({error:"books.create_quote",id:req.params.id,er:er}, 0, 2))
+                })
+            }
         ], function(er, quote){
             if (er){
                 console.log(JSON.stringify({error:"books.create_quote",params:req.params.id,body:req.body,er:er}, 0, 2))

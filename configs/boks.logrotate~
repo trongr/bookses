@@ -1,0 +1,6 @@
+/home/ubuntu/nt/vdgami/logs/o.log /home/ubuntu/nt/vdgami/logs/e.log {
+    copytruncate
+    daily
+    rotate 7
+    missingok
+}

@@ -106,14 +106,16 @@ button {
 }
 
 .book {
+    display: table-row;
     clear: both;
     padding: 20px 0 0 20px;
 }
 
 .book_left_box {
-    float: left;
+    display: table-cell;
     text-align: center;
     margin: 0 10px 0 0;
+    min-width: 100px;
 }
 
 .book_votes, .book_num_comments {
@@ -122,7 +124,8 @@ button {
 }
 
 .book_main_box {
-    float: left;
+    display: table-cell;
+    padding: 10px;
 }
 
 .book_title {
@@ -148,4 +151,5 @@ button {
 
 .book_created {
     color: #555;
+    padding: 10px;
 }
