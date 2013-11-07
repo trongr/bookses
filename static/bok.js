@@ -195,7 +195,7 @@ var bok = function(x){
             var html = "<div id='" + o.bID + "' class='boks_reader'>"
                 + "         <div class='boks_reader_menu'>"
                 + "             <button class='boks_book_upvote'><i class='icon-heart-empty'></i></button>"
-                + "             <button class='boks_clip'><i class='icon-quote-right'></i></button>"
+                // + "             <button class='boks_clip'><i class='icon-quote-right'></i></button>"
                 + "             <button class='boks_close'><i class='icon-remove'></i></button>"
                 + "         </div>"
                 + "         <div class='boks_reader_content'>"
@@ -328,7 +328,7 @@ var bok = function(x){
                 },
                 function(text, done){
                     o.box.html(templates.reader(text)).off()
-                        .on("click", ".boks_clip", bindings.clip)
+                        // .on("click", ".boks_clip", bindings.clip)
                         .on("click", ".boks_close", bindings.close)
                         .on("click", ".boks_book p", bindings.click_paragraph)
                         .on("mouseenter", ".boks_book p", bindings.mouseenter_p)
@@ -455,31 +455,31 @@ var bok = function(x){
     var bindings = (function(){
         var bindings = {}
 
-        // todo. limit quote length
-        bindings.clip = function(){
-            var s = window.getSelection()
-            if (s.rangeCount > 0 && s.toString().length){
-                var reader = $(this).closest(".boks_reader")
-                var book = reader.find(".boks_book")
-                var node = $(s.getRangeAt(0).startContainer.parentNode) // todo: error checking for different browsers
-                if (book.find(node).length){ // only allow highlight from this book
-                    var p = node.index()
-                    var top = node.get(0).offsetTop
-                    var quote = {
-                        quote: s.toString(),
-                        p: p
-                    }
-                    api.create_quote(o.bID, quote, function(er, quote){
-                        if (er && er.loggedin == false) alert("You have to be logged in")
-                        else if (er) alert(JSON.stringify(er, 0, 2))
-                        else views.load_quote(quote, p, top, function(er){})
-                    })
-                    views.clear_selection() // avoids consecutive clicks
-                }
-            } else {
-                alert("Please select some text to quote")
-            }
-        }
+        // not doing clipping any more
+        // bindings.clip = function(){
+        //     var s = window.getSelection()
+        //     if (s.rangeCount > 0 && s.toString().length){
+        //         var reader = $(this).closest(".boks_reader")
+        //         var book = reader.find(".boks_book")
+        //         var node = $(s.getRangeAt(0).startContainer.parentNode) // todo: error checking for different browsers
+        //         if (book.find(node).length){ // only allow highlight from this book
+        //             var p = node.index()
+        //             var top = node.get(0).offsetTop
+        //             var quote = {
+        //                 quote: s.toString(),
+        //                 p: p
+        //             }
+        //             api.create_quote(o.bID, quote, function(er, quote){
+        //                 if (er && er.loggedin == false) alert("You have to be logged in")
+        //                 else if (er) alert(JSON.stringify(er, 0, 2))
+        //                 else views.load_quote(quote, p, top, function(er){})
+        //             })
+        //             views.clear_selection() // avoids consecutive clicks
+        //         }
+        //     } else {
+        //         alert("Please select some text to quote")
+        //     }
+        // }
 
         bindings.click_paragraph = function(){
             var s = window.getSelection()
