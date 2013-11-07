@@ -21,6 +21,12 @@ var validate = module.exports = (function(){
         else done({error:"empty password",password:password})
     }
 
+    validate.text_length = function(text, done){
+        if (!text || text.length == 0) done({error:"empty text"})
+        else if (text.length > 500) done({error:"text longer than 500 characters"})
+        else done(null)
+    }
+
     return validate
 }())
 

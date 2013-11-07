@@ -87,7 +87,6 @@ var bok = function(x){
                 type: "post",
                 data: {
                     quote: quote.quote,
-                    comment: quote.comment,
                     p: quote.p
                 },
                 success: function(re){
@@ -472,7 +471,7 @@ var bok = function(x){
                     }
                     api.create_quote(o.bID, quote, function(er, quote){
                         if (er && er.loggedin == false) alert("You have to be logged in")
-                        else if (er) console.log(JSON.stringify(er, 0, 2))
+                        else if (er) alert(JSON.stringify(er, 0, 2))
                         else views.load_quote(quote, p, top, function(er){})
                     })
                     views.clear_selection() // avoids consecutive clicks
@@ -548,7 +547,7 @@ var bok = function(x){
             quote_box.find(".boks_quote_reply_box").hide()
             api.create_quote_comment(quote_id, comment, function(er, comment){
                 if (er && er.loggedin == false) alert("You have to be logged in")
-                else if (er) console.log(JSON.stringify(er, 0, 2))
+                else if (er) alert(JSON.stringify(er, 0, 2))
                 else views.load_quote_comment(comments_box, comment)
             })
         }
@@ -608,7 +607,7 @@ var bok = function(x){
             comment_box.find(".boks_comment_reply_box").hide()
             api.create_comment_comment(comment_id, comment, function(er, comment){
                 if (er && er.loggedin == false) alert("You have to be logged in")
-                else if (er) console.log(JSON.stringify(er, 0, 2))
+                else if (er) alert(JSON.stringify(er, 0, 2))
                 else views.load_comment_comment(comments_box, comment)
             })
         }
@@ -623,7 +622,7 @@ var bok = function(x){
             }
             api.create_quote(o.bID, quote, function(er, quote){
                 if (er && er.loggedin == false) alert("You have to be logged in")
-                else if (er) console.log(JSON.stringify(er, 0, 2))
+                else if (er) alert(JSON.stringify(er, 0, 2))
                 else views.load_quote(quote, p, null, function(er){})
             })
             var quotes_box = quote_box.find(".boks_quote_box_quotes")

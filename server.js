@@ -14,6 +14,7 @@ server.configure(function(){
     server.set('views', __dirname + '/static')
     server.engine('html', require('ejs').renderFile)
 
+    server.use(express.limit(1000000)) // limit request size
     server.use(express.bodyParser({uploadDir: "./tmp"}))
     server.use(express.logger("dev"))
 
@@ -37,6 +38,7 @@ server.configure(function(){
         res.header("Access-Control-Allow-Headers", "Content-Type")
         res.end()
     })
+
 })
 
 server.configure('development', function(){

@@ -188,10 +188,22 @@ var books = module.exports = (function(){
 
     // todo. check other params
     books.create_quote_validate = function(req, res, next){
-        validate.id(req.params.id, function(er){
+        async.waterfall([
+            function(done){
+                validate.id(req.params.id, function(er){
+                    if (er) done({error:"invalid id"})
+                    else done(null)
+                })
+            },
+            function(done){
+                validate.text_length(req.body.quote, function(er){
+                    done(er)
+                })
+            }
+        ], function(er, re){
             if (er){
                 console.log(JSON.stringify({error:"books.create_quote_validate",er:er}, 0, 2))
-                res.send({error:"create quote"})
+                res.send({error:"create quote",info:er.error})
             } else next(null)
         })
     }
@@ -290,10 +302,21 @@ var books = module.exports = (function(){
     }
 
     books.create_quote_comment_validate = function(req, res, next){
-        validate.id(req.params.id, function(er){
+        async.waterfall([
+            function(done){
+                validate.id(req.params.id, function(er){
+                    done(er)
+                })
+            },
+            function(done){
+                validate.text_length(req.body.comment, function(er){
+                    done(er)
+                })
+            }
+        ], function(er, re){
             if (er){
                 console.log(JSON.stringify({error:"books.create_quote_comment_validate",er:er}, 0, 2))
-                res.send({error:"create quote comment"})
+                res.send({error:"create quote comment",er:er})
             } else next(null)
         })
     }
@@ -364,10 +387,21 @@ var books = module.exports = (function(){
     }
 
     books.create_comment_comment_validate = function(req, res, next){
-        validate.id(req.params.id, function(er){
+        async.waterfall([
+            function(done){
+                validate.id(req.params.id, function(er){
+                    done(er)
+                })
+            },
+            function(done){
+                validate.text_length(req.body.comment, function(er){
+                    done(er)
+                })
+            }
+        ], function(er, re){
             if (er){
                 console.log(JSON.stringify({error:"books.create_comment_comment_validate",er:er}, 0, 2))
-                res.send({error:"create comment comment"})
+                res.send({error:"create comment comment",er:er})
             } else next(null)
         })
     }
