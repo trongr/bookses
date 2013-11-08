@@ -15,6 +15,11 @@ button {
     clear: both;
 }
 
+#banner {
+    display: table;
+    width: 100%;
+}
+
 #banner button {
     font-size: 1em;
     padding: 0;
@@ -26,7 +31,7 @@ button {
 }
 
 #banner_left {
-    float: left;
+    display: table-cell;
 }
 
 #banner_left #search_bar {
@@ -34,7 +39,8 @@ button {
 }
 
 #banner_right {
-    float: right;
+    display: table-cell;
+    text-align: right;
 }
 
 #banner_right input {
