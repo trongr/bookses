@@ -3,6 +3,15 @@ body {
     font-family: helvetica, arial, sans;
 }
 
+a {
+    text-decoration: none;
+    color: #000;
+}
+
+a:hover {
+    color: #0f0;
+}
+
 input {
     border: none;
 }
@@ -61,11 +70,15 @@ button {
     color: #333;
 }
 
-#tagline {
-    font-size: 3em;
-    padding: 20px;
-    color: #666;
+#tagline_box {
     text-align: center;
+    padding: 20px 0 20px 0;
+}
+
+#tagline {
+    font-size: 12pt;
+    color: #666;
+    padding: 20px;
 }
 
 #upload_page {
@@ -172,4 +185,10 @@ button {
 .book_created {
     color: #555;
     padding: 10px;
+}
+
+#more_books_button {
+    font-size: 3em;
+    padding: 30px;
+    width: 100%;
 }

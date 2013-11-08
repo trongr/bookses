@@ -3,6 +3,7 @@ jQuery(function($){
     var k = {
         static_public: "/static/public",
         date_format: "D MMMM YYYY",
+        page: 0,
     }
 
     var dom = {
@@ -41,10 +42,13 @@ jQuery(function($){
             })
         }
 
-        api.get_all_books = function(done){
+        api.get_all_books = function(page, done){
             $.ajax({
                 url: "books",
                 type: "get",
+                data: {
+                    page: page
+                },
                 success: function(re){
                     if (re.books) done(null, re.books)
                     else done({re:re})
@@ -100,14 +104,19 @@ jQuery(function($){
         var views = {}
 
         views.init = function(){
+            views.load_books(k.page++)
+        }
+
+        // mark
+        views.load_books = function(page){
             async.waterfall([
                 function(done){
-                    api.get_all_books(function(er, books){
+                    api.get_all_books(page, function(er, books){ // mark
                         done(er, books)
                     })
                 },
                 function(books, done){
-                    views.load_books(books)
+                    views.render_books(books)
                     done(null)
                 },
             ], function(er, re){
@@ -115,12 +124,12 @@ jQuery(function($){
             })
         }
 
-        views.load_books = function(books){
+        views.render_books = function(books){
             var html = ""
             for (var i = 0; i < books.length; i++){
                 html += templates.book(books[i])
             }
-            dom.books.html(html)
+            dom.books.append(html)
                 .on("click", ".book_title", bindings.click_book_title)
         }
 
@@ -152,6 +161,8 @@ jQuery(function($){
             $("#upload_button").on("click", bindings.click_upload_button)
             $("#post_upload_button").on("click", bindings.click_post_upload_button)
             $("#cancel_upload_button").on("click", bindings.click_cancel_upload_button)
+            $("#more_books_button").on("click", bindings.click_more_books)
+            // mark
         }
 
         bindings.click_search_button = function(){
@@ -177,6 +188,11 @@ jQuery(function($){
 
         bindings.click_cancel_upload_button = function(){
             dom.upload_page.hide()
+        }
+
+        bindings.click_more_books = function(){
+            views.load_books(k.page++)
+            // mark
         }
 
         return bindings
@@ -289,6 +305,26 @@ jQuery(function($){
         return users
     }())
 
+    var css = (function(){
+        var css = {}
+
+        css.init = function(){
+            css.fit_tagline()
+        }
+
+        css.fit_tagline = function(){
+            var box_width = $("#tagline_box").width() - 100
+            var tagline = $("#tagline")
+            var size = parseInt(tagline.css("font-size"))
+            while (tagline.width() < box_width){
+                size++
+                tagline.css("font-size", size.toString() + "px")
+            }
+        }
+
+        return css
+    }())
+
     var app = (function(){
         var app = {}
 
@@ -296,6 +332,7 @@ jQuery(function($){
             views.init()
             bindings.init()
             users.init()
+            css.init()
         }
 
         return app
