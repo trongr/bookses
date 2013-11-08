@@ -283,6 +283,11 @@ var books = module.exports = (function(){
         })
     }
 
+    // todo use this to get the last N items, and sort by votes
+    // collection.find(query, aux).sort({votes:-1}, function(err, cursor){
+    //     cursor.toArray(function(er, entries){})
+    // })
+
     books.get_book_quotes = function(req, res){
         var book = req.params.id
         var p = req.query.p
