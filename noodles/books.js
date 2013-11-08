@@ -148,11 +148,20 @@ var books = module.exports = (function(){
         })
     }
 
+    books.get_all_books_validate = function(req, res, next){
+        var page = req.query.page || 0
+        validate.integer(page, function(er){
+            if (er) res.send({error:"invalid page",er:er})
+            else next(null)
+        })
+    }
+
     books.get_all_books = function(req, res){
         var query = {}
         var aux = {
             sort: [["pop","desc"]],
-            limit: k.page_size // todo change to reasonable size, e.g. 10
+            limit: k.page_size, // todo change to reasonable size, e.g. 10
+            skip: req.query.page * k.page_size
         }
         DB.get_entries(k.tables.books, query, aux, function(er, entries){
             if (er){

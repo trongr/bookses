@@ -334,8 +334,8 @@ var bok = function(x){
                         .on("mouseenter", ".boks_book p", bindings.mouseenter_p)
                         .on("mouseleave", ".boks_book p", bindings.mouseleave_p)
                         .on("click", ".boks_book_upvote", bindings.click_book_like)
-                        .scrollTop()
                     dom.quotes = o.box.find(".boks_quotes")
+                    window.scrollTo(0, 0)
                     done(null)
                 },
             ], function(er, re){
@@ -631,6 +631,9 @@ var bok = function(x){
 
         bindings.close = function(){
             $(this).closest(".boks_reader").parent().hide()
+            $("html, body").animate({
+                scrollTop: $("#" + o.bID).offset().top
+            }, 100)
         }
 
         bindings.click_quote_thumbs_up = function(){

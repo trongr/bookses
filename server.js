@@ -61,7 +61,7 @@ server.post("/bug", function(req, res){
 })
 
 server.post("/book", users.authenticate, books.create_book_validate, books.create_book)
-server.get("/books", books.get_all_books)
+server.get("/books", books.get_all_books_validate, books.get_all_books)
 server.get("/book/:id", books.get_book_by_id_validate, books.get_book_by_id)
 
 server.post("/book/:id/quote", users.authenticate, books.create_quote_validate, books.create_quote)

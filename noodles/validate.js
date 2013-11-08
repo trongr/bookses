@@ -27,6 +27,11 @@ var validate = module.exports = (function(){
         else done(null)
     }
 
+    validate.integer = function(d, done){
+        if (/^[0-9]+$/.test(d)) done(null)
+        else done({error:"not a positive integer"})
+    }
+
     return validate
 }())
 

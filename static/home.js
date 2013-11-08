@@ -74,7 +74,7 @@ jQuery(function($){
         var templates = {}
 
         templates.book = function(book){
-            var html = "<div class='book' data-id='" + book._id + "'>"
+            var html = "<div id='" + book._id + "' class='book' data-id='" + book._id + "'>"
                 + "        <div class='book_left_box'>"
                 + "            <div class='book_votes' title='likes'>" + book.votes + "</div>"
                 + "            <hr>"
@@ -111,7 +111,7 @@ jQuery(function($){
         views.load_books = function(page){
             async.waterfall([
                 function(done){
-                    api.get_all_books(page, function(er, books){ // mark
+                    api.get_all_books(page, function(er, books){
                         done(er, books)
                     })
                 },
@@ -190,9 +190,9 @@ jQuery(function($){
             dom.upload_page.hide()
         }
 
+        // mark
         bindings.click_more_books = function(){
             views.load_books(k.page++)
-            // mark
         }
 
         return bindings
