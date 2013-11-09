@@ -20,8 +20,10 @@ button:hover {
 }
 
 .boks_reader {
-    position: absolute;
+    display: table;
+    position: relative;
     width: 100%;
+    height: 100%;
     background-color: #eee;
 }
 
@@ -52,18 +54,18 @@ button:hover {
 }
 
 .boks_reader_content {
-    position: relative;
+    display: table-row;
     width: 100%;
 }
 
 .boks_reader_left {
-    float: left;
+    display: table-cell;
     width: 60%;
     background-color: #ddd;
 }
 
 .boks_reader_right {
-    float: right;
+    display: table-cell;
     width: 40%;
 }
 
@@ -82,13 +84,13 @@ button:hover {
 }
 
 .boks_quotes {
-    position: relative;
+
 }
 
 .boks_quote_box {
+    position: absolute;
     box-shadow: 0 0 10px 5px #aaa;
     background-color: #eee;
-    /* padding-bottom: 64px; /\* maybe use this to stop users from falling over the bottom *\/ */
 }
 
 .boks_quote_box:hover {
@@ -321,4 +323,5 @@ button.boks_comment_menu_flag:hover {
 .boks_more_quotes_button {
     width: 100%;
     font-size: 2em;
+    padding: 20px;
 }
