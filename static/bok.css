@@ -102,6 +102,8 @@ button:hover {
     background-color: #eee;
     white-space: pre-line;
     position: relative;
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
 }
 
 .boks_quote_text:hover {
@@ -139,6 +141,8 @@ button:hover {
     margin: 0 0 0 1px;
     position: relative;
     border-left: 5px solid #bbb;
+    border-top: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
 }
 
 .boks_quote_comment:hover {
@@ -175,11 +179,14 @@ button:hover {
 
 .boks_quote_reply_menu {
     float: right;
+    padding: 5px;
 }
 
 .boks_quote_reply_menu_post {
+    padding: 10px;
     font-size: 1em;
-    padding: 20px;
+    border-radius: 3px;
+    border: 1px solid #666;
 }
 
 .boks_quote_reply_textarea_box {
@@ -215,11 +222,14 @@ button:hover {
 
 .boks_comment_reply_menu {
     float: right;
+    padding: 5px;
 }
 
 .boks_comment_reply_menu_post {
+    padding: 10px;
     font-size: 1em;
-    padding: 20px;
+    border-radius: 3px;
+    border: 1px solid #666;
 }
 
 .boks_comment_reply_textarea_box {
@@ -247,6 +257,7 @@ button:hover {
     display: none;
     width: 100%;
     position: relative;
+    border-bottom: 1px solid #bbb;
 }
 
 .boks_quote_new_quote_textarea_box {
@@ -271,11 +282,18 @@ button:hover {
 
 .boks_quote_new_quote_menu {
     float: right;
+    padding: 5px;
 }
 
 .boks_quote_new_quote_post {
-    padding: 20px;
+    padding: 10px;
     font-size: 1em;
+    border-radius: 3px;
+    border: 1px solid #666;
+}
+
+.boks_quote_new_quote_post:hover {
+    border: 1px solid #0f0;
 }
 
 .clear_both {

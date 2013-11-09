@@ -84,6 +84,8 @@ button {
 #upload_page {
     display: none;
     width: 100%;
+    border-top: 1px solid #bbb;
+    padding: 20px;
 }
 
 #upload_page_inner {
@@ -135,16 +137,21 @@ button {
     font-size: 1em;
 }
 
+#books {
+    display: table;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
+}
+
 .book {
     display: table-row;
     clear: both;
-    padding: 20px 0 0 20px;
 }
 
 .book_left_box {
     display: table-cell;
     text-align: center;
-    margin: 0 10px 0 0;
+    vertical-align: middle;
     min-width: 100px;
 }
 
@@ -155,7 +162,9 @@ button {
 
 .book_main_box {
     display: table-cell;
-    padding: 10px;
+    padding: 20px;
+    border-left: 1px solid #bbb;
+    border-bottom: 1px solid #bbb;
 }
 
 .book_title {
