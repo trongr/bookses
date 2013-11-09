@@ -192,7 +192,6 @@ button:hover {
     border: none;
     border-left: 5px solid #0f0;
     padding-left: 15px;
-    padding-right: 45px;
     resize: none;
     margin-bottom: 3px;
     background-color: #eee;
@@ -233,7 +232,6 @@ button:hover {
     border: none;
     border-left: 5px solid #0f0;
     padding-left: 15px;
-    padding-right: 45px;
     resize: none;
     margin-bottom: 3px;
     background-color: #eee;
@@ -260,7 +258,6 @@ button:hover {
     height: 6em;
     border: none;
     padding-left: 15px;
-    padding-right: 35px;
     resize: none;
     margin-bottom: 3px;
     background-color: #eee;
