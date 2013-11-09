@@ -317,3 +317,8 @@ button.boks_comment_menu_flag:hover {
     font-weight: bolder;
     color: #555;
 }
+
+.boks_more_quotes_button {
+    width: 100%;
+    font-size: 2em;
+}

@@ -13,21 +13,19 @@ var bok = function(x){
     var k = {
         static_public: "static/public",
         date_format: "D MMMM YYYY",
+        page_size: 10,
     }
 
     var page = (function(){
         var page = {}
 
         page.k = {
-            p: 0,
             page_size: 10, // should be same as on server
-            pages: {
-                0: true,
-            }, // pages already requested
+            pages: {}, // pages already requested
         }
 
         page.get_p = function(p){
-            var q = p - p % page.k.page_size + page.k.page_size
+            var q = p - p % page.k.page_size
             if (page.k.pages[q]){
                 return null
             } else {
@@ -67,6 +65,7 @@ var bok = function(x){
             })
         }
 
+        // mark
         api.get_book_quotes = function(bID, p, done){
             $.ajax({
                 url: "book/" + bID + "/quotes",
@@ -210,6 +209,7 @@ var bok = function(x){
             return html
         }
 
+        // mark
         templates.quote_box = function(quotes, p, top){
             var html = "<div data-p='" + p + "' class='boks_quote_box'"
                 + "             style='"
@@ -225,7 +225,10 @@ var bok = function(x){
                 + "                 <div class='clear_both'></div>"
                 + "             </div>"
                 + "             <div class='boks_quote_box_quotes'>"
-                +                  quotes
+                +                   quotes
+                + "             </div>"
+                + "             <div class=''>"
+                + "                 <button class='boks_more_quotes_button' data-page='0'><i class='icon-chevron-down'></i></button>"
                 + "             </div>"
                 + "         </div>"
             return html
@@ -315,7 +318,7 @@ var bok = function(x){
         views.init = function(){
             views.load_book(function(er){
                 if (er) o.error({error:"loading book",er:er})
-                else views.load_quotes(0)
+                // else views.load_quotes(0)
             })
         }
 
@@ -328,12 +331,20 @@ var bok = function(x){
                 },
                 function(text, done){
                     o.box.html(templates.reader(text)).off()
-                        // .on("click", ".boks_clip", bindings.clip)
+                    // .on("click", ".boks_clip", bindings.clip)
                         .on("click", ".boks_close", bindings.close)
                         .on("click", ".boks_book p", bindings.click_paragraph)
                         .on("mouseenter", ".boks_book p", bindings.mouseenter_p)
                         .on("mouseleave", ".boks_book p", bindings.mouseleave_p)
                         .on("click", ".boks_book_upvote", bindings.click_book_like)
+                        .on("mouseenter", ".boks_quote_box", bindings.mouseenter_quote_box)
+                        .on("mouseleave", ".boks_quote_box", bindings.mouseleave_quote_box)
+                        .on("click", ".boks_quote_new_quote_post", bindings.click_new_quote_post)
+                        .on("click", ".boks_quote_text", bindings.click_quote_text)
+                        .on("click", ".boks_quote_reply", bindings.click_quote_reply)
+                        .on("click", ".boks_quote_thumbs_up", bindings.click_quote_thumbs_up)
+                        .on("click", ".boks_quote_reply_menu_post", bindings.click_quote_reply_post)
+                        .on("click", ".boks_more_quotes_button", bindings.click_more_quotes)
                     dom.quotes = o.box.find(".boks_quotes")
                     window.scrollTo(0, 0)
                     done(null)
@@ -344,7 +355,19 @@ var bok = function(x){
             })
         }
 
+        // mark
         views.load_quotes = function(p){
+            async.timesSeries(k.page_size, function(i, done){
+                views.load_paragraph_quotes(p + i, function(er){
+                    if (er) console.log(JSON.stringify(er, 0, 2))
+                    done(null)
+                })
+            }, function(er, re){
+                if (er) console.log(JSON.stringify({error:"views.load_quotes",er:er}, 0, 2))
+            })
+        }
+
+        views.load_paragraph_quotes = function(p, done){
             async.waterfall([
                 function(done){
                     api.get_book_quotes(o.bID, p, function(er, quotes){
@@ -352,44 +375,24 @@ var bok = function(x){
                     })
                 },
                 function(quotes, done){
-                    views.render_quotes(quotes)
+                    if (quotes.length) views.render_quotes(p, quotes)
                     done(null)
                 },
             ], function(er, re){
-                if (er) console.log(JSON.stringify({error:"views.load_quotes",er:er}, 0, 2))
+                if (er) done({error:"views.load_paragraph_quotes",er:er})
+                else done(null)
             })
         }
 
-        views.render_quotes = function(quotes){
-            var paragraphs = $("#" + o.bID + " .boks_book p")
-            var html = ""
-            var prev_p = null
-            var box_quotes = ""
+        views.render_quotes = function(p, quotes){
+            var paragraph = $("#" + o.bID + " .boks_book p").eq(p)
+            var top = paragraph.get(0).offsetTop
+            var quotes_box = ""
             for (var i = 0; i < quotes.length; i++){
-                var p = quotes[i].p
-                var quote = templates.quote(quotes[i])
-                if (prev_p == p || prev_p == null){ // put a paragraph's quotes into one box
-                    box_quotes += quote
-                } else { // new paragraph: add the last one to html and restart box_quotes
-                    var top = paragraphs.eq(prev_p).get(0).offsetTop
-                    html += templates.quote_box(box_quotes, prev_p, top)
-                    box_quotes = quote
-                }
-                prev_p = p
-                if (i == quotes.length - 1){ // put the last quote wherever it belongs
-                    var top = paragraphs.eq(prev_p).get(0).offsetTop
-                    html += templates.quote_box(box_quotes, prev_p, top)
-                    box_quotes = quote
-                }
+                quotes_box += templates.quote(quotes[i])
             }
-            $("#" + o.bID + " .boks_quotes").append(html).off()
-                .on("mouseenter", ".boks_quote_box", bindings.mouseenter_quote_box)
-                .on("mouseleave", ".boks_quote_box", bindings.mouseleave_quote_box)
-                .on("click", ".boks_quote_new_quote_post", bindings.click_new_quote_post)
-                .on("click", ".boks_quote_text", bindings.click_quote_text)
-                .on("click", ".boks_quote_reply", bindings.click_quote_reply)
-                .on("click", ".boks_quote_thumbs_up", bindings.click_quote_thumbs_up)
-                .on("click", ".boks_quote_reply_menu_post", bindings.click_quote_reply_post)
+            $("#" + o.bID + " .boks_quotes").append(templates.quote_box(quotes_box, p, top))
+            // mark
         }
 
         views.load_quote = function(quote, p, top, done){
@@ -560,7 +563,7 @@ var bok = function(x){
                 "border-left": "5px solid #0f0"
             })
             var q = page.get_p(p)
-            if (q) views.load_quotes(q)
+            if (q != null) views.load_quotes(q)
         }
 
         bindings.mouseleave_p = function(){
@@ -670,6 +673,12 @@ var bok = function(x){
             api.like_book(o.bID, function(er, num){
                 if (er) alert("couldn't like book " + JSON.stringify(er, 0, 2))
             })
+        }
+
+        // mark
+        bindings.click_more_quotes = function(){
+            var page = parseInt($(this).attr("data-page"))
+            alert($(this).attr("data-page"))
         }
 
         return bindings

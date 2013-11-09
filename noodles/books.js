@@ -1,3 +1,9 @@
+
+// todo use this to get the last N items, and sort by votes
+// collection.find(query, aux).sort({votes:-1}, function(err, cursor){
+//     cursor.toArray(function(er, entries){})
+// })
+
 var request = require("request")
 var async = require("async")
 var mongo = require("mongodb")
@@ -160,7 +166,7 @@ var books = module.exports = (function(){
         var query = {}
         var aux = {
             sort: [["pop","desc"]],
-            limit: k.page_size, // todo change to reasonable size, e.g. 10
+            limit: k.page_size,
             skip: req.query.page * k.page_size
         }
         DB.get_entries(k.tables.books, query, aux, function(er, entries){
@@ -263,6 +269,11 @@ var books = module.exports = (function(){
     books.get_book_quotes_validate = function(req, res, next){
         async.parallel([
             function(done){
+                validate.id(req.params.id, function(er){
+                    done(er)
+                })
+            },
+            function(done){
                 try {
                     req.query.p = parseInt(req.query.p)
                     done(null)
@@ -271,8 +282,10 @@ var books = module.exports = (function(){
                 }
             },
             function(done){
-                validate.id(req.params.id, function(er){
-                    done(er)
+                var page = req.query.page || 0
+                validate.integer(page, function(er){
+                    if (er) res.send({error:"invalid page",er:er})
+                    else next(null)
                 })
             }
         ], function(er, re){
@@ -283,34 +296,26 @@ var books = module.exports = (function(){
         })
     }
 
-    // todo use this to get the last N items, and sort by votes
-    // collection.find(query, aux).sort({votes:-1}, function(err, cursor){
-    //     cursor.toArray(function(er, entries){})
-    // })
-
+    // mark
     books.get_book_quotes = function(req, res){
         var book = req.params.id
         var p = req.query.p
-        var result = []
-        async.timesSeries(k.page_size, function(i, done){
-            var query = {
-                book: book,
-                p: p + i
-            }
-            var aux = {
-                sort: [["pop","desc"]],
-                limit: 5 // todo change to reasonable size, e.g. 5
-            }
-            DB.get_entries(k.tables.quotes, query, aux, function(er, entries){
-                result.push.apply(result, entries)
-                done(null)
-            })
-        }, function(er, re){
+        var page = req.query.page
+        var query = {
+            book: book,
+            p: p
+        }
+        var aux = {
+            sort: [["pop","desc"]],
+            limit: k.page_size,
+            skip: page * k.page_size
+        }
+        DB.get_entries(k.tables.quotes, query, aux, function(er, entries){
             if (er){
                 console.log(JSON.stringify({error:"books.get_book_quotes",er:er}, 0, 2))
                 res.send({error:"get book quotes"})
             } else {
-                res.send({quotes:result})
+                res.send({quotes:entries})
             }
         })
     }
