@@ -349,3 +349,7 @@ button.boks_comment_menu_flag:hover {
     font-size: 2em;
     padding: 20px;
 }
+
+.boks_green {
+    color: #0f0;
+}

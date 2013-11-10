@@ -13,6 +13,7 @@ var bok = function(x){
     var k = {
         static_public: "static/public",
         date_format: "D MMMM YYYY",
+        date_format_alt: "llll",
         page_size: 10,
     }
 
@@ -212,6 +213,7 @@ var bok = function(x){
 
         // mark
         templates.quotes_box = function(quotes, p, top){
+            var content = templates.quotes(quotes.slice(0, k.page_size))
             var html = "<div data-p='" + p + "' class='boks_quote_box'"
                 + "             style='"
                 + "                   position:absolute;"
@@ -226,10 +228,10 @@ var bok = function(x){
                 + "                 <div class='clear_both'></div>"
                 + "             </div>"
                 + "             <div class='boks_quote_box_quotes'>"
-                +                   quotes
+                +                   content
                 + "             </div>"
                 + "             <div class=''>"
-                + "                 <button class='boks_more_quotes_button' data-page='0'><i class='icon-chevron-down'></i></button>"
+                + "                 <button class='boks_more_quotes_button " + (quotes.length > 10 ? "boks_green" : "") + "' data-page='0'><i class='icon-chevron-down'></i></button>"
                 + "             </div>"
                 + "         </div>"
             return html
@@ -240,6 +242,7 @@ var bok = function(x){
             return text.replace(exp,"<img class='boks_img' src='$1'/>");
         }
 
+        // mark
         templates.quotes = function(quotes){
             var html = ""
             for (var i = 0; i < quotes.length; i++){
@@ -256,7 +259,7 @@ var bok = function(x){
                 +                   text
                 + "             </div>"
                 + "             <div class='boks_quote_created'>"
-                +                   moment(quote.created).format(k.date_format)
+                +                   moment(quote.created).format(k.date_format_alt)
                 + "             </div>"
                 + "             <div class='boks_quote_username'>"
                 +                   quote.username
@@ -291,7 +294,7 @@ var bok = function(x){
                 +                   text
                 + "             </div>"
                 + "             <div class='boks_comment_created'>"
-                +                   moment(comment.created).format(k.date_format)
+                +                   moment(comment.created).format(k.date_format_alt)
                 + "             </div>"
                 + "             <div class='boks_comment_username'>"
                 +                   comment.username
@@ -375,7 +378,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         views.load_paragraph_quotes = function(p, done){
             async.waterfall([
                 function(done){
@@ -393,22 +395,20 @@ var bok = function(x){
             })
         }
 
+        // mark
         views.render_quotes = function(p, quotes){
             var paragraph = $("#" + o.bID + " .boks_book p").eq(p)
             var top = paragraph.get(0).offsetTop
-            var html = templates.quotes_box(templates.quotes(quotes), p, top)
+            var html = templates.quotes_box(quotes, p, top)
             $("#" + o.bID + " .boks_quotes").append(html)
-            // mark
         }
 
-        // mark
         views.load_quote = function(quote, p, top, done){
             var box = dom.quotes.find(".boks_quote_box[data-p='" + p + "'] .boks_quote_box_quotes")
-            var q = templates.quote(quote)
             if (box.length){
-                box.prepend(q)
+                box.prepend(templates.quote(quote))
             } else {
-                dom.quotes.append(templates.quotes_box(q, p, top))
+                dom.quotes.append(templates.quotes_box([quote], p, top))
             }
             done(null)
         }
@@ -453,7 +453,7 @@ var bok = function(x){
         }
 
         views.load_new_quote_box = function(p, top){
-            var quote = $(templates.quotes_box("", p, top))
+            var quote = $(templates.quotes_box([], p, top))
             dom.quotes.append(quote).find(quote) // have to find quote again, cause if you focus before appending it'll lose focus
                 .find(".boks_quote_new_quote_box").show()
                 .find(".boks_quote_new_quote_textarea").focus()
@@ -684,8 +684,27 @@ var bok = function(x){
 
         // mark
         bindings.click_more_quotes = function(){
-            var page = parseInt($(this).attr("data-page"))
-            alert($(this).attr("data-page"))
+            var that = $(this)
+            var container = that.closest(".boks_quote_box")
+            var box = container.find(".boks_quote_box_quotes")
+            var page = parseInt(that.attr("data-page")) + 1
+            var p = container.attr("data-p")
+            async.waterfall([
+                function(done){
+                    api.get_book_quotes(o.bID, p, page, function(er, quotes){
+                        done(er, quotes)
+                    })
+                },
+                function(quotes, done){
+                    if (quotes.length) box.append(templates.quotes(quotes.slice(0, k.page_size)))
+                    if (quotes.length > k.page_size) that.addClass("boks_green")
+                    else that.removeClass("boks_green")
+                    that.attr("data-page", page)
+                    done(null)
+                },
+            ], function(er, re){
+                if (er) console.log(JSON.stringify(({error:"bindings.click_more_quotes",er:er}), 0, 2))
+            })
         }
 
         return bindings

@@ -307,7 +307,7 @@ var books = module.exports = (function(){
         }
         var aux = {
             sort: [["pop","desc"]],
-            limit: k.page_size,
+            limit: k.page_size + 1,
             skip: page * k.page_size
         }
         DB.get_entries(k.tables.quotes, query, aux, function(er, entries){
