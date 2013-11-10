@@ -170,7 +170,7 @@ jQuery(function($){
         }
 
         bindings.click_upload_button = function(){
-            dom.upload_page.show()
+            dom.upload_page.slideDown(100)
         }
 
         bindings.click_post_upload_button = function(){
