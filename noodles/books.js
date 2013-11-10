@@ -538,20 +538,6 @@ var test = (function(){
         })
     }
 
-    test.create_comment_comment = function(){
-        var comment = process.argv[2]
-        request.post({
-            url: k.localhost + "/comment/525d3afdcb66b1b160000044/comment",
-            form: {
-                comment: comment,
-            },
-            json: true
-        }, function(er, res, body){
-            if (er) console.log(JSON.stringify(er, 0, 2))
-            else console.log(JSON.stringify(body, 0, 2))
-        })
-    }
-
     return test
 }())
 
