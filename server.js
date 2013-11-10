@@ -64,14 +64,14 @@ server.post("/book", users.authenticate, books.create_book_validate, books.creat
 server.get("/books", books.get_all_books_validate, books.get_all_books)
 server.get("/book/:id", books.get_book_by_id_validate, books.get_book_by_id)
 
-server.post("/book/:id/quote", users.authenticate, books.create_quote_validate, books.create_quote)
-server.get("/book/:id/quotes", books.get_book_quotes_validate, books.get_book_quotes)
+server.post("/book/:id/comment", users.authenticate, books.create_comment_validate, books.create_comment)
+server.get("/book/:id/comments", books.get_book_comments_validate, books.get_book_comments)
 
 server.post("/book/:id/like", users.authenticate, books.like_book_validate, books.like_book)
 
-server.post("/quote/:id/comment", users.authenticate, books.create_quote_comment_validate, books.create_quote_comment)
-server.get("/quote/:id/comments", books.get_quote_comments_validate, books.get_quote_comments)
-server.post("/quote/:id/upvote", users.authenticate, books.upvote_quote_validate, books.upvote_quote)
+server.post("/comment/:id/comment", users.authenticate, books.create_comment_comment_validate, books.create_comment_comment)
+server.get("/comment/:id/comments", books.get_comment_comments_validate, books.get_comment_comments)
+server.post("/comment/:id/upvote", users.authenticate, books.upvote_comment_validate, books.upvote_comment)
 
 server.post("/user/:username/register", users.create_user_validate, users.create_user)
 server.post("/user/:username/login", users.login_validate, users.login)

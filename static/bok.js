@@ -67,56 +67,56 @@ var bok = function(x){
         }
 
         // mark
-        api.get_book_quotes = function(bID, p, page, done){
+        api.get_book_comments = function(bID, p, page, done){
             $.ajax({
-                url: "book/" + bID + "/quotes",
+                url: "book/" + bID + "/comments",
                 type: "get",
                 data: {
                     p: p,
                     page: page
                 },
                 success: function(re){
-                    if (re.quotes) done(null, re.quotes)
-                    else done({error:"api.get_book_quotes",re:re})
+                    if (re.comments) done(null, re.comments)
+                    else done({error:"api.get_book_comments",re:re})
                 }
             })
         }
 
-        api.create_quote = function(bID, quote, done){
+        api.create_comment = function(bID, comment, done){
             $.ajax({
-                url: "book/" + bID + "/quote",
+                url: "book/" + bID + "/comment",
                 type: "post",
                 data: {
-                    quote: quote.quote,
-                    p: quote.p
+                    comment: comment.comment,
+                    p: comment.p
                 },
                 success: function(re){
-                    if (re.quote) done(null, re.quote)
+                    if (re.comment) done(null, re.comment)
                     else done(re)
                 }
             })
         }
 
-        api.get_quote_comments = function(qID, done){
+        api.get_comment_comments = function(qID, done){
             $.ajax({
-                url: "quote/" + qID + "/comments",
+                url: "comment/" + qID + "/comments",
                 type: "get",
                 success: function(re){
-                    if (re.quotes) done(null, re.quotes)
-                    else done({error:"api.get_quote_comments",re:re})
+                    if (re.comments) done(null, re.comments)
+                    else done({error:"api.get_comment_comments",re:re})
                 }
             })
         }
 
-        api.create_quote_comment = function(qID, comment, done){
+        api.create_comment_comment = function(qID, comment, done){
             $.ajax({
-                url: "quote/" + qID + "/comment",
+                url: "comment/" + qID + "/comment",
                 type: "post",
                 data: {
-                    quote: comment
+                    comment: comment
                 },
                 success: function(re){
-                    if (re.quote) done(null, re.quote)
+                    if (re.comment) done(null, re.comment)
                     else done(re)
                 }
             })
@@ -124,10 +124,10 @@ var bok = function(x){
 
         api.get_comment_comments = function(cID, done){
             $.ajax({
-                url: "quote/" + cID + "/comments",
+                url: "comment/" + cID + "/comments",
                 type: "get",
                 success: function(re){
-                    if (re.quotes) done(null, re.quotes)
+                    if (re.comments) done(null, re.comments)
                     else done({error:"api.get_comment_comments",re:re})
                 }
             })
@@ -135,27 +135,13 @@ var bok = function(x){
 
         api.create_comment_comment = function(cID, comment, done){
             $.ajax({
-                url: "quote/" + cID + "/comment",
+                url: "comment/" + cID + "/comment",
                 type: "post",
                 data: {
-                    quote: comment
+                    comment: comment
                 },
                 success: function(re){
-                    if (re.quote) done(null, re.quote)
-                    else done(re)
-                }
-            })
-        }
-
-        api.upvote_quote = function(qID, done){
-            $.ajax({
-                url: "quote/" + qID + "/upvote",
-                type: "post",
-                data: {
-
-                },
-                success: function(re){
-                    if (re.num) done(null, re.num)
+                    if (re.comment) done(null, re.comment)
                     else done(re)
                 }
             })
@@ -163,7 +149,7 @@ var bok = function(x){
 
         api.upvote_comment = function(cID, done){
             $.ajax({
-                url: "quote/" + cID + "/upvote",
+                url: "comment/" + cID + "/upvote",
                 type: "post",
                 data: {
 
@@ -212,8 +198,8 @@ var bok = function(x){
         }
 
         // mark
-        templates.quotes_box = function(quotes, p, top){
-            var content = templates.quotes(quotes.slice(0, k.page_size))
+        templates.quotes_box = function(comments, p, top){
+            var content = templates.quotes(comments.slice(0, k.page_size))
             var html = "<div data-p='" + p + "' class='boks_quote_box'"
                 + "             style='"
                 + "                   position:absolute;"
@@ -231,7 +217,7 @@ var bok = function(x){
                 +                   content
                 + "             </div>"
                 + "             <div class=''>"
-                + "                 <button class='boks_more_quotes_button " + (quotes.length > 10 ? "boks_green" : "") + "' data-page='0'><i class='icon-chevron-down'></i></button>"
+                + "                 <button class='boks_more_quotes_button " + (comments.length > 10 ? "boks_green" : "") + "' data-page='0'><i class='icon-chevron-down'></i></button>"
                 + "             </div>"
                 + "         </div>"
             return html
@@ -243,30 +229,30 @@ var bok = function(x){
         }
 
         // mark
-        templates.quotes = function(quotes){
+        templates.quotes = function(comments){
             var html = ""
-            for (var i = 0; i < quotes.length; i++){
-                html += templates.quote(quotes[i])
+            for (var i = 0; i < comments.length; i++){
+                html += templates.quote(comments[i])
             }
             return html
         }
 
-        templates.quote = function(quote){
-            var text = templates.replace_text_with_img(quote.quote)
-            var html = "<div data-id='" + quote._id + "' class='boks_quote'>"
+        templates.quote = function(comment){
+            var text = templates.replace_text_with_img(comment.comment)
+            var html = "<div data-id='" + comment._id + "' class='boks_quote'>"
                 + "         <div class='boks_quote_text_box'>"
                 + "             <div class='boks_quote_text'>"
                 +                   text
                 + "             </div>"
                 + "             <div class='boks_quote_created'>"
-                +                   moment(quote.created).format(k.date_format_alt)
+                +                   moment(comment.created).format(k.date_format_alt)
                 + "             </div>"
                 + "             <div class='boks_quote_username'>"
-                +                   quote.username
+                +                   comment.username
                 + "             </div>"
                 + "             <div class='boks_quote_menu'>"
-                + "                 <button class='boks_quote_reply " + (quote.replies > 0 ? "boks_green_underline" : "") + "'><i class='icon-comments-alt'></i>" + quote.replies + "</button>"
-                + "                 <button class='boks_quote_thumbs_up " + (quote.votes > 1 ? "boks_red_underline" : "") + "'><i class='icon-thumbs-up-alt'></i><span class='boks_votes'>" + quote.votes + "</span></button>"
+                + "                 <button class='boks_quote_reply " + (comment.replies > 0 ? "boks_green_underline" : "") + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
+                + "                 <button class='boks_quote_thumbs_up " + (comment.votes > 1 ? "boks_red_underline" : "") + "'><i class='icon-thumbs-up-alt'></i><span class='boks_votes'>" + comment.votes + "</span></button>"
                 + "                 <button class='boks_quote_flag'><i class='icon-flag'></i></button>"
                 + "             </div>"
                 + "             <div class='clear_both'></div>"
@@ -286,22 +272,22 @@ var bok = function(x){
             return html
         }
 
-        templates.comment = function(quote){
-            var text = templates.replace_text_with_img(quote.quote)
-            var html = "<div class='boks_quote_comment' data-id='" + quote._id + "'>"
+        templates.comment = function(comment){
+            var text = templates.replace_text_with_img(comment.comment)
+            var html = "<div class='boks_quote_comment' data-id='" + comment._id + "'>"
                 + "         <div class='boks_quote_comment_text_box'>"
                 + "             <div class='boks_quote_comment_text'>"
                 +                   text
                 + "             </div>"
                 + "             <div class='boks_comment_created'>"
-                +                   moment(quote.created).format(k.date_format_alt)
+                +                   moment(comment.created).format(k.date_format_alt)
                 + "             </div>"
                 + "             <div class='boks_comment_username'>"
-                +                   quote.username
+                +                   comment.username
                 + "             </div>"
                 + "             <div class='boks_comment_menu'>"
-                + "                 <button class='boks_comment_menu_reply " + (quote.replies > 0 ? "boks_green_underline" : "") + "'><i class='icon-comments-alt'></i>" + quote.replies + "</button>"
-                + "                 <button class='boks_comment_menu_thumbs_up " + (quote.votes > 1 ? "boks_red_underline" : "") + "'><i class='icon-thumbs-up-alt'></i><span class='boks_votes'>" + quote.votes + "</span></button>"
+                + "                 <button class='boks_comment_menu_reply " + (comment.replies > 0 ? "boks_green_underline" : "") + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
+                + "                 <button class='boks_comment_menu_thumbs_up " + (comment.votes > 1 ? "boks_red_underline" : "") + "'><i class='icon-thumbs-up-alt'></i><span class='boks_votes'>" + comment.votes + "</span></button>"
                 + "                 <button class='boks_comment_menu_flag'><i class='icon-flag'></i></button>"
                 + "             </div>"
                 + "             <div class='clear_both'></div>"
@@ -330,7 +316,6 @@ var bok = function(x){
         views.init = function(){
             views.load_book(function(er){
                 if (er) o.error({error:"loading book",er:er})
-                // else views.load_quotes(0)
             })
         }
 
@@ -381,12 +366,12 @@ var bok = function(x){
         views.load_paragraph_quotes = function(p, done){
             async.waterfall([
                 function(done){
-                    api.get_book_quotes(o.bID, p, 0, function(er, quotes){
-                        done(er, quotes)
+                    api.get_book_comments(o.bID, p, 0, function(er, comments){
+                        done(er, comments)
                     })
                 },
-                function(quotes, done){
-                    if (quotes.length) views.render_quotes(p, quotes)
+                function(comments, done){
+                    if (comments.length) views.render_quotes(p, comments)
                     done(null)
                 },
             ], function(er, re){
@@ -396,19 +381,19 @@ var bok = function(x){
         }
 
         // mark
-        views.render_quotes = function(p, quotes){
+        views.render_quotes = function(p, comments){
             var paragraph = $("#" + o.bID + " .boks_book p").eq(p)
             var top = paragraph.get(0).offsetTop
-            var html = templates.quotes_box(quotes, p, top)
+            var html = templates.quotes_box(comments, p, top)
             $("#" + o.bID + " .boks_quotes").append(html)
         }
 
-        views.load_quote = function(quote, p, top, done){
+        views.load_quote = function(comment, p, top, done){
             var box = dom.quotes.find(".boks_quote_box[data-p='" + p + "'] .boks_quote_box_quotes")
             if (box.length){
-                box.prepend(templates.quote(quote))
+                box.prepend(templates.quote(comment))
             } else {
-                dom.quotes.append(templates.quotes_box([quote], p, top))
+                dom.quotes.append(templates.quotes_box([comment], p, top))
             }
             done(null)
         }
@@ -418,10 +403,10 @@ var bok = function(x){
             else if (window.getSelection().removeAllRanges) window.getSelection().removeAllRanges()
         }
 
-        views.load_quote_comments = function(box, quotes, done){
+        views.load_quote_comments = function(box, comments, done){
             var html = ""
-            for (var i = 0; i < quotes.length; i++){
-                html += templates.comment(quotes[i])
+            for (var i = 0; i < comments.length; i++){
+                html += templates.comment(comments[i])
             }
             box.html(html).off()
                 .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
@@ -431,8 +416,8 @@ var bok = function(x){
             done(null)
         }
 
-        views.load_quote_comment = function(box, quote){
-            box.prepend(templates.comment(quote)).off()
+        views.load_quote_comment = function(box, comment){
+            box.prepend(templates.comment(comment)).off()
                 .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
                 .on("click", ".boks_comment_menu_reply", bindings.click_comment_reply)
                 .on("click", ".boks_comment_menu_thumbs_up", bindings.click_comment_menu_thumbs_up)
@@ -453,8 +438,8 @@ var bok = function(x){
         }
 
         views.load_new_quote_box = function(p, top){
-            var quote = $(templates.quotes_box([], p, top))
-            dom.quotes.append(quote).find(quote) // have to find quote again, cause if you focus before appending it'll lose focus
+            var comment = $(templates.quotes_box([], p, top))
+            dom.quotes.append(comment).find(comment) // have to find quote again, cause if you focus before appending it'll lose focus
                 .find(".boks_quote_new_quote_box").show()
                 .find(".boks_quote_new_quote_textarea").focus()
         }
@@ -464,32 +449,6 @@ var bok = function(x){
 
     var bindings = (function(){
         var bindings = {}
-
-        // not doing clipping any more
-        // bindings.clip = function(){
-        //     var s = window.getSelection()
-        //     if (s.rangeCount > 0 && s.toString().length){
-        //         var reader = $(this).closest(".boks_reader")
-        //         var book = reader.find(".boks_book")
-        //         var node = $(s.getRangeAt(0).startContainer.parentNode) // todo: error checking for different browsers
-        //         if (book.find(node).length){ // only allow highlight from this book
-        //             var p = node.index()
-        //             var top = node.get(0).offsetTop
-        //             var quote = {
-        //                 quote: s.toString(),
-        //                 p: p
-        //             }
-        //             api.create_quote(o.bID, quote, function(er, quote){
-        //                 if (er && er.loggedin == false) alert("You have to be logged in")
-        //                 else if (er) alert(JSON.stringify(er, 0, 2))
-        //                 else views.load_quote(quote, p, top, function(er){})
-        //             })
-        //             views.clear_selection() // avoids consecutive clicks
-        //         }
-        //     } else {
-        //         alert("Please select some text to quote")
-        //     }
-        // }
 
         bindings.click_paragraph = function(){
             var s = window.getSelection()
@@ -528,12 +487,12 @@ var bok = function(x){
             var box = quote_box.find(".boks_quote_comments")
             async.waterfall([
                 function(done){
-                    api.get_quote_comments(quote_id, function(er, quotes){
-                        done(er, quotes)
+                    api.get_comment_comments(quote_id, function(er, comments){
+                        done(er, comments)
                     })
                 },
-                function(quotes, done){
-                    views.load_quote_comments(box, quotes, function(er){
+                function(comments, done){
+                    views.load_quote_comments(box, comments, function(er){
                         done(er)
                     })
                 },
@@ -555,16 +514,27 @@ var bok = function(x){
             var comment = quote_box.find(".boks_quote_reply_textarea").val()
             var comments_box = quote_box.find(".boks_quote_comments")
             quote_box.find(".boks_quote_reply_box").hide()
-            api.create_quote_comment(quote_id, comment, function(er, quote){
+            api.create_comment_comment(quote_id, comment, function(er, comment){
                 if (er && er.loggedin == false) alert("You have to be logged in")
                 else if (er) alert(JSON.stringify(er, 0, 2))
-                else views.load_quote_comment(comments_box, quote)
+                else views.load_quote_comment(comments_box, comment)
             })
         }
 
         bindings.mouseenter_p = function(){
             var p = $(this).index()
             dom.quotes.find(".boks_quote_box[data-p='" + p + "']").css({
+
+
+
+
+
+
+
+
+
+
+
                 "z-index": 1,
                 "margin-left": "-10px",
                 "border-left": "5px solid #0f0"
@@ -624,16 +594,16 @@ var bok = function(x){
 
         bindings.click_new_quote_post = function(){
             var quote_box = $(this).closest(".boks_quote_box")
-            var comment = quote_box.find(".boks_quote_new_quote_textarea").val()
+            var text = quote_box.find(".boks_quote_new_quote_textarea").val()
             var p = quote_box.attr("data-p")
-            var quote = {
-                quote: comment,
+            var comment = {
+                comment: text,
                 p: p
             }
-            api.create_quote(o.bID, quote, function(er, quote){
+            api.create_comment(o.bID, comment, function(er, comment){
                 if (er && er.loggedin == false) alert("You have to be logged in")
                 else if (er) alert(JSON.stringify(er, 0, 2))
-                else views.load_quote(quote, p, null, function(er){})
+                else views.load_quote(comment, p, null, function(er){})
             })
             var quotes_box = quote_box.find(".boks_quote_box_quotes")
             quote_box.find(".boks_quote_new_quote_box").hide()
@@ -651,7 +621,7 @@ var bok = function(x){
                 var id = $(this).closest(".boks_quote").attr("data-id")
                 var boks_votes = $(this).find(".boks_votes")
                 boks_votes.html(parseInt(boks_votes.html()) + 1)
-                api.upvote_quote(id, function(er, num){
+                api.upvote_comment(id, function(er, num){
                     if (er && er.loggedin == false) alert("You have to be logged in")
                     else if (er) console.log(JSON.stringify(er, 0, 2))
                 })
@@ -691,13 +661,13 @@ var bok = function(x){
             var p = container.attr("data-p")
             async.waterfall([
                 function(done){
-                    api.get_book_quotes(o.bID, p, page, function(er, quotes){
-                        done(er, quotes)
+                    api.get_book_comments(o.bID, p, page, function(er, comments){
+                        done(er, comments)
                     })
                 },
-                function(quotes, done){
-                    if (quotes.length) box.append(templates.quotes(quotes.slice(0, k.page_size)))
-                    if (quotes.length > k.page_size) that.addClass("boks_green")
+                function(comments, done){
+                    if (comments.length) box.append(templates.quotes(comments.slice(0, k.page_size)))
+                    if (comments.length > k.page_size) that.addClass("boks_green")
                     else that.removeClass("boks_green")
                     that.attr("data-page", page)
                     done(null)

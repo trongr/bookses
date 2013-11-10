@@ -23,7 +23,7 @@ var k = {
     localhost: "http://localhost:8080",
     tables: {
         books: "books",
-        quotes: "quotes",
+        comments: "comments",
     },
     page_size: 10,
 }
@@ -201,7 +201,7 @@ var books = module.exports = (function(){
     }
 
     // todo. check other params
-    books.create_quote_validate = function(req, res, next){
+    books.create_comment_validate = function(req, res, next){
         async.waterfall([
             function(done){
                 validate.id(req.params.id, function(er){
@@ -210,19 +210,19 @@ var books = module.exports = (function(){
                 })
             },
             function(done){
-                validate.text_length(req.body.quote, function(er){
+                validate.text_length(req.body.comment, function(er){
                     done(er)
                 })
             }
         ], function(er, re){
             if (er){
-                console.log(JSON.stringify({error:"books.create_quote_validate",er:er}, 0, 2))
-                res.send({error:"create quote",info:er.error})
+                console.log(JSON.stringify({error:"books.create_comment_validate",er:er}, 0, 2))
+                res.send({error:"create comment",info:er.error})
             } else next(null)
         })
     }
 
-    books.create_quote = function(req, res){
+    books.create_comment = function(req, res){
         async.waterfall([
             function(done){
                 DB.get_entry_by_id(k.tables.books, req.params.id, function(er, book){
@@ -233,39 +233,40 @@ var books = module.exports = (function(){
             },
             function(book, done){
                 try {
-                    var quote = {
+                    var comment = {
                         username: req.session.username,
-                        quote: req.body.quote,
+                        comment: req.body.comment,
                         book: book._id.toString(),
                         p: parseInt(req.body.p),
                         created: new Date(),
                         votes: 1,
                         replies: 0,
+                        pop: 1
                     }
-                    DB.create(k.tables.quotes, quote, function(er, quote){
-                        done(er, quote)
+                    DB.create(k.tables.comments, comment, function(er, comment){
+                        done(er, comment)
                     })
                 } catch (er){
                     done({er:"parse int paragraph"})
                 }
             },
-            function(quote, done){
-                done(null, quote)
+            function(comment, done){
+                done(null, comment)
                 DB.update_entry_by_id(k.tables.books, req.params.id, {$inc:{replies:1,pop:1}}, function(er, num){
-                    if (er) console.log(JSON.stringify({error:"books.create_quote",id:req.params.id,er:er}, 0, 2))
+                    if (er) console.log(JSON.stringify({error:"books.create_comment",id:req.params.id,er:er}, 0, 2))
                 })
             }
-        ], function(er, quote){
+        ], function(er, comment){
             if (er){
-                console.log(JSON.stringify({error:"books.create_quote",params:req.params.id,body:req.body,er:er}, 0, 2))
-                res.send({error:"create quote"})
+                console.log(JSON.stringify({error:"books.create_comment",params:req.params.id,body:req.body,er:er}, 0, 2))
+                res.send({error:"create comment"})
             } else {
-                res.send({quote:quote})
+                res.send({comment:comment})
             }
         })
     }
 
-    books.get_book_quotes_validate = function(req, res, next){
+    books.get_book_comments_validate = function(req, res, next){
         async.parallel([
             function(done){
                 validate.id(req.params.id, function(er){
@@ -289,14 +290,14 @@ var books = module.exports = (function(){
             }
         ], function(er, re){
             if (er){
-                console.log(JSON.stringify({error:"books.get_book_quotes_validate",er:er}, 0, 2))
-                res.send({error:"get book quotes"})
+                console.log(JSON.stringify({error:"books.get_book_comments_validate",er:er}, 0, 2))
+                res.send({error:"get book comments"})
             } else next(null)
         })
     }
 
     // mark
-    books.get_book_quotes = function(req, res){
+    books.get_book_comments = function(req, res){
         var book = req.params.id
         var p = req.query.p
         var page = req.query.page
@@ -309,17 +310,17 @@ var books = module.exports = (function(){
             limit: k.page_size + 1,
             skip: page * k.page_size
         }
-        DB.get_entries(k.tables.quotes, query, aux, function(er, entries){
+        DB.get_entries(k.tables.comments, query, aux, function(er, entries){
             if (er){
-                console.log(JSON.stringify({error:"books.get_book_quotes",er:er}, 0, 2))
-                res.send({error:"get book quotes"})
+                console.log(JSON.stringify({error:"books.get_book_comments",er:er}, 0, 2))
+                res.send({error:"get book comments"})
             } else {
-                res.send({quotes:entries})
+                res.send({comments:entries})
             }
         })
     }
 
-    books.create_quote_comment_validate = function(req, res, next){
+    books.create_comment_comment_validate = function(req, res, next){
         async.waterfall([
             function(done){
                 validate.id(req.params.id, function(er){
@@ -327,66 +328,66 @@ var books = module.exports = (function(){
                 })
             },
             function(done){
-                validate.text_length(req.body.quote, function(er){
+                validate.text_length(req.body.comment, function(er){
                     done(er)
                 })
             }
         ], function(er, re){
             if (er){
-                console.log(JSON.stringify({error:"books.create_quote_comment_validate",er:er}, 0, 2))
-                res.send({error:"create quote comment",er:er})
+                console.log(JSON.stringify({error:"books.create_comment_comment_validate",er:er}, 0, 2))
+                res.send({error:"create comment comment",er:er})
             } else next(null)
         })
     }
 
-    books.create_quote_comment = function(req, res){
+    books.create_comment_comment = function(req, res){
         async.waterfall([
             function(done){
-                DB.get_entry_by_id(k.tables.quotes, req.params.id, function(er, quote){
+                DB.get_entry_by_id(k.tables.comments, req.params.id, function(er, comment){
                     if (er) done(er)
-                    else if (quote) done(null, quote)
-                    else done({error:"no such quote"})
+                    else if (comment) done(null, comment)
+                    else done({error:"no such comment"})
                 })
             },
             function(parent, done){
-                var quote = {
+                var comment = {
                     username: req.session.username,
-                    quote: req.body.quote,
+                    comment: req.body.comment,
                     parent: parent._id.toString(),
                     created: new Date(),
                     votes: 1,
                     replies: 0,
                     pop: 1, // pop is the sum of votes and replies, used to sort results
                 }
-                DB.create(k.tables.quotes, quote, function(er, quote){
-                    done(er, parent, quote)
+                DB.create(k.tables.comments, comment, function(er, comment){
+                    done(er, parent, comment)
                 })
             },
-            function(parent, quote, done){
-                DB.update_entry_by_id(k.tables.quotes, parent._id.toString(), {$inc:{replies:1,pop:1}}, function(er, num){
-                    done(er, quote)
+            function(parent, comment, done){
+                DB.update_entry_by_id(k.tables.comments, parent._id.toString(), {$inc:{replies:1,pop:1}}, function(er, num){
+                    done(er, comment)
                 })
             },
-        ], function(er, quote){
+        ], function(er, comment){
             if (er){
-                console.log(JSON.stringify({error:"books.create_quote_quote",params:req.params.id,body:req.body,er:er}, 0, 2))
-                res.send({error:"create quote"})
+                console.log(JSON.stringify({error:"books.create_comment_comment",params:req.params.id,body:req.body,er:er}, 0, 2))
+                res.send({error:"create comment"})
             } else {
-                res.send({quote:quote})
+                res.send({comment:comment})
             }
         })
     }
 
-    books.get_quote_comments_validate = function(req, res, next){
+    books.get_comment_comments_validate = function(req, res, next){
         validate.id(req.params.id, function(er){
             if (er){
-                console.log(JSON.stringify({error:"books.get_quote_comments_validate",er:er}, 0, 2))
-                res.send({error:"get quote comments"})
+                console.log(JSON.stringify({error:"books.get_comment_comments_validate",er:er}, 0, 2))
+                res.send({error:"get comment comments"})
             } else next(null)
         })
     }
 
-    books.get_quote_comments = function(req, res){
+    books.get_comment_comments = function(req, res){
         var query = {
             parent: req.params.id
         }
@@ -394,30 +395,30 @@ var books = module.exports = (function(){
             sort: [["pop","desc"]],
             limit: k.page_size
         }
-        DB.get_entries(k.tables.quotes, query, aux, function(er, entries){
+        DB.get_entries(k.tables.comments, query, aux, function(er, entries){
             if (er){
-                console.log(JSON.stringify({error:"books.get_quote_comments",id:req.params.id,er:er}, 0, 2))
-                res.send({error:"get quote comments"})
+                console.log(JSON.stringify({error:"books.get_comment_comments",id:req.params.id,er:er}, 0, 2))
+                res.send({error:"get comment comments"})
             } else {
-                res.send({quotes:entries})
+                res.send({comments:entries})
             }
         })
     }
 
-    books.upvote_quote_validate = function(req, res, next){
+    books.upvote_comment_validate = function(req, res, next){
         validate.id(req.params.id, function(er){
             if (er){
-                console.log(JSON.stringify({error:"books.upvote_quote_validate",er:er}, 0, 2))
-                res.send({error:"upvote quote"})
+                console.log(JSON.stringify({error:"books.upvote_comment_validate",er:er}, 0, 2))
+                res.send({error:"upvote comment"})
             } else next(null)
         })
     }
 
-    books.upvote_quote = function(req, res){
-        DB.update_entry_by_id(k.tables.quotes, req.params.id, {$inc:{votes:1,pop:1}}, function(er, num){
+    books.upvote_comment = function(req, res){
+        DB.update_entry_by_id(k.tables.comments, req.params.id, {$inc:{votes:1,pop:1}}, function(er, num){
             if (er){
-                console.log(JSON.stringify({error:"books.upvote_quote",id:req.params.id,er:er}, 0, 2))
-                res.send({error:"upvote quote"})
+                console.log(JSON.stringify({error:"books.upvote_comment",id:req.params.id,er:er}, 0, 2))
+                res.send({error:"upvote comment"})
             } else {
                 res.send({num:num})
             }
@@ -488,13 +489,13 @@ var test = (function(){
         })
     }
 
-    test.create_quote = function(){
-        var quote = process.argv[2]
+    test.create_comment = function(){
+        var comment = process.argv[2]
         var p = process.argv[3]
         request.post({
-            url: k.localhost + "/book/525a5c25b79c992d22000004/quote",
+            url: k.localhost + "/book/525a5c25b79c992d22000004/comment",
             form: {
-                quote: quote,
+                comment: comment,
                 p: p
             },
             json: true
@@ -504,9 +505,9 @@ var test = (function(){
         })
     }
 
-    test.get_book_quotes = function(){
+    test.get_book_comments = function(){
         request.get({
-            url: k.localhost + "/book/525a5c25b79c992d22000004/quotes",
+            url: k.localhost + "/book/525a5c25b79c992d22000004/comments",
             json: true,
         }, function(er, res, body){
             if (er) console.log(JSON.stringify(er, 0, 2))
@@ -514,10 +515,10 @@ var test = (function(){
         })
     }
 
-    test.create_quote_comment = function(){
+    test.create_comment_comment = function(){
         var comment = process.argv[2]
         request.post({
-            url: k.localhost + "/quote/525ba6e2fc28df044f000070/comment",
+            url: k.localhost + "/comment/525ba6e2fc28df044f000070/comment",
             form: {
                 comment: comment,
             },
@@ -528,9 +529,9 @@ var test = (function(){
         })
     }
 
-    test.get_quote_comments = function(){
+    test.get_comment_comments = function(){
         request.get({
-            url: k.localhost + "/quote/525b9685fc28df044f000036/comments",
+            url: k.localhost + "/comment/525b9685fc28df044f000036/comments",
             json: true,
         }, function(er, res, body){
             if (er) console.log(JSON.stringify(er, 0, 2))
