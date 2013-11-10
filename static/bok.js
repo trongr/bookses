@@ -66,12 +66,13 @@ var bok = function(x){
         }
 
         // mark
-        api.get_book_quotes = function(bID, p, done){
+        api.get_book_quotes = function(bID, p, page, done){
             $.ajax({
                 url: "book/" + bID + "/quotes",
                 type: "get",
                 data: {
-                    p: p
+                    p: p,
+                    page: page
                 },
                 success: function(re){
                     if (re.quotes) done(null, re.quotes)
@@ -211,6 +212,10 @@ var bok = function(x){
 
         // mark
         templates.quote_box = function(quotes, p, top){
+            var content = ""
+            for (var i = 0; i < quotes.length; i++){
+                content += templates.quote(quotes[i])
+            }
             var html = "<div data-p='" + p + "' class='boks_quote_box'"
                 + "             style='"
                 + "                   position:absolute;"
@@ -225,7 +230,7 @@ var bok = function(x){
                 + "                 <div class='clear_both'></div>"
                 + "             </div>"
                 + "             <div class='boks_quote_box_quotes'>"
-                +                   quotes
+                +                   content
                 + "             </div>"
                 + "             <div class=''>"
                 + "                 <button class='boks_more_quotes_button' data-page='0'><i class='icon-chevron-down'></i></button>"
@@ -355,7 +360,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         views.load_quotes = function(p){
             async.timesSeries(k.page_size, function(i, done){
                 views.load_paragraph_quotes(p + i, function(er){
@@ -367,10 +371,11 @@ var bok = function(x){
             })
         }
 
+        // mark
         views.load_paragraph_quotes = function(p, done){
             async.waterfall([
                 function(done){
-                    api.get_book_quotes(o.bID, p, function(er, quotes){
+                    api.get_book_quotes(o.bID, p, 0, function(er, quotes){
                         done(er, quotes)
                     })
                 },
@@ -387,21 +392,17 @@ var bok = function(x){
         views.render_quotes = function(p, quotes){
             var paragraph = $("#" + o.bID + " .boks_book p").eq(p)
             var top = paragraph.get(0).offsetTop
-            var quotes_box = ""
-            for (var i = 0; i < quotes.length; i++){
-                quotes_box += templates.quote(quotes[i])
-            }
-            $("#" + o.bID + " .boks_quotes").append(templates.quote_box(quotes_box, p, top))
+            $("#" + o.bID + " .boks_quotes").append(templates.quote_box(quotes, p, top))
             // mark
         }
 
+        // mark
         views.load_quote = function(quote, p, top, done){
             var box = dom.quotes.find(".boks_quote_box[data-p='" + p + "'] .boks_quote_box_quotes")
-            var q = templates.quote(quote)
             if (box.length){
-                box.prepend(q)
+                box.prepend(templates.quote(quote))
             } else {
-                dom.quotes.append(templates.quote_box(q, p, top))
+                dom.quotes.append(templates.quote_box([quote], p, top))
             }
             done(null)
         }
@@ -446,7 +447,7 @@ var bok = function(x){
         }
 
         views.load_new_quote_box = function(p, top){
-            var quote = $(templates.quote_box("", p, top))
+            var quote = $(templates.quote_box([], p, top))
             dom.quotes.append(quote).find(quote) // have to find quote again, cause if you focus before appending it'll lose focus
                 .find(".boks_quote_new_quote_box").show()
                 .find(".boks_quote_new_quote_textarea").focus()
