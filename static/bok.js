@@ -7,7 +7,7 @@ var bok = function(x){
 
     var dom = {
         box: o.box,
-        quotes: null,
+        comments: null,
     }
 
     var k = {
@@ -182,7 +182,6 @@ var bok = function(x){
             var html = "<div id='" + o.bID + "' class='boks_reader'>"
                 + "         <div class='boks_reader_menu'>"
                 + "             <button class='boks_book_upvote'><i class='icon-heart-empty'></i></button>"
-                // + "             <button class='boks_clip'><i class='icon-quote-right'></i></button>"
                 + "             <button class='boks_close'><i class='icon-remove'></i></button>"
                 + "         </div>"
                 + "         <div class='boks_reader_content'>"
@@ -190,7 +189,7 @@ var bok = function(x){
                 + "                 <div class='boks_book'>" + text + "</div>"
                 + "             </div>"
                 + "             <div class='boks_reader_right'>"
-                + "                 <div class='boks_quotes'></div>"
+                + "                 <div class='boks_comments'></div>"
                 + "             </div>"
                 + "         </div>"
                 + "     </div>"
@@ -342,7 +341,7 @@ var bok = function(x){
                         .on("click", ".boks_quote_thumbs_up", bindings.click_quote_thumbs_up)
                         .on("click", ".boks_quote_reply_menu_post", bindings.click_quote_reply_post)
                         .on("click", ".boks_more_quotes_button", bindings.click_more_quotes)
-                    dom.quotes = o.box.find(".boks_quotes")
+                    dom.comments = o.box.find(".boks_comments")
                     window.scrollTo(0, 0)
                     done(null)
                 },
@@ -385,15 +384,15 @@ var bok = function(x){
             var paragraph = $("#" + o.bID + " .boks_book p").eq(p)
             var top = paragraph.get(0).offsetTop
             var html = templates.quotes_box(comments, p, top)
-            $("#" + o.bID + " .boks_quotes").append(html)
+            $("#" + o.bID + " .boks_comments").append(html)
         }
 
         views.load_quote = function(comment, p, top, done){
-            var box = dom.quotes.find(".boks_quote_box[data-p='" + p + "'] .boks_quote_box_quotes")
+            var box = dom.comments.find(".boks_quote_box[data-p='" + p + "'] .boks_quote_box_quotes")
             if (box.length){
                 box.prepend(templates.quote(comment))
             } else {
-                dom.quotes.append(templates.quotes_box([comment], p, top))
+                dom.comments.append(templates.quotes_box([comment], p, top))
             }
             done(null)
         }
@@ -439,7 +438,7 @@ var bok = function(x){
 
         views.load_new_quote_box = function(p, top){
             var comment = $(templates.quotes_box([], p, top))
-            dom.quotes.append(comment).find(comment) // have to find quote again, cause if you focus before appending it'll lose focus
+            dom.comments.append(comment).find(comment) // have to find quote again, cause if you focus before appending it'll lose focus
                 .find(".boks_quote_new_quote_box").show()
                 .find(".boks_quote_new_quote_textarea").focus()
         }
@@ -457,7 +456,7 @@ var bok = function(x){
             } else {
                 var p = $(this).index()
                 var top = $(this).get(0).offsetTop
-                var quote_box = dom.quotes.find(".boks_quote_box[data-p='" + p + "']")
+                var quote_box = dom.comments.find(".boks_quote_box[data-p='" + p + "']")
                 if (quote_box.length){
                     quote_box.find(".boks_quote_new_quote_box").show()
                         .find(".boks_quote_new_quote_textarea").focus().val("")
@@ -523,7 +522,7 @@ var bok = function(x){
 
         bindings.mouseenter_p = function(){
             var p = $(this).index()
-            dom.quotes.find(".boks_quote_box[data-p='" + p + "']").css({
+            dom.comments.find(".boks_quote_box[data-p='" + p + "']").css({
 
 
 
@@ -545,7 +544,7 @@ var bok = function(x){
 
         bindings.mouseleave_p = function(){
             var p = $(this).index()
-            dom.quotes.find(".boks_quote_box[data-p='" + p + "']").css({
+            dom.comments.find(".boks_quote_box[data-p='" + p + "']").css({
                 "z-index": 0,
                 "margin-left": "0",
                 "border-left": "none"
