@@ -197,8 +197,8 @@ var bok = function(x){
         }
 
         // mark
-        templates.quotes_box = function(comments, p, top){
-            var content = templates.quotes(comments.slice(0, k.page_size))
+        templates.comments_box = function(comments, p, top){
+            var content = templates.comments(comments.slice(0, k.page_size))
             var html = "<div data-p='" + p + "' class='boks_quote_box'"
                 + "             style='"
                 + "                   position:absolute;"
@@ -228,7 +228,7 @@ var bok = function(x){
         }
 
         // mark
-        templates.quotes = function(comments){
+        templates.comments = function(comments){
             var html = ""
             for (var i = 0; i < comments.length; i++){
                 html += templates.quote(comments[i])
@@ -383,7 +383,7 @@ var bok = function(x){
         views.render_quotes = function(p, comments){
             var paragraph = $("#" + o.bID + " .boks_book p").eq(p)
             var top = paragraph.get(0).offsetTop
-            var html = templates.quotes_box(comments, p, top)
+            var html = templates.comments_box(comments, p, top)
             $("#" + o.bID + " .boks_comments").append(html)
         }
 
@@ -392,14 +392,9 @@ var bok = function(x){
             if (box.length){
                 box.prepend(templates.quote(comment))
             } else {
-                dom.comments.append(templates.quotes_box([comment], p, top))
+                dom.comments.append(templates.comments_box([comment], p, top))
             }
             done(null)
-        }
-
-        views.clear_selection = function(){
-            if (window.getSelection().empty) window.getSelection().empty()
-            else if (window.getSelection().removeAllRanges) window.getSelection().removeAllRanges()
         }
 
         views.load_quote_comments = function(box, comments, done){
@@ -437,7 +432,7 @@ var bok = function(x){
         }
 
         views.load_new_quote_box = function(p, top){
-            var comment = $(templates.quotes_box([], p, top))
+            var comment = $(templates.comments_box([], p, top))
             dom.comments.append(comment).find(comment) // have to find quote again, cause if you focus before appending it'll lose focus
                 .find(".boks_quote_new_quote_box").show()
                 .find(".boks_quote_new_quote_textarea").focus()
@@ -604,7 +599,6 @@ var bok = function(x){
                 else if (er) alert(JSON.stringify(er, 0, 2))
                 else views.load_quote(comment, p, null, function(er){})
             })
-            var quotes_box = quote_box.find(".boks_quote_box_quotes")
             quote_box.find(".boks_quote_new_quote_box").hide()
         }
 
@@ -665,7 +659,7 @@ var bok = function(x){
                     })
                 },
                 function(comments, done){
-                    if (comments.length) box.append(templates.quotes(comments.slice(0, k.page_size)))
+                    if (comments.length) box.append(templates.comments(comments.slice(0, k.page_size)))
                     if (comments.length > k.page_size) that.addClass("boks_green")
                     else that.removeClass("boks_green")
                     that.attr("data-page", page)
