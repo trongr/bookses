@@ -102,7 +102,7 @@ var bok = function(x){
                 url: "quote/" + qID + "/comments",
                 type: "get",
                 success: function(re){
-                    if (re.comments) done(null, re.comments)
+                    if (re.quotes) done(null, re.quotes)
                     else done({error:"api.get_quote_comments",re:re})
                 }
             })
@@ -113,10 +113,10 @@ var bok = function(x){
                 url: "quote/" + qID + "/comment",
                 type: "post",
                 data: {
-                    comment: comment
+                    quote: comment
                 },
                 success: function(re){
-                    if (re.comment) done(null, re.comment)
+                    if (re.quote) done(null, re.quote)
                     else done(re)
                 }
             })
@@ -286,22 +286,22 @@ var bok = function(x){
             return html
         }
 
-        templates.comment = function(comment){
-            var text = templates.replace_text_with_img(comment.comment)
-            var html = "<div class='boks_quote_comment' data-id='" + comment._id + "'>"
+        templates.comment = function(quote){
+            var text = templates.replace_text_with_img(quote.quote)
+            var html = "<div class='boks_quote_comment' data-id='" + quote._id + "'>"
                 + "         <div class='boks_quote_comment_text_box'>"
                 + "             <div class='boks_quote_comment_text'>"
                 +                   text
                 + "             </div>"
                 + "             <div class='boks_comment_created'>"
-                +                   moment(comment.created).format(k.date_format_alt)
+                +                   moment(quote.created).format(k.date_format_alt)
                 + "             </div>"
                 + "             <div class='boks_comment_username'>"
-                +                   comment.username
+                +                   quote.username
                 + "             </div>"
                 + "             <div class='boks_comment_menu'>"
-                + "                 <button class='boks_comment_menu_reply " + (comment.replies > 0 ? "boks_green_underline" : "") + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
-                + "                 <button class='boks_comment_menu_thumbs_up " + (comment.votes > 1 ? "boks_red_underline" : "") + "'><i class='icon-thumbs-up-alt'></i><span class='boks_votes'>" + comment.votes + "</span></button>"
+                + "                 <button class='boks_comment_menu_reply " + (quote.replies > 0 ? "boks_green_underline" : "") + "'><i class='icon-comments-alt'></i>" + quote.replies + "</button>"
+                + "                 <button class='boks_comment_menu_thumbs_up " + (quote.votes > 1 ? "boks_red_underline" : "") + "'><i class='icon-thumbs-up-alt'></i><span class='boks_votes'>" + quote.votes + "</span></button>"
                 + "                 <button class='boks_comment_menu_flag'><i class='icon-flag'></i></button>"
                 + "             </div>"
                 + "             <div class='clear_both'></div>"
@@ -418,10 +418,10 @@ var bok = function(x){
             else if (window.getSelection().removeAllRanges) window.getSelection().removeAllRanges()
         }
 
-        views.load_quote_comments = function(box, comments, done){
+        views.load_quote_comments = function(box, quotes, done){
             var html = ""
-            for (var i = 0; i < comments.length; i++){
-                html += templates.comment(comments[i])
+            for (var i = 0; i < quotes.length; i++){
+                html += templates.comment(quotes[i])
             }
             box.html(html).off()
                 .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
@@ -431,8 +431,8 @@ var bok = function(x){
             done(null)
         }
 
-        views.load_quote_comment = function(box, comment){
-            box.prepend(templates.comment(comment)).off()
+        views.load_quote_comment = function(box, quote){
+            box.prepend(templates.comment(quote)).off()
                 .on("click", ".boks_quote_comment_text", bindings.click_comment_text)
                 .on("click", ".boks_comment_menu_reply", bindings.click_comment_reply)
                 .on("click", ".boks_comment_menu_thumbs_up", bindings.click_comment_menu_thumbs_up)
@@ -528,12 +528,12 @@ var bok = function(x){
             var box = quote_box.find(".boks_quote_comments")
             async.waterfall([
                 function(done){
-                    api.get_quote_comments(quote_id, function(er, comments){
-                        done(er, comments)
+                    api.get_quote_comments(quote_id, function(er, quotes){
+                        done(er, quotes)
                     })
                 },
-                function(comments, done){
-                    views.load_quote_comments(box, comments, function(er){
+                function(quotes, done){
+                    views.load_quote_comments(box, quotes, function(er){
                         done(er)
                     })
                 },
@@ -555,10 +555,10 @@ var bok = function(x){
             var comment = quote_box.find(".boks_quote_reply_textarea").val()
             var comments_box = quote_box.find(".boks_quote_comments")
             quote_box.find(".boks_quote_reply_box").hide()
-            api.create_quote_comment(quote_id, comment, function(er, comment){
+            api.create_quote_comment(quote_id, comment, function(er, quote){
                 if (er && er.loggedin == false) alert("You have to be logged in")
                 else if (er) alert(JSON.stringify(er, 0, 2))
-                else views.load_quote_comment(comments_box, comment)
+                else views.load_quote_comment(comments_box, quote)
             })
         }
 

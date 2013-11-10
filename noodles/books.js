@@ -328,7 +328,7 @@ var books = module.exports = (function(){
                 })
             },
             function(done){
-                validate.text_length(req.body.comment, function(er){
+                validate.text_length(req.body.quote, function(er){
                     done(er)
                 })
             }
@@ -349,31 +349,31 @@ var books = module.exports = (function(){
                     else done({error:"no such quote"})
                 })
             },
-            function(quote, done){
-                var comment = {
+            function(parent, done){
+                var quote = {
                     username: req.session.username,
-                    comment: req.body.comment,
-                    quote: quote._id.toString(),
+                    quote: req.body.quote,
+                    parent: parent._id.toString(),
                     created: new Date(),
                     votes: 1,
                     replies: 0,
                     pop: 1, // pop is the sum of votes and replies, used to sort results
                 }
-                DB.create(k.tables.comments, comment, function(er, comment){
-                    done(er, quote, comment)
+                DB.create(k.tables.quotes, quote, function(er, quote){
+                    done(er, parent, quote)
                 })
             },
-            function(quote, comment, done){
-                DB.update_entry_by_id(k.tables.quotes, quote._id.toString(), {$inc:{replies:1,pop:1}}, function(er, num){
-                    done(er, comment)
+            function(parent, quote, done){
+                DB.update_entry_by_id(k.tables.quotes, parent._id.toString(), {$inc:{replies:1,pop:1}}, function(er, num){
+                    done(er, quote)
                 })
             },
-        ], function(er, comment){
+        ], function(er, quote){
             if (er){
-                console.log(JSON.stringify({error:"books.create_quote_comment",params:req.params.id,body:req.body,er:er}, 0, 2))
-                res.send({error:"create comment"})
+                console.log(JSON.stringify({error:"books.create_quote_quote",params:req.params.id,body:req.body,er:er}, 0, 2))
+                res.send({error:"create quote"})
             } else {
-                res.send({comment:comment})
+                res.send({quote:quote})
             }
         })
     }
@@ -389,18 +389,18 @@ var books = module.exports = (function(){
 
     books.get_quote_comments = function(req, res){
         var query = {
-            quote: req.params.id
+            parent: req.params.id
         }
         var aux = {
             sort: [["pop","desc"]],
             limit: k.page_size
         }
-        DB.get_entries(k.tables.comments, query, aux, function(er, entries){
+        DB.get_entries(k.tables.quotes, query, aux, function(er, entries){
             if (er){
                 console.log(JSON.stringify({error:"books.get_quote_comments",id:req.params.id,er:er}, 0, 2))
                 res.send({error:"get quote comments"})
             } else {
-                res.send({comments:entries})
+                res.send({quotes:entries})
             }
         })
     }
