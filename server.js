@@ -73,9 +73,9 @@ server.post("/quote/:id/comment", users.authenticate, books.create_quote_comment
 server.get("/quote/:id/comments", books.get_quote_comments_validate, books.get_quote_comments)
 server.post("/quote/:id/upvote", users.authenticate, books.upvote_quote_validate, books.upvote_quote)
 
-server.post("/comment/:id/comment", users.authenticate, books.create_comment_comment_validate, books.create_comment_comment)
-server.get("/comment/:id/comments", books.get_comment_comments_validate, books.get_comment_comments)
-server.post("/comment/:id/upvote", users.authenticate, books.upvote_comment_validate, books.upvote_comment)
+// server.post("/comment/:id/comment", users.authenticate, books.create_comment_comment_validate, books.create_comment_comment)
+// server.get("/comment/:id/comments", books.get_comment_comments_validate, books.get_comment_comments)
+// server.post("/comment/:id/upvote", users.authenticate, books.upvote_comment_validate, books.upvote_comment)
 
 server.post("/user/:username/register", users.create_user_validate, users.create_user)
 server.post("/user/:username/login", users.login_validate, users.login)

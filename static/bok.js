@@ -124,10 +124,10 @@ var bok = function(x){
 
         api.get_comment_comments = function(cID, done){
             $.ajax({
-                url: "comment/" + cID + "/comments",
+                url: "quote/" + cID + "/comments",
                 type: "get",
                 success: function(re){
-                    if (re.comments) done(null, re.comments)
+                    if (re.quotes) done(null, re.quotes)
                     else done({error:"api.get_comment_comments",re:re})
                 }
             })
@@ -135,13 +135,13 @@ var bok = function(x){
 
         api.create_comment_comment = function(cID, comment, done){
             $.ajax({
-                url: "comment/" + cID + "/comment",
+                url: "quote/" + cID + "/comment",
                 type: "post",
                 data: {
-                    comment: comment
+                    quote: comment
                 },
                 success: function(re){
-                    if (re.comment) done(null, re.comment)
+                    if (re.quote) done(null, re.quote)
                     else done(re)
                 }
             })
@@ -163,7 +163,7 @@ var bok = function(x){
 
         api.upvote_comment = function(cID, done){
             $.ajax({
-                url: "comment/" + cID + "/upvote",
+                url: "quote/" + cID + "/upvote",
                 type: "post",
                 data: {
 

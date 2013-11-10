@@ -24,7 +24,6 @@ var k = {
     tables: {
         books: "books",
         quotes: "quotes",
-        comments: "comments",
     },
     page_size: 10,
 }
@@ -405,91 +404,6 @@ var books = module.exports = (function(){
         })
     }
 
-    books.create_comment_comment_validate = function(req, res, next){
-        async.waterfall([
-            function(done){
-                validate.id(req.params.id, function(er){
-                    done(er)
-                })
-            },
-            function(done){
-                validate.text_length(req.body.comment, function(er){
-                    done(er)
-                })
-            }
-        ], function(er, re){
-            if (er){
-                console.log(JSON.stringify({error:"books.create_comment_comment_validate",er:er}, 0, 2))
-                res.send({error:"create comment comment",er:er})
-            } else next(null)
-        })
-    }
-
-    books.create_comment_comment = function(req, res){
-        async.waterfall([
-            function(done){
-                DB.get_entry_by_id(k.tables.comments, req.params.id, function(er, comment){
-                    if (er) done(er)
-                    else if (comment) done(null, comment)
-                    else done({error:"no such comment"})
-                })
-            },
-            function(parent, done){
-                var comment = {
-                    username: req.session.username,
-                    comment: req.body.comment,
-                    parent: parent._id.toString(),
-                    created: new Date(),
-                    votes: 1,
-                    replies: 0,
-                    pop: 1, // pop = votes + replies, used to sort results
-                }
-                DB.create(k.tables.comments, comment, function(er, comment){
-                    done(er, parent, comment)
-                })
-            },
-            function(parent, comment, done){
-                DB.update_entry_by_id("comments", parent._id.toString(), {$inc:{replies:1,pop:1}}, function(er, num){
-                    done(er, comment)
-                })
-            },
-        ], function(er, comment){
-            if (er){
-                console.log(JSON.stringify({error:"books.create_comment_comment",params:req.params.id,body:req.body,er:er}, 0, 2))
-                res.send({error:"create comment"})
-            } else {
-                res.send({comment:comment})
-            }
-        })
-    }
-
-    books.get_comment_comments_validate = function(req, res, next){
-        validate.id(req.params.id, function(er){
-            if (er){
-                console.log(JSON.stringify({error:"books.get_comment_comments_validate",er:er}, 0, 2))
-                res.send({error:"get comment comments"})
-            } else next(null)
-        })
-    }
-
-    books.get_comment_comments = function(req, res){
-        var query = {
-            parent: req.params.id
-        }
-        var aux = {
-            sort: [["pop","desc"]],
-            limit: k.page_size
-        }
-        DB.get_entries(k.tables.comments, query, aux, function(er, entries){
-            if (er){
-                console.log(JSON.stringify({error:"books.get_comment_comments",id:req.params.id,er:er}, 0, 2))
-                res.send({error:"get comment comments"})
-            } else {
-                res.send({comments:entries})
-            }
-        })
-    }
-
     books.upvote_quote_validate = function(req, res, next){
         validate.id(req.params.id, function(er){
             if (er){
@@ -504,26 +418,6 @@ var books = module.exports = (function(){
             if (er){
                 console.log(JSON.stringify({error:"books.upvote_quote",id:req.params.id,er:er}, 0, 2))
                 res.send({error:"upvote quote"})
-            } else {
-                res.send({num:num})
-            }
-        })
-    }
-
-    books.upvote_comment_validate = function(req, res, next){
-        validate.id(req.params.id, function(er){
-            if (er){
-                console.log(JSON.stringify({error:"books.upvote_comment_validate",er:er}, 0, 2))
-                res.send({error:"upvote comment"})
-            } else next(null)
-        })
-    }
-
-    books.upvote_comment = function(req, res){
-        DB.update_entry_by_id("comments", req.params.id, {$inc:{votes:1,pop:1}}, function(er, num){
-            if (er){
-                console.log(JSON.stringify({error:"books.upvote_comment",id:req.params.id,er:er}, 0, 2))
-                res.send({error:"upvote comment"})
             } else {
                 res.send({num:num})
             }
