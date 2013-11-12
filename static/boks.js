@@ -13,7 +13,7 @@ var bok = function(x){
     var k = {
         static_public: "static/public",
         date_format: "D MMMM YYYY",
-        date_format_alt: "llll",
+        date_format_alt: "h:mm A D MMM YYYY",
         page_size: 10,
     }
 
