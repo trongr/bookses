@@ -200,11 +200,11 @@ var books = module.exports = (function(){
         })
     }
 
-    // todo. check other params
+    // mark
     books.create_comment_validate = function(req, res, next){
         async.waterfall([
             function(done){
-                validate.id(req.params.id, function(er){
+                validate.id(req.body.book, function(er){
                     if (er) done({error:"invalid id"})
                     else done(null)
                 })
@@ -225,19 +225,13 @@ var books = module.exports = (function(){
     books.create_comment = function(req, res){
         async.waterfall([
             function(done){
-                DB.get_entry_by_id(k.tables.books, req.params.id, function(er, book){
-                    if (er) done(er)
-                    else if (book) done(null, book)
-                    else done({error:"no such book"})
-                })
-            },
-            function(book, done){
                 try {
                     var comment = {
                         username: req.session.username,
                         comment: req.body.comment,
-                        book: book._id.toString(),
+                        book: req.body.book,
                         p: parseInt(req.body.p),
+                        parent: req.body.parent,
                         created: new Date(),
                         votes: 1,
                         replies: 0,
@@ -298,17 +292,14 @@ var books = module.exports = (function(){
 
     // mark
     books.get_book_comments = function(req, res){
-        var book = req.params.id
-        var p = req.query.p
-        var page = req.query.page
         var query = {
-            book: book,
-            p: p
+            book: req.params.id,
+            p: req.query.p
         }
         var aux = {
             sort: [["pop","desc"]],
             limit: k.page_size + 1,
-            skip: page * k.page_size
+            skip: req.query.page * k.page_size
         }
         DB.get_entries(k.tables.comments, query, aux, function(er, entries){
             if (er){
@@ -379,7 +370,20 @@ var books = module.exports = (function(){
     }
 
     books.get_comment_comments_validate = function(req, res, next){
-        validate.id(req.params.id, function(er){
+        async.parallel([
+            function(done){
+                validate.id(req.params.id, function(er){
+                    done(er)
+                })
+            },
+            function(done){
+                var page = req.query.page || 0
+                validate.integer(page, function(er){
+                    if (er) res.send({error:"invalid page",er:er})
+                    else next(null)
+                })
+            }
+        ], function(er, re){
             if (er){
                 console.log(JSON.stringify({error:"books.get_comment_comments_validate",er:er}, 0, 2))
                 res.send({error:"get comment comments"})
@@ -393,7 +397,8 @@ var books = module.exports = (function(){
         }
         var aux = {
             sort: [["pop","desc"]],
-            limit: k.page_size
+            limit: k.page_size + 1,
+            skip: req.query.page * k.page_size
         }
         DB.get_entries(k.tables.comments, query, aux, function(er, entries){
             if (er){

@@ -63,11 +63,10 @@ server.post("/bug", function(req, res){
 server.post("/book", users.authenticate, books.create_book_validate, books.create_book)
 server.get("/books", books.get_all_books_validate, books.get_all_books)
 server.get("/book/:id", books.get_book_by_id_validate, books.get_book_by_id)
-
-server.post("/book/:id/comment", users.authenticate, books.create_comment_validate, books.create_comment)
-server.get("/book/:id/comments", books.get_book_comments_validate, books.get_book_comments)
-
 server.post("/book/:id/like", users.authenticate, books.like_book_validate, books.like_book)
+
+server.post("/comment", users.authenticate, books.create_comment_validate, books.create_comment)
+server.get("/book/:id/comments", books.get_book_comments_validate, books.get_book_comments)
 
 server.post("/comment/:id/comment", users.authenticate, books.create_comment_comment_validate, books.create_comment_comment)
 server.get("/comment/:id/comments", books.get_comment_comments_validate, books.get_comment_comments)
