@@ -7,6 +7,7 @@ var bok = function(x){
     var dom = {
         box: x.box,
         comments: null,
+        clink: $("#clink")[0]
     }
 
     var k = {
@@ -168,7 +169,7 @@ var bok = function(x){
         templates.comments_box = function(comments, p, top, parentid){
             var content = templates.comments(comments.slice(0, k.page_size))
             var style = (top ? "style='position:absolute;top:" + top + ";'" : "")
-            var datap = (p ? "data-p='" + p + "'" : "")
+            var datap = ((p || p == 0) ? "data-p='" + p + "'" : "")
             var parent = (parentid ? "data-parent='" + parentid + "'" : "")
             var more_comments = (comments.length > 10 ? "" : "boks_hide")
             var html = "<div class='boks_comments_box' " + parent + " " + datap + " " + style + ">"
@@ -199,7 +200,6 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.comment = function(comment){
             var text = templates.replace_text_with_img(comment.comment)
             var has_replies = (comment.replies > 0 ? "boks_green_underline" : "")
@@ -257,6 +257,7 @@ var bok = function(x){
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
                         .on("mouseenter", ".boks_text p", bindings.mouseenter_p)
                         .on("mouseleave", ".boks_text p", bindings.mouseleave_p)
+                        // .on("mouseenter", ".boks_content_right > .boks_comments_box", bindings.mouseenter_top_level_comments_box)
                     //     .on("mouseenter", ".boks_comments_box", bindings.mouseenter_quote_box)
                     //     .on("mouseleave", ".boks_comments_box", bindings.mouseleave_quote_box)
                     //     .on("click", ".boks_quote_thumbs_up", bindings.click_quote_thumbs_up)
@@ -283,7 +284,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         views.load_paragraph_comments = function(p, done){
             async.waterfall([
                 function(done){
@@ -326,6 +326,7 @@ var bok = function(x){
         //     box.prepend(templates.comment(comment))
         // }
 
+        // mark
         views.load_new_comments_box = function(p, top, parent){
             var comment = $(templates.comments_box([], p, top, parent))
             dom.comments.append(comment).find(comment) // have to find quote again, cause if you focus before appending it'll lose focus
@@ -417,7 +418,6 @@ var bok = function(x){
         //     })
         // }
 
-        // mark
         bindings.mouseenter_p = function(){
             var p = $(this).index()
             dom.comments.find(".boks_comments_box[data-p='" + p + "']").css({
@@ -434,7 +434,7 @@ var bok = function(x){
             dom.comments.find(".boks_comments_box[data-p='" + p + "']").css({
                 "z-index": 0,
                 "margin-left": "0",
-                "border-left": "none"
+                "border-left": "none",
             })
         }
 
@@ -546,6 +546,10 @@ var bok = function(x){
         //     ], function(er, re){
         //         if (er) console.log(JSON.stringify(({error:"bindings.click_more_quotes",er:er}), 0, 2))
         //     })
+        // }
+
+        // bindings.mouseenter_top_level_comments_box = function(){
+        //     dom.clink.play()
         // }
 
         return bindings
