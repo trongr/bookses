@@ -114,7 +114,7 @@ button:hover {
 
 .boks_content_right > .boks_comments_box:hover {
     box-shadow: 0 0 20px 5px #999;
-    z-index: 1;
+    z-index: 1 !important;
 }
 
 .boks_img {

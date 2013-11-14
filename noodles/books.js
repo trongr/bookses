@@ -205,9 +205,17 @@ var books = module.exports = (function(){
         async.waterfall([
             function(done){
                 validate.id(req.body.book, function(er){
-                    if (er) done({error:"invalid id"})
+                    if (er) done({error:"invalid id",book:req.body.book,er:er})
                     else done(null)
                 })
+            },
+            function(done){
+                if (req.body.parent){
+                    validate.id(req.body.parent, function(er){
+                        if (er) done({error:"invalid id",parent:req.body.parent,er:er})
+                        else done(null)
+                    })
+                } else done(null)
             },
             function(done){
                 validate.text_length(req.body.comment, function(er){
@@ -246,8 +254,11 @@ var books = module.exports = (function(){
             },
             function(comment, done){
                 done(null, comment)
-                DB.update_entry_by_id(k.tables.books, req.params.id, {$inc:{replies:1,pop:1}}, function(er, num){
-                    if (er) console.log(JSON.stringify({error:"books.create_comment",id:req.params.id,er:er}, 0, 2))
+                if (req.body.book) DB.update_entry_by_id(k.tables.books, req.body.book, {$inc:{replies:1,pop:1}}, function(er, num){
+                    if (er) console.log(JSON.stringify({error:"books.create_comment: updating book pop",id:req.body.book,er:er}, 0, 2))
+                })
+                if (req.body.parent) DB.update_entry_by_id(k.tables.comments, req.body.parent, {$inc:{replies:1,pop:1}}, function(er, num){
+                    if (er) console.log(JSON.stringify({error:"books.create_comment: updating parent pop",id:req.body.parent,er:er}, 0, 2))
                 })
             }
         ], function(er, comment){

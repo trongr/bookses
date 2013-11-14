@@ -111,34 +111,6 @@ var bok = function(x){
             })
         }
 
-        api.create_comment_comment = function(qID, comment, done){
-            $.ajax({
-                url: "comment/" + qID + "/comment",
-                type: "post",
-                data: {
-                    comment: comment
-                },
-                success: function(re){
-                    if (re.comment) done(null, re.comment)
-                    else done(re)
-                }
-            })
-        }
-
-        api.create_comment_comment = function(cID, comment, done){
-            $.ajax({
-                url: "comment/" + cID + "/comment",
-                type: "post",
-                data: {
-                    comment: comment
-                },
-                success: function(re){
-                    if (re.comment) done(null, re.comment)
-                    else done(re)
-                }
-            })
-        }
-
         api.upvote_comment = function(cID, done){
             $.ajax({
                 url: "comment/" + cID + "/upvote",
@@ -230,6 +202,8 @@ var bok = function(x){
         // mark
         templates.comment = function(comment){
             var text = templates.replace_text_with_img(comment.comment)
+            var has_replies = (comment.replies > 0 ? "boks_green_underline" : "")
+            var has_votes = (comment.votes > 1 ? "boks_red_underline" : "")
             var html = "<div class='boks_comment' data-id='" + comment._id + "'>"
                 + "         <div class='boks_comment_text_box'>"
                 + "             <div class='boks_comment_text'>"
@@ -242,8 +216,8 @@ var bok = function(x){
                 +                   comment.username
                 + "             </div>"
                 + "             <div class='boks_comment_menu'>"
-                + "                 <button class='boks_comment_reply " + (comment.replies > 0 ? "boks_green_underline" : "") + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
-                + "                 <button class='boks_comment_thumbs_up " + (comment.votes > 1 ? "boks_red_underline" : "") + "'><i class='icon-thumbs-up-alt'></i><span class='boks_comment_votes'>" + comment.votes + "</span></button>"
+                + "                 <button class='boks_comment_reply " + has_replies + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
+                + "                 <button class='boks_comment_thumbs_up " + has_votes + "'><i class='icon-thumbs-up-alt'></i><span class='boks_comment_votes'>" + comment.votes + "</span></button>"
                 + "                 <button class='boks_comment_flag'><i class='icon-flag'></i></button>"
                 + "             </div>"
                 + "             <div class='clear_both'></div>"
@@ -281,8 +255,8 @@ var bok = function(x){
                         .on("click", ".boks_new_comment_post", bindings.click_new_comment_post)
                         .on("click", ".boks_comment_text", bindings.click_comment_text)
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
-                    //     .on("mouseenter", ".boks_text p", bindings.mouseenter_p)
-                    //     .on("mouseleave", ".boks_text p", bindings.mouseleave_p)
+                        .on("mouseenter", ".boks_text p", bindings.mouseenter_p)
+                        .on("mouseleave", ".boks_text p", bindings.mouseleave_p)
                     //     .on("mouseenter", ".boks_comments_box", bindings.mouseenter_quote_box)
                     //     .on("mouseleave", ".boks_comments_box", bindings.mouseleave_quote_box)
                     //     .on("click", ".boks_quote_thumbs_up", bindings.click_quote_thumbs_up)
@@ -298,40 +272,38 @@ var bok = function(x){
             })
         }
 
-        // views.load_quotes = function(p){
-        //     async.timesSeries(k.page_size, function(i, done){
-        //         views.load_paragraph_quotes(p + i, function(er){
-        //             if (er) console.log(JSON.stringify(er, 0, 2))
-        //             done(null)
-        //         })
-        //     }, function(er, re){
-        //         if (er) console.log(JSON.stringify({error:"views.load_quotes",er:er}, 0, 2))
-        //     })
-        // }
+        views.load_book_comments = function(p){
+            async.timesSeries(k.page_size, function(i, done){
+                views.load_paragraph_comments(p + i, function(er){
+                    if (er) console.log(JSON.stringify(er, 0, 2))
+                    done(null)
+                })
+            }, function(er, re){
+                if (er) console.log(JSON.stringify({error:"views.load_book_comments",er:er}, 0, 2))
+            })
+        }
 
-        // views.load_paragraph_quotes = function(p, done){
-        //     async.waterfall([
-        //         function(done){
-        //             api.get_book_comments(o.bID, p, 0, function(er, comments){
-        //                 done(er, comments)
-        //             })
-        //         },
-        //         function(comments, done){
-        //             if (comments.length) views.render_quotes(p, comments)
-        //             done(null)
-        //         },
-        //     ], function(er, re){
-        //         if (er) done({error:"views.load_paragraph_quotes",er:er})
-        //         else done(null)
-        //     })
-        // }
-
-        // views.render_quotes = function(p, comments){
-        //     var paragraph = $("#" + o.bID + " .boks_text p").eq(p)
-        //     var top = paragraph.get(0).offsetTop
-        //     var html = templates.comments_box(comments, p, top)
-        //     dom.comments.append(html)
-        // }
+        // mark
+        views.load_paragraph_comments = function(p, done){
+            async.waterfall([
+                function(done){
+                    api.get_book_comments(o.bID, p, 0, function(er, comments){
+                        done(er, comments)
+                    })
+                },
+                function(comments, done){
+                    if (comments.length){
+                        var paragraph = $("#" + o.bID + " .boks_text p").eq(p)
+                        var top = paragraph.get(0).offsetTop
+                        dom.comments.append(templates.comments_box(comments, p, top, null))
+                    }
+                    done(null)
+                },
+            ], function(er, re){
+                if (er) done({error:"views.load_paragraph_comments",er:er})
+                else done(null)
+            })
+        }
 
         // views.load_quote_comment = function(box, comment){
         //     box.prepend(templates.comment(comment)).off()
@@ -411,21 +383,6 @@ var bok = function(x){
             }
         }
 
-        // bindings.mouseenter_quote_box = function(){
-        //     $(this).css({
-        //         "z-index": 1,
-        //         "margin-left": "-10px"
-        //     })
-        // }
-
-        // bindings.mouseleave_quote_box = function(){
-        //     $(this).css({
-        //         "z-index": 0,
-        //         "margin-left": 0
-        //     })
-        // }
-
-        // mark
         bindings.click_comment_text = function(){
             var comment_box = $(this).closest(".boks_comment")
             var id = comment_box.attr("data-id")
@@ -435,7 +392,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         bindings.click_comment_reply = function(){
             var comment_box = $(this).closest(".boks_comment")
             var id = comment_box.attr("data-id")
@@ -461,36 +417,26 @@ var bok = function(x){
         //     })
         // }
 
-        // bindings.mouseenter_p = function(){
-        //     var p = $(this).index()
-        //     dom.comments.find(".boks_comments_box[data-p='" + p + "']").css({
+        // mark
+        bindings.mouseenter_p = function(){
+            var p = $(this).index()
+            dom.comments.find(".boks_comments_box[data-p='" + p + "']").css({
+                "z-index": 1,
+                "margin-left": "-5px",
+                "border-left": "5px solid #0f0",
+            })
+            var q = page.get_p(p)
+            if (q != null) views.load_book_comments(q)
+        }
 
-
-
-
-
-
-
-
-
-
-
-        //         "z-index": 1,
-        //         "margin-left": "-10px",
-        //         "border-left": "5px solid #0f0"
-        //     })
-        //     var q = page.get_p(p)
-        //     if (q != null) views.load_quotes(q)
-        // }
-
-        // bindings.mouseleave_p = function(){
-        //     var p = $(this).index()
-        //     dom.comments.find(".boks_comments_box[data-p='" + p + "']").css({
-        //         "z-index": 0,
-        //         "margin-left": "0",
-        //         "border-left": "none"
-        //     })
-        // }
+        bindings.mouseleave_p = function(){
+            var p = $(this).index()
+            dom.comments.find(".boks_comments_box[data-p='" + p + "']").css({
+                "z-index": 0,
+                "margin-left": "0",
+                "border-left": "none"
+            })
+        }
 
         // bindings.click_comment_text = function(){
         //     var comment_box = $(this).closest(".boks_comment")
