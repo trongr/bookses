@@ -67,8 +67,6 @@ server.post("/book/:id/like", users.authenticate, books.like_book_validate, book
 
 server.post("/comment", users.authenticate, books.create_comment_validate, books.create_comment)
 server.get("/book/:id/comments", books.get_book_comments_validate, books.get_book_comments)
-
-server.post("/comment/:id/comment", users.authenticate, books.create_comment_comment_validate, books.create_comment_comment)
 server.get("/comment/:id/comments", books.get_comment_comments_validate, books.get_comment_comments)
 server.post("/comment/:id/upvote", users.authenticate, books.upvote_comment_validate, books.upvote_comment)
 
