@@ -257,12 +257,10 @@ var bok = function(x){
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
                         .on("mouseenter", ".boks_text p", bindings.mouseenter_p)
                         .on("mouseleave", ".boks_text p", bindings.mouseleave_p)
-                        // .on("mouseenter", ".boks_content_right > .boks_comments_box", bindings.mouseenter_top_level_comments_box)
-                    //     .on("mouseenter", ".boks_comments_box", bindings.mouseenter_quote_box)
-                    //     .on("mouseleave", ".boks_comments_box", bindings.mouseleave_quote_box)
-                    //     .on("click", ".boks_quote_thumbs_up", bindings.click_quote_thumbs_up)
-                    //     .on("click", ".boks_quote_reply_menu_post", bindings.click_quote_reply_post)
+                        .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
                     //     .on("click", ".boks_more_comments_button", bindings.click_more_quotes)
+                    // uncomment to get clinking sound effect
+                    // .on("mouseenter", ".boks_content_right > .boks_comments_box", bindings.mouseenter_top_level_comments_box)
                     dom.comments = dom.box.find(".boks_content_right")
                     window.scrollTo(0, 0)
                     done(null)
@@ -496,19 +494,20 @@ var bok = function(x){
             comments_box.find(".boks_new_comment_box").hide()
         }
 
-        // bindings.click_quote_thumbs_up = function(){
-        //     try {
-        //         var id = $(this).closest(".boks_quote").attr("data-id")
-        //         var boks_comment_votes = $(this).find(".boks_comment_votes")
-        //         boks_comment_votes.html(parseInt(boks_comment_votes.html()) + 1)
-        //         api.upvote_comment(id, function(er, num){
-        //             if (er && er.loggedin == false) alert("You have to be logged in")
-        //             else if (er) console.log(JSON.stringify(er, 0, 2))
-        //         })
-        //     } catch (e){
-        //         alert("something went wrong. couldn't upvote quote")
-        //     }
-        // }
+        // mark
+        bindings.click_comment_like = function(){
+            try {
+                var id = $(this).closest(".boks_comment").attr("data-id")
+                var boks_comment_votes = $(this).find(".boks_comment_votes")
+                boks_comment_votes.html(parseInt(boks_comment_votes.html()) + 1)
+                api.upvote_comment(id, function(er, num){
+                    if (er && er.loggedin == false) alert("You have to be logged in")
+                    else if (er) console.log(JSON.stringify(er, 0, 2))
+                })
+            } catch (e){
+                alert("something went wrong. couldn't upvote quote")
+            }
+        }
 
         // bindings.click_comment_menu_thumbs_up = function(){
         //     try {
