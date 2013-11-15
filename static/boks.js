@@ -463,7 +463,7 @@ var bok = function(x){
         bindings.click_book_sound_toggle = function(){
             k.sound = !k.sound
             if (k.sound) $(".boks_sound").html("<i class='icon-volume-off'></i>")
-            else $(".boks_sound").html("<i class='icon-volume-off'></i>")
+            else $(".boks_sound").html("<i class='icon-volume-up'></i>")
         }
 
         bindings.mouseenter_top_level_comments_box = function(){
