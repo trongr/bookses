@@ -153,6 +153,13 @@ var books = module.exports = (function(){
         })
     }
 
+    // mark
+    books.upload = function(req, res){
+        console.log(req.files.file.name)
+        console.log(req.files.file.path)
+        res.send({upload:true})
+    }
+
     books.get_all_books_validate = function(req, res, next){
         var page = req.query.page || 0
         validate.integer(page, function(er){
@@ -200,7 +207,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.create_comment_validate = function(req, res, next){
         async.waterfall([
             function(done){
@@ -301,7 +307,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.get_book_comments = function(req, res){
         var query = {
             book: req.params.id,
@@ -449,7 +454,7 @@ var books = module.exports = (function(){
             } else next(null)
         })
     }
-    // mark
+
     books.like_book = function(req, res){
         DB.update_entry_by_id(k.tables.books, req.params.id, {$inc:{votes:1,pop:1}}, function(er, num){
             if (er){

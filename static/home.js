@@ -174,16 +174,47 @@ jQuery(function($){
         }
 
         bindings.click_post_upload_button = function(){
-            dom.upload_page.hide()
-            api.create_book({
-                title: $("#upload_book_title").val(),
-                description: $("#upload_book_description").val(),
-                src: $("#url_book_upload").val(),
-            }, function(er, book){
-                if (er && er.loggedin == false) alert("You have to be logged in")
-                else if (er) alert(JSON.stringify(er, 0, 2))
-                else alert("Your book is being processed")
+            if (!FormData) return alert("no form data")
+            var file = $("#local_book_upload")[0].files[0]
+            if (file.size > 10485760) return alert("your file is too big: must be less than 10MB")
+            var data = new FormData()
+            data.append("file", file)
+            $.ajax({
+                url: "upload",
+                type: "post",
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function(re){
+                    console.log(JSON.stringify(re, 0, 2))
+                },
+                error: function(xhr, status, er){
+                    console.log(JSON.stringify({error:"upload",xhr:xhr,status:status,er:er}, 0, 2))
+                },
+                xhr: function(){
+                    var xhr = $.ajaxSettings.xhr()
+                    if (xhr && xhr.upload){
+                        xhr.upload.addEventListener('progress', function(event) {
+                            if (event.lengthComputable) {
+                                var percent = event.loaded / file.size
+                                console.log(percent)
+                            }
+                        }, false)
+                    }
+                    return xhr
+                }
             })
+
+            // dom.upload_page.hide()
+            // api.create_book({
+            //     title: $("#upload_book_title").val(),
+            //     description: $("#upload_book_description").val(),
+            //     src: $("#url_book_upload").val(),
+            // }, function(er, book){
+            //     if (er && er.loggedin == false) alert("You have to be logged in")
+            //     else if (er) alert(JSON.stringify(er, 0, 2))
+            //     else alert("Your book is being processed")
+            // })
         }
 
         bindings.click_cancel_upload_button = function(){

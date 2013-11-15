@@ -7,6 +7,10 @@ var app = http.createServer(server)
 var books = require("./noodles/books.js")
 var users = require("./noodles/users.js")
 
+var k = {
+    max_req_size: 10485760
+}
+
 server.configure(function(){
     if (process.env.ENV == "local"){
         server.use("/static", express.static(__dirname + "/static"))
@@ -14,8 +18,22 @@ server.configure(function(){
     server.set('views', __dirname + '/static')
     server.engine('html', require('ejs').renderFile)
 
-    server.use(express.limit(1000000)) // limit request size
-    server.use(express.bodyParser({uploadDir: "./tmp"}))
+    server.use(function(req, res, next){
+        var size = 0
+        req.on("data", function(data){
+            size += data.length
+            if (size > k.max_req_size){
+                console.log({error:"request over limit"})
+                res.destroy()
+            }
+        })
+        next()
+    })
+    server.use(express.bodyParser({
+        keepExtensions: true,
+        uploadDir: "./tmp"
+    }))
+
     server.use(express.logger("dev"))
 
     server.use(express.cookieParser())
@@ -61,6 +79,7 @@ server.post("/bug", function(req, res){
 })
 
 server.post("/book", users.authenticate, books.create_book_validate, books.create_book)
+server.post("/upload", books.upload)
 server.get("/books", books.get_all_books_validate, books.get_all_books)
 server.get("/book/:id", books.get_book_by_id_validate, books.get_book_by_id)
 server.post("/book/:id/like", users.authenticate, books.like_book_validate, books.like_book)

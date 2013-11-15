@@ -112,7 +112,11 @@ button {
     resize: none;
 }
 
-#upload_page label {
+#upload_page label#choose_local {
+    padding: 10px;
+}
+
+#upload_page label#text_files_only {
     float: right;
 }
 
