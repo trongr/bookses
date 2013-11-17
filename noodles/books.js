@@ -90,11 +90,10 @@ var press = (function(){
 
     press.working = false
 
-    // mark
     press.process_books = function(){
         new cron("*/13 * * * * *", function(){
             if (press.working) return
-            press.working = true
+            else press.working = true
             async.waterfall([
                 function(done){
                     DB.get_entries(k.tables.jobs, {
@@ -119,10 +118,6 @@ var press = (function(){
                                     if (er) console.log(JSON.stringify(er, 0, 2))
                                 })
                             })
-                        // not sure if need this:
-                        // .on("error", function(er){
-                        //     console.log(JSON.stringify({error:"child processing book",book:book,er:er}, 0, 2))
-                        // })
                     }, function(er){
                         done(null, jobs)
                     })
@@ -161,7 +156,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.create_book = function(req, res){
         var id = new mongo.ObjectID()
         var book = {
@@ -259,6 +253,12 @@ var books = module.exports = (function(){
                 })
             },
             function(done){
+                validate.integer(req.body.p, function(er){
+                    if (er) done({error:"p not an integer"})
+                    else done(null)
+                })
+            },
+            function(done){
                 if (req.body.parent){
                     validate.id(req.body.parent, function(er){
                         if (er) done({error:"invalid id",parent:req.body.parent,er:er})
@@ -338,8 +338,7 @@ var books = module.exports = (function(){
             function(done){
                 var page = req.query.page || 0
                 validate.integer(page, function(er){
-                    if (er) res.send({error:"invalid page",er:er})
-                    else next(null)
+                    done(er)
                 })
             }
         ], function(er, re){
@@ -353,7 +352,8 @@ var books = module.exports = (function(){
     books.get_book_comments = function(req, res){
         var query = {
             book: req.params.id,
-            p: req.query.p
+            p: req.query.p,
+            parent: null
         }
         var aux = {
             sort: [["pop","desc"]],
@@ -370,64 +370,6 @@ var books = module.exports = (function(){
         })
     }
 
-    books.create_comment_comment_validate = function(req, res, next){
-        async.waterfall([
-            function(done){
-                validate.id(req.params.id, function(er){
-                    done(er)
-                })
-            },
-            function(done){
-                validate.text_length(req.body.comment, function(er){
-                    done(er)
-                })
-            }
-        ], function(er, re){
-            if (er){
-                console.log(JSON.stringify({error:"books.create_comment_comment_validate",er:er}, 0, 2))
-                res.send({error:"create comment comment",er:er})
-            } else next(null)
-        })
-    }
-
-    books.create_comment_comment = function(req, res){
-        async.waterfall([
-            function(done){
-                DB.get_entry_by_id(k.tables.comments, req.params.id, function(er, comment){
-                    if (er) done(er)
-                    else if (comment) done(null, comment)
-                    else done({error:"no such comment"})
-                })
-            },
-            function(parent, done){
-                var comment = {
-                    username: req.session.username,
-                    comment: req.body.comment,
-                    parent: parent._id.toString(),
-                    created: new Date(),
-                    votes: 1,
-                    replies: 0,
-                    pop: 1, // pop is the sum of votes and replies, used to sort results
-                }
-                DB.create(k.tables.comments, comment, function(er, comment){
-                    done(er, parent, comment)
-                })
-            },
-            function(parent, comment, done){
-                DB.update_entry_by_id(k.tables.comments, parent._id.toString(), {$inc:{replies:1,pop:1}}, function(er, num){
-                    done(er, comment)
-                })
-            },
-        ], function(er, comment){
-            if (er){
-                console.log(JSON.stringify({error:"books.create_comment_comment",params:req.params.id,body:req.body,er:er}, 0, 2))
-                res.send({error:"create comment"})
-            } else {
-                res.send({comment:comment})
-            }
-        })
-    }
-
     books.get_comment_comments_validate = function(req, res, next){
         async.parallel([
             function(done){
@@ -438,8 +380,7 @@ var books = module.exports = (function(){
             function(done){
                 var page = req.query.page || 0
                 validate.integer(page, function(er){
-                    if (er) res.send({error:"invalid page",er:er})
-                    else next(null)
+                    done(er)
                 })
             }
         ], function(er, re){
@@ -573,20 +514,6 @@ var test = (function(){
         request.get({
             url: k.localhost + "/book/525a5c25b79c992d22000004/comments",
             json: true,
-        }, function(er, res, body){
-            if (er) console.log(JSON.stringify(er, 0, 2))
-            else console.log(JSON.stringify(body, 0, 2))
-        })
-    }
-
-    test.create_comment_comment = function(){
-        var comment = process.argv[2]
-        request.post({
-            url: k.localhost + "/comment/525ba6e2fc28df044f000070/comment",
-            form: {
-                comment: comment,
-            },
-            json: true
         }, function(er, res, body){
             if (er) console.log(JSON.stringify(er, 0, 2))
             else console.log(JSON.stringify(body, 0, 2))

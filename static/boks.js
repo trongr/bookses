@@ -201,11 +201,14 @@ var bok = function(x){
             return html
         }
 
+        // mark
         templates.comment = function(comment){
             var text = templates.replace_text_with_img(comment.comment)
+            var dataid = "data-id='" + comment._id + "'"
+            var datap = "data-p='" + comment.p + "'"
             var has_replies = (comment.replies > 0 ? "boks_green_underline" : "")
             var has_votes = (comment.votes > 1 ? "boks_red_underline" : "")
-            var html = "<div class='boks_comment' data-id='" + comment._id + "'>"
+            var html = "<div class='boks_comment' " + dataid + " " + datap + ">"
                 + "         <div class='boks_comment_text_box'>"
                 + "             <div class='boks_comment_text'>"
                 +                   text
@@ -310,7 +313,8 @@ var bok = function(x){
                 .find(".boks_new_comment_textarea").focus()
         }
 
-        views.load_comments = function(parentid, box, done){
+        // mark
+        views.load_comments = function(parentid, p, box, done){
             async.waterfall([
                 function(done){
                     api.get_comment_comments(parentid, 0, function(er, comments){ // todo. replace 0 with page
@@ -318,7 +322,7 @@ var bok = function(x){
                     })
                 },
                 function(comments, done){
-                    box.html(templates.comments_box(comments, null, null, parentid))
+                    box.html(templates.comments_box(comments, p, null, parentid))
                     done(null)
                 },
             ], function(er, re){
@@ -363,8 +367,9 @@ var bok = function(x){
         bindings.click_comment_text = function(){
             var comment_box = $(this).closest(".boks_comment")
             var id = comment_box.attr("data-id")
+            var p = comment_box.attr("data-p")
             var children_box = comment_box.find(".boks_comments_box_box")
-            views.load_comments(id, children_box, function(er){
+            views.load_comments(id, p, children_box, function(er){
                 if (er) alert(JSON.stringify(er, 0, 2))
             })
         }
@@ -372,8 +377,9 @@ var bok = function(x){
         bindings.click_comment_reply = function(){
             var comment_box = $(this).closest(".boks_comment")
             var id = comment_box.attr("data-id")
+            var p = comment_box.attr("data-p")
             var children_box = comment_box.find(".boks_comments_box_box")
-            views.load_comments(id, children_box, function(er){
+            views.load_comments(id, p, children_box, function(er){
                 if (er) alert(JSON.stringify(er, 0, 2))
                 else children_box
                     .find(".boks_new_comment_box").show()
@@ -383,7 +389,7 @@ var bok = function(x){
 
         bindings.mouseenter_p = function(){
             var p = $(this).index()
-            dom.comments.find(".boks_comments_box[data-p='" + p + "']").css({
+            dom.comments.children(".boks_comments_box[data-p='" + p + "']").css({
                 "z-index": 1,
                 "margin-left": "-5px",
                 "border-left": "5px solid #0f0",
@@ -394,7 +400,7 @@ var bok = function(x){
 
         bindings.mouseleave_p = function(){
             var p = $(this).index()
-            dom.comments.find(".boks_comments_box[data-p='" + p + "']").css({
+            dom.comments.children(".boks_comments_box[data-p='" + p + "']").css({
                 "z-index": 0,
                 "margin-left": "0",
                 "border-left": "none",
