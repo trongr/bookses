@@ -10,6 +10,7 @@ jQuery(function($){
     var dom = {
         books: $("#books"),
         upload_page: $("#upload_page"),
+        upload_progress: $("#upload_progress")
     }
 
     var api = (function(){
@@ -154,21 +155,22 @@ jQuery(function($){
         }
 
         bindings.click_upload_button = function(){
-            // dom.upload_page.slideDown(100)
             dom.upload_page.css({"display":"table"})
         }
 
         // mark
         bindings.click_post_upload_button = function(){
-            dom.upload_page.hide()
+            var title = $("#upload_book_title").val().trim()
+            var description = $("#upload_book_description").val().trim()
+            if (!title || !description) return alert("title and description can't be blank")
             var file = $("#local_book_upload")[0].files[0]
             if (!file) return alert("please choose a file")
             else if (file.size > k.max_book_size) return alert("your file is too big: must be less than 10MB")
             if (!FormData) return alert("can't upload: please update your browser")
             var data = new FormData()
             data.append("file", file)
-            data.append("title", $("#upload_book_title").val())
-            data.append("description", $("#upload_book_description").val())
+            data.append("title", title)
+            data.append("description", description)
             $.ajax({
                 url: "book",
                 type: "post",
@@ -180,6 +182,7 @@ jQuery(function($){
                         console.log(JSON.stringify(re.book, 0, 2))
                     } else if (re.loggedin == false) alert("you have to log in")
                     else console.log(JSON.stringify({error:"book",er:er}, 0, 2))
+                    dom.upload_page.hide()
                 },
                 error: function(xhr, status, er){
                     console.log(JSON.stringify({error:"upload",xhr:xhr,status:status,er:er}, 0, 2))
@@ -190,7 +193,7 @@ jQuery(function($){
                         xhr.upload.addEventListener('progress', function(event) {
                             if (event.lengthComputable) {
                                 var percent = event.loaded / file.size
-                                console.log(percent)
+                                dom.upload_progress.css("width", percent + "%")
                             }
                         }, false)
                     }

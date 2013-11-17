@@ -87,6 +87,16 @@ button {
     border-top: 1px solid #bbb;
 }
 
+#upload_progress_box {
+    display: table-row;
+    height: 5px;
+}
+
+#upload_progress {
+    width: 0;
+    height: 100%;
+}
+
 #upload_page_left {
     display: table-cell;
     width: 60%;
