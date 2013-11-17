@@ -143,6 +143,7 @@ jQuery(function($){
         bindings.init = function(){
             $("#search_button").on("click", bindings.click_search_button)
             $("#upload_button").on("click", bindings.click_upload_button)
+            $("#local_book_upload").on("change", bindings.change_book_input)
             $("#post_upload_button").on("click", bindings.click_post_upload_button)
             $("#cancel_upload_button").on("click", bindings.click_cancel_upload_button)
             $("#more_books_button").on("click", bindings.click_more_books)
@@ -153,7 +154,8 @@ jQuery(function($){
         }
 
         bindings.click_upload_button = function(){
-            dom.upload_page.slideDown(100)
+            // dom.upload_page.slideDown(100)
+            dom.upload_page.css({"display":"table"})
         }
 
         // mark
@@ -203,6 +205,22 @@ jQuery(function($){
 
         bindings.click_more_books = function(){
             views.load_books(k.page++)
+        }
+
+        bindings.change_book_input = function(e){
+            if (!(window.File && window.FileReader && window.Blob)) return
+            var file = e.target.files[0].slice(0, 1024)
+            var reader = new FileReader()
+            reader.onload = function(e){
+                var height = $("#upload_page_right").height()
+                var width = parseInt($("#upload_page_right").width()) * 60 / 40
+                $("#book_preview").text(e.target.result)
+                    .css({
+                        height:height,
+                        width:width + "px"
+                    })
+            }
+            reader.readAsText(file)
         }
 
         return bindings

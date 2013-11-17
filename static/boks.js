@@ -391,7 +391,7 @@ var bok = function(x){
             var p = $(this).index()
             dom.comments.children(".boks_comments_box[data-p='" + p + "']").css({
                 "z-index": 1,
-                "margin-left": "-5px",
+                "margin-left": "-10px",
                 "border-left": "5px solid #0f0",
             })
             var q = page.get_p(p)

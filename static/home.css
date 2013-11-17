@@ -85,14 +85,25 @@ button {
     display: none;
     width: 100%;
     border-top: 1px solid #bbb;
+}
+
+#upload_page_left {
+    display: table-cell;
+    width: 60%;
+    align: center;
+}
+
+#book_preview {
+    white-space: pre-wrap;
+    overflow: hidden;
+    width: 100%;
     padding: 20px;
 }
 
-#upload_page_inner {
-    width: 60%;
-    min-width: 400px;
-    left: 20%;
-    position: relative;
+#upload_page_right {
+    display: table-cell;
+    width: 40%;
+    padding: 20px;
 }
 
 #upload_page input {
@@ -114,6 +125,8 @@ button {
 
 #upload_page label#text_files_only {
     float: right;
+    color: #333;
+    font-size: 0.8em;
 }
 
 #upload_page button {
