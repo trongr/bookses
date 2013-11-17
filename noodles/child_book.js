@@ -25,7 +25,7 @@ var u = (function(){
                 else done({error:"u.wget",src:src,dst:dst,code:code,signal:signal})
             })
     }
-    // mark
+
     u.write_book = function(src, dst, done){
         var out = fs.createWriteStream(dst)
         out.on("open", function(fd){
@@ -59,31 +59,15 @@ var child_book = (function(){
     var child_book = {}
 
     child_book.process_book = function(id, src){
-        console.log("processing new book")
-        var tmp = k.tmp + "/" + id
+        console.log("processing new book: " + id)
         var dst = k.static_public + "/" + id
-        async.waterfall([
-            function(done){
-                u.wget(src, tmp, function(er){
-                    done(er)
-                })
-            },
-            function(done){
-                u.write_book(tmp, dst, function(er){
-                    done(er)
-                })
-            },
-        ], function(er, re){
-            console.log("done processing new book")
-            u.rm(tmp, function(er){
-                if (er) console.log(JSON.stringify(er, 0, 2))
-            })
+        u.write_book(src, dst, function(er){
+            console.log("done processing new book: " + id)
             if (er){
-                console.log(JSON.stringify({error:"child_book.process_book",id:id,url:url,er:er}, 0, 2))
-                u.rm(dst, function(er){
-                    if (er) console.log(JSON.stringify(er, 0, 2))
-                })
+                console.log(JSON.stringify({error:"child_book.process_book",id:id,src:src,er:er}, 0, 2))
+                u.rm(dst, function(er){if (er) console.log(JSON.stringify(er, 0, 2))})
             }
+            u.rm(src, function(er){if (er) console.log(JSON.stringify(er, 0, 2))})
         })
     }
 
@@ -124,4 +108,3 @@ if (require.main == module){
 } else {
 
 }
-

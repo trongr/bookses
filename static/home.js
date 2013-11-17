@@ -4,6 +4,7 @@ jQuery(function($){
         static_public: "/static/public",
         date_format: "D MMMM YYYY",
         page: 0,
+        max_book_size: 10485760,
     }
 
     var dom = {
@@ -23,22 +24,6 @@ jQuery(function($){
                     error: error
                 },
                 success: function(re){}
-            })
-        }
-
-        api.create_book = function(x, done){
-            $.ajax({
-                url: "book",
-                type: "post",
-                data: {
-                    src: x.src,
-                    title: x.title,
-                    description: x.description
-                },
-                success: function(re){
-                    if (re.book) done(null, re.book)
-                    else done(re)
-                }
             })
         }
 
@@ -107,7 +92,6 @@ jQuery(function($){
             views.load_books(k.page++)
         }
 
-        // mark
         views.load_books = function(page){
             async.waterfall([
                 function(done){
@@ -162,7 +146,6 @@ jQuery(function($){
             $("#post_upload_button").on("click", bindings.click_post_upload_button)
             $("#cancel_upload_button").on("click", bindings.click_cancel_upload_button)
             $("#more_books_button").on("click", bindings.click_more_books)
-            // mark
         }
 
         bindings.click_search_button = function(){
@@ -173,20 +156,28 @@ jQuery(function($){
             dom.upload_page.slideDown(100)
         }
 
+        // mark
         bindings.click_post_upload_button = function(){
-            if (!FormData) return alert("no form data")
+            dom.upload_page.hide()
             var file = $("#local_book_upload")[0].files[0]
-            if (file.size > 10485760) return alert("your file is too big: must be less than 10MB")
+            if (!file) return alert("please choose a file")
+            else if (file.size > k.max_book_size) return alert("your file is too big: must be less than 10MB")
+            if (!FormData) return alert("can't upload: please update your browser")
             var data = new FormData()
             data.append("file", file)
+            data.append("title", $("#upload_book_title").val())
+            data.append("description", $("#upload_book_description").val())
             $.ajax({
-                url: "upload",
+                url: "book",
                 type: "post",
                 data: data,
                 processData: false,
                 contentType: false,
                 success: function(re){
-                    console.log(JSON.stringify(re, 0, 2))
+                    if (re.book){
+                        console.log(JSON.stringify(re.book, 0, 2))
+                    } else if (re.loggedin == false) alert("you have to log in")
+                    else console.log(JSON.stringify({error:"book",er:er}, 0, 2))
                 },
                 error: function(xhr, status, er){
                     console.log(JSON.stringify({error:"upload",xhr:xhr,status:status,er:er}, 0, 2))
@@ -204,24 +195,12 @@ jQuery(function($){
                     return xhr
                 }
             })
-
-            // dom.upload_page.hide()
-            // api.create_book({
-            //     title: $("#upload_book_title").val(),
-            //     description: $("#upload_book_description").val(),
-            //     src: $("#url_book_upload").val(),
-            // }, function(er, book){
-            //     if (er && er.loggedin == false) alert("You have to be logged in")
-            //     else if (er) alert(JSON.stringify(er, 0, 2))
-            //     else alert("Your book is being processed")
-            // })
         }
 
         bindings.click_cancel_upload_button = function(){
             dom.upload_page.hide()
         }
 
-        // mark
         bindings.click_more_books = function(){
             views.load_books(k.page++)
         }

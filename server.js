@@ -79,7 +79,6 @@ server.post("/bug", function(req, res){
 })
 
 server.post("/book", users.authenticate, books.create_book_validate, books.create_book)
-server.post("/upload", books.upload)
 server.get("/books", books.get_all_books_validate, books.get_all_books)
 server.get("/book/:id", books.get_book_by_id_validate, books.get_book_by_id)
 server.post("/book/:id/like", users.authenticate, books.like_book_validate, books.like_book)

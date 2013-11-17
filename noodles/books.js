@@ -4,6 +4,7 @@
 //     cursor.toArray(function(er, entries){})
 // })
 
+var cron = require("cron").CronJob
 var request = require("request")
 var async = require("async")
 var mongo = require("mongodb")
@@ -24,8 +25,10 @@ var k = {
     tables: {
         books: "books",
         comments: "comments",
+        jobs: "jobs",
     },
     page_size: 10,
+    milliseconds_in_a_day: 24 * 60 * 60 * 1000,
 }
 
 var DB = (function(){
@@ -82,33 +85,83 @@ var DB = (function(){
     return DB
 }())
 
-var parent_book = (function(){
-    var parent_book = {}
+var press = (function(){
+    var press = {}
 
-    parent_book.process_book = function(book, done){
-        var id = book._id.toString()
-        var src = book.src
-        child.fork("noodles/child_book.js", [id, src])
-            .on("exit", function(code, signal){
-                if (code == 0) done(null)
-                else done({error:"parent_book.process_book",book:book,code:code,signal:signal})
+    press.working = false
+
+    // mark
+    press.process_books = function(){
+        new cron("*/13 * * * * *", function(){
+            if (press.working) return
+            press.working = true
+            async.waterfall([
+                function(done){
+                    DB.get_entries(k.tables.jobs, {
+                        done: false,
+                        created: {$gte: new Date(new Date().getTime() - k.milliseconds_in_a_day)}
+                    }, {}, function(er, entries){
+                        done(er, entries)
+                    })
+                },
+                function(jobs, done){
+                    if (jobs.length){
+                        console.log(new Date() + " start processing books")
+                        console.log(JSON.stringify(jobs, 0, 2))
+                    }
+                    async.eachSeries(jobs, function(job, done){
+                        child.fork("noodles/child_book.js", [job.book, job.src])
+                            .on("exit", function(code, signal){
+                                if (code == 0) var update = {$set:{done:true}}
+                                else var update = {$set:{done:null}}
+                                DB.update_entry_by_id(k.tables.jobs, job._id.toString(), update, function(er, num){
+                                    done(null)
+                                    if (er) console.log(JSON.stringify(er, 0, 2))
+                                })
+                            })
+                        // not sure if need this:
+                        // .on("error", function(er){
+                        //     console.log(JSON.stringify({error:"child processing book",book:book,er:er}, 0, 2))
+                        // })
+                    }, function(er){
+                        done(null, jobs)
+                    })
+                }
+            ], function(er, jobs){
+                if (er) console.log(JSON.stringify({error:"press process books",er:er}, 0, 2))
+                if (jobs.length) console.log(new Date() + " end processing books")
+                press.working = false
             })
-            .on("error", function(er){
-                done({error:"parent_book.process_book",book:book,er:er})
-            })
+        }, null, true)
     }
 
-    return parent_book
+    return press
 }())
 
 var books = module.exports = (function(){
     var books = {}
 
-    // todo
     books.create_book_validate = function(req, res, next){
-        next(null)
+        async.waterfall([
+            function(done){
+                validate.text_length(req.body.title, function(er){
+                    done(er)
+                })
+            },
+            function(done){
+                validate.text_length(req.body.description, function(er){
+                    done(er)
+                })
+            }
+        ], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"books.create_book_validate",er:er}, 0, 2))
+                res.send({error:"create book",info:er.error})
+            } else next(null)
+        })
     }
 
+    // mark
     books.create_book = function(req, res){
         var id = new mongo.ObjectID()
         var book = {
@@ -116,7 +169,6 @@ var books = module.exports = (function(){
             username: req.session.username,
             title: req.body.title,
             description: req.body.description,
-            src: req.body.src,
             url: k.static_public + "/" + id,
             created: new Date(),
             votes: 1,
@@ -131,33 +183,24 @@ var books = module.exports = (function(){
             },
             function(book, done){
                 done(null, book)
-                parent_book.process_book(book, function(er){
-                    if (er){
-                        console.log(JSON.stringify(er, 0, 2))
-                        var update = {
-                            $set: {error:"processing book"}
-                        }
-                        DB.update_entry_by_id(k.tables.books, book._id.toString(), update, function(er, num){
-                            if (er) console.log(JSON.stringify(er, 0, 2))
-                        })
-                    }
+                var job = {
+                    book: book._id.toString(),
+                    src: req.files.file.path,
+                    created: new Date(),
+                    done: false,
+                }
+                DB.create(k.tables.jobs, job, function(er, job){
+                    if (er) console.log(JSON.stringify(er, 0, 2))
                 })
             }
-        ], function(er, book){
+        ], function(er, new_book){
             if (er){
                 console.log(JSON.stringify({error:"books.create_book",body:req.body,er:er}, 0, 2))
                 res.send({error:"create book"})
             } else {
-                res.send({book:book})
+                res.send({book:new_book})
             }
         })
-    }
-
-    // mark
-    books.upload = function(req, res){
-        console.log(req.files.file.name)
-        console.log(req.files.file.path)
-        res.send({upload:true})
     }
 
     books.get_all_books_validate = function(req, res, next){
@@ -567,5 +610,5 @@ console.log("requiring " + module.filename + " from " + require.main.filename)
 if (require.main == module){
     test.create_book()
 } else {
-
+    press.process_books()
 }
