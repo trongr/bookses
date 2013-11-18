@@ -147,6 +147,9 @@ var books = module.exports = (function(){
                 validate.text_length(req.body.description, function(er){
                     done(er)
                 })
+            },
+            function(done){
+                if (!req.files) done({error:"no file"})
             }
         ], function(er, re){
             if (er){
@@ -259,12 +262,11 @@ var books = module.exports = (function(){
                 })
             },
             function(done){
-                if (req.body.parent){
-                    validate.id(req.body.parent, function(er){
-                        if (er) done({error:"invalid id",parent:req.body.parent,er:er})
-                        else done(null)
-                    })
-                } else done(null)
+                if (req.body.parent) validate.id(req.body.parent, function(er){
+                    if (er) done({error:"invalid id",parent:req.body.parent,er:er})
+                    else done(null)
+                })
+                else done(null)
             },
             function(done){
                 validate.text_length(req.body.comment, function(er){
@@ -279,11 +281,14 @@ var books = module.exports = (function(){
         })
     }
 
+    // mark
     books.create_comment = function(req, res){
         async.waterfall([
             function(done){
                 try {
+                    var id = new mongo.ObjectID()
                     var comment = {
+                        _id: id,
                         username: req.session.username,
                         comment: req.body.comment,
                         book: req.body.book,
@@ -294,6 +299,7 @@ var books = module.exports = (function(){
                         replies: 0,
                         pop: 1
                     }
+                    if (req.files.img) comment.img = k.static_public + "/" + id
                     DB.create(k.tables.comments, comment, function(er, comment){
                         done(er, comment)
                     })
@@ -303,6 +309,9 @@ var books = module.exports = (function(){
             },
             function(comment, done){
                 done(null, comment)
+                if (req.files.img) child.exec("mv " + req.files.img.path + " " + k.static_public + "/" + comment._id, function(er, stdout, stder){
+                    if (er) console.log(JSON.stringify({error:"books.create_comment: mv img",src:req.files.img.path,id:comment._id}, 0, 2))
+                })
                 if (req.body.book) DB.update_entry_by_id(k.tables.books, req.body.book, {$inc:{replies:1,pop:1}}, function(er, num){
                     if (er) console.log(JSON.stringify({error:"books.create_comment: updating book pop",id:req.body.book,er:er}, 0, 2))
                 })

@@ -181,7 +181,7 @@ jQuery(function($){
                     if (re.book){
                         console.log(JSON.stringify(re.book, 0, 2))
                     } else if (re.loggedin == false) alert("you have to log in")
-                    else console.log(JSON.stringify({error:"book",er:er}, 0, 2))
+                    else console.log(JSON.stringify({error:"book",er:re}, 0, 2))
                     dom.upload_progress.css("width", "0")
                     dom.upload_page.hide()
                 },

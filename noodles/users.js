@@ -185,7 +185,7 @@ var test = (function(){
     return test
 }())
 
-console.log("requiring " + require.main.filename + " from " + module.filename)
+console.log("requiring " + module.filename + " from " + require.main.filename)
 if (require.main == module){
     test.create_user()
 } else {

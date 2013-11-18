@@ -16,6 +16,7 @@ var bok = function(x){
         date_format_alt: "h:mm A D MMM YYYY",
         page_size: 10,
         sound: false,
+        max_img_size: 5242880,
     }
 
     var page = (function(){
@@ -63,23 +64,6 @@ var bok = function(x){
                 },
                 error: function(xhr, status, er){
                     done({error:"api getting book", xhr:xhr, status:status, er:er})
-                }
-            })
-        }
-
-        api.create_comment = function(bID, comment, done){
-            $.ajax({
-                url: "comment",
-                type: "post",
-                data: {
-                    comment: comment.comment,
-                    book: bID,
-                    p: comment.p,
-                    parent: comment.parent
-                },
-                success: function(re){
-                    if (re.comment) done(null, re.comment)
-                    else done(re)
                 }
             })
         }
@@ -176,9 +160,11 @@ var bok = function(x){
             var html = "<div class='boks_comments_box' " + parent + " " + datap + " " + style + ">"
                 + "         <div class='boks_new_comment_box'>"
                 + "             <div class='boks_new_comment_textarea_box'>"
-                + "                 <textarea class='boks_new_comment_textarea' placeholder='Comment or add a picture, like so: [[http://example.com/cat.jpg]]'></textarea>"
+                + "                 <textarea class='boks_new_comment_textarea' placeholder='Comment or add an image'></textarea>"
                 + "             </div>"
                 + "             <div class='boks_new_comment_menu'>"
+                + "                 <input class='boks_new_comment_picture_input' type='file'>"
+                + "                 <button class='boks_new_comment_picture_button'><i class='icon-picture'></i></button>"
                 + "                 <button class='boks_new_comment_post'>POST</button>"
                 + "             </div>"
                 + "             <div class='clear_both'></div>"
@@ -201,17 +187,20 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.comment = function(comment){
             var text = templates.replace_text_with_img(comment.comment)
+            var img = (comment.img ? "<div class='boks_comment_img_box'><img class='boks_comment_img' src='" + comment.img + "' alt='your image will be ready in a minute'></div>" : "")
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
             var has_replies = (comment.replies > 0 ? "boks_green_underline" : "")
             var has_votes = (comment.votes > 1 ? "boks_red_underline" : "")
             var html = "<div class='boks_comment' " + dataid + " " + datap + ">"
                 + "         <div class='boks_comment_text_box'>"
-                + "             <div class='boks_comment_text'>"
-                +                   text
+                + "             <div class='boks_comment_content'>"
+                +                   img
+                + "                 <div class='boks_comment_text'>"
+                +                       text
+                + "                 </div>"
                 + "             </div>"
                 + "             <div class='boks_comment_created'>"
                 +                   moment(comment.created).format(k.date_format_alt)
@@ -256,8 +245,9 @@ var bok = function(x){
                         .on("click", ".boks_sound", bindings.click_book_sound_toggle)
                         .on("click", ".boks_close", bindings.click_book_close)
                         .on("click", ".boks_text p", bindings.click_paragraph)
+                        .on("click", ".boks_new_comment_picture_button", bindings.click_choose_comment_image)
                         .on("click", ".boks_new_comment_post", bindings.click_new_comment_post)
-                        .on("click", ".boks_comment_text", bindings.click_comment_text)
+                        .on("click", ".boks_comment_content", bindings.click_comment_content)
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
                         .on("mouseenter", ".boks_text p", bindings.mouseenter_p)
                         .on("mouseleave", ".boks_text p", bindings.mouseleave_p)
@@ -313,7 +303,6 @@ var bok = function(x){
                 .find(".boks_new_comment_textarea").focus()
         }
 
-        // mark
         views.load_comments = function(parentid, p, box, done){
             async.waterfall([
                 function(done){
@@ -364,7 +353,7 @@ var bok = function(x){
             }
         }
 
-        bindings.click_comment_text = function(){
+        bindings.click_comment_content = function(){
             var comment_box = $(this).closest(".boks_comment")
             var id = comment_box.attr("data-id")
             var p = comment_box.attr("data-p")
@@ -409,20 +398,36 @@ var bok = function(x){
 
         bindings.click_new_comment_post = function(){
             var comments_box = $(this).closest(".boks_comments_box")
-            var text = comments_box.find(".boks_new_comment_textarea").val()
             var p = comments_box.attr("data-p")
             var parentid = comments_box.attr("data-parent")
-            var comment = {
-                comment: text,
-                p: p,
-                parent: parentid
-            }
-            api.create_comment(o.bID, comment, function(er, comment){
-                if (er && er.loggedin == false) alert("You have to be logged in")
-                else if (er) alert(JSON.stringify(er, 0, 2))
-                else comments_box.find(".boks_comments").eq(0).prepend(templates.comment(comment))
-            })
+            var comment = comments_box.find(".boks_new_comment_textarea").val().trim()
+            if (!comment) return alert("empty comment")
+            var img = $(this).parent().children(".boks_new_comment_picture_input")[0].files[0]
+            if (img && img.size > k.max_img_size) return alert("your img is too big: must be less than 5MB")
+
+            if (!FormData) return alert("can't upload: please update your browser")
+            var data = new FormData()
+            data.append("book", o.bID)
+            data.append("p", p)
+            if (parentid) data.append("parent", parentid)
+            data.append("comment", comment)
+            if (img) data.append("img", img)
+
             comments_box.find(".boks_new_comment_box").hide()
+
+            $.ajax({
+                url: "comment",
+                type: "post",
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function(re){
+                    if (re.comment){
+                        comments_box.children(".boks_comments").prepend(templates.comment(re.comment))
+                    } else if (re.loggedin == false) alert("you have to log in")
+                    else alert(JSON.stringify({error:"create comment",er:re}, 0, 2))
+                }
+            })
         }
 
         bindings.click_comment_like = function(){
@@ -474,6 +479,10 @@ var bok = function(x){
 
         bindings.mouseenter_top_level_comments_box = function(){
             if (k.sound) dom.clink.play()
+        }
+
+        bindings.click_choose_comment_image = function(){
+            $(this).parent().children(".boks_new_comment_picture_input").click()
         }
 
         return bindings
