@@ -109,11 +109,22 @@ button:hover {
 
 .boks_content_right > .boks_comments_box {
     box-shadow: 0 0 10px 5px #aaa;
-    margin-left: 0px;
+    margin-left: 0;
 }
 
-.boks_content_right > .boks_comments_box:hover {
-    box-shadow: 0 0 20px 5px #999;
+/* .boks_content_right > .boks_comments_box:hover { */
+/*     box-shadow: 0 0 20px 5px #999; */
+/*     z-index: 1 !important; */
+/* } */
+
+.boks_p_hover {
+    box-shadow: 0 0 20px 5px #999 !important;
+    z-index: 1 !important;
+    margin-left: -10px !important;
+    border-left: 5px solid #0f0 !important;
+}
+
+.boks_comments_box_hover {
     z-index: 1 !important;
 }
 

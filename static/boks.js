@@ -378,22 +378,15 @@ var bok = function(x){
 
         bindings.mouseenter_p = function(){
             var p = $(this).index()
-            dom.comments.children(".boks_comments_box[data-p='" + p + "']").css({
-                "z-index": 1,
-                "margin-left": "-10px",
-                "border-left": "5px solid #0f0",
-            })
+            dom.comments.children(".boks_comments_box").removeClass("boks_comments_box_hover")
+            dom.comments.children(".boks_comments_box[data-p='" + p + "']").addClass("boks_p_hover")
             var q = page.get_p(p)
             if (q != null) views.load_book_comments(q)
         }
 
         bindings.mouseleave_p = function(){
             var p = $(this).index()
-            dom.comments.children(".boks_comments_box[data-p='" + p + "']").css({
-                "z-index": 0,
-                "margin-left": "0",
-                "border-left": "none",
-            })
+            dom.comments.children(".boks_comments_box[data-p='" + p + "']").removeClass("boks_p_hover")
         }
 
         bindings.click_new_comment_post = function(){
@@ -479,6 +472,8 @@ var bok = function(x){
 
         bindings.mouseenter_top_level_comments_box = function(){
             if (k.sound) dom.clink.play()
+            dom.comments.children(".boks_comments_box").removeClass("boks_comments_box_hover")
+            $(this).addClass("boks_comments_box_hover")
         }
 
         bindings.click_choose_comment_image = function(){
