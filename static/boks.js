@@ -297,10 +297,11 @@ var bok = function(x){
         }
 
         views.load_new_comments_box = function(p, top, parent){
-            var comment = $(templates.comments_box([], p, top, parent))
-            dom.comments.append(comment).find(comment) // have to find quote again, cause if you focus before appending it'll lose focus
+            var comments_box = $(templates.comments_box([], p, top, parent))
+            dom.comments.append(comments_box).find(comments_box) // have to find quote again, cause if you focus before appending it'll lose focus
                 .find(".boks_new_comment_box").show()
                 .find(".boks_new_comment_textarea").focus()
+            return comments_box // should do this for every view that creates a dom element, so you can chain methods
         }
 
         views.load_comments = function(parentid, p, box, done){
@@ -344,12 +345,13 @@ var bok = function(x){
         bindings.click_paragraph = function(){
             var p = $(this).index()
             var top = $(this).get(0).offsetTop
+            dom.comments.children(".boks_comments_box").removeClass("boks_comments_box_hover boks_p_hover")
             var comments_box = dom.comments.find(".boks_comments_box[data-p='" + p + "']")
             if (comments_box.length){
                 comments_box.find(".boks_new_comment_box").eq(0).show()
                     .find(".boks_new_comment_textarea").focus().val("")
             } else {
-                views.load_new_comments_box(p, top, null)
+                views.load_new_comments_box(p, top, null).addClass("boks_p_hover")
             }
         }
 
