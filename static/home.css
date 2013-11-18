@@ -88,13 +88,14 @@ button {
 }
 
 #upload_progress_box {
-    display: table-row;
     height: 5px;
+    width: 100%;
 }
 
 #upload_progress {
     width: 0;
     height: 100%;
+    background-color: #77CFFF;
 }
 
 #upload_page_left {
@@ -185,6 +186,7 @@ button {
 
 .book_main_box {
     display: table-cell;
+    width: 100%;
     padding: 20px;
     border-left: 1px solid #bbb;
     border-bottom: 1px solid #bbb;

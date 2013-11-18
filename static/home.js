@@ -182,6 +182,7 @@ jQuery(function($){
                         console.log(JSON.stringify(re.book, 0, 2))
                     } else if (re.loggedin == false) alert("you have to log in")
                     else console.log(JSON.stringify({error:"book",er:er}, 0, 2))
+                    dom.upload_progress.css("width", "0")
                     dom.upload_page.hide()
                 },
                 error: function(xhr, status, er){
@@ -192,7 +193,7 @@ jQuery(function($){
                     if (xhr && xhr.upload){
                         xhr.upload.addEventListener('progress', function(event) {
                             if (event.lengthComputable) {
-                                var percent = event.loaded / file.size
+                                var percent = event.loaded / file.size * 100
                                 dom.upload_progress.css("width", percent + "%")
                             }
                         }, false)
