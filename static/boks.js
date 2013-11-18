@@ -189,7 +189,7 @@ var bok = function(x){
 
         templates.comment = function(comment){
             var text = templates.replace_text_with_img(comment.comment)
-            var img = (comment.img ? "<div class='boks_comment_img_box'><img class='boks_comment_img' src='" + comment.img + "' alt='your image will be ready in a minute'></div>" : "")
+            var img = (comment.img ? "<div class='boks_comment_img_box'><img class='boks_comment_img' src='" + comment.img + "'></div>" : "")
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
             var has_replies = (comment.replies > 0 ? "boks_green_underline" : "")
@@ -378,15 +378,13 @@ var bok = function(x){
 
         bindings.mouseenter_p = function(){
             var p = $(this).index()
-            dom.comments.children(".boks_comments_box").removeClass("boks_comments_box_hover")
-            dom.comments.children(".boks_comments_box[data-p='" + p + "']").addClass("boks_p_hover")
+            var comments_box = dom.comments.children(".boks_comments_box[data-p='" + p + "']")
+            if (comments_box.length){
+                dom.comments.children(".boks_comments_box").removeClass("boks_comments_box_hover boks_p_hover")
+                comments_box.addClass("boks_p_hover")
+            }
             var q = page.get_p(p)
             if (q != null) views.load_book_comments(q)
-        }
-
-        bindings.mouseleave_p = function(){
-            var p = $(this).index()
-            dom.comments.children(".boks_comments_box[data-p='" + p + "']").removeClass("boks_p_hover")
         }
 
         bindings.click_new_comment_post = function(){
@@ -472,7 +470,7 @@ var bok = function(x){
 
         bindings.mouseenter_top_level_comments_box = function(){
             if (k.sound) dom.clink.play()
-            dom.comments.children(".boks_comments_box").removeClass("boks_comments_box_hover")
+            dom.comments.children(".boks_comments_box").removeClass("boks_comments_box_hover boks_p_hover")
             $(this).addClass("boks_comments_box_hover")
         }
 
