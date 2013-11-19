@@ -6,6 +6,7 @@ var http = require("http")
 var app = http.createServer(server)
 var books = require("./noodles/books.js")
 var users = require("./noodles/users.js")
+var jobs = require("./noodles/jobs.js")
 
 var k = {
     max_req_size: 10485760

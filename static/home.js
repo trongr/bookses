@@ -158,18 +158,19 @@ jQuery(function($){
             dom.upload_page.css({"display":"table"})
         }
 
-        // mark
         bindings.click_post_upload_button = function(){
             var title = $("#upload_book_title").val().trim()
             var description = $("#upload_book_description").val().trim()
             var file = $("#local_book_upload")[0].files[0]
             if (!file) return alert("please choose a file")
             else if (file.size > k.max_book_size) return alert("your file is too big: must be less than 10MB")
+
             if (!FormData) return alert("can't upload: please update your browser")
             var data = new FormData()
             data.append("file", file)
             data.append("title", title)
             data.append("description", description)
+
             $.ajax({
                 url: "book",
                 type: "post",

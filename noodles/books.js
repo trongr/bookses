@@ -281,7 +281,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.create_comment = function(req, res){
         async.waterfall([
             function(done){
