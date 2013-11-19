@@ -398,7 +398,6 @@ var bok = function(x){
             var p = comments_box.attr("data-p")
             var parentid = comments_box.attr("data-parent")
             var comment = comments_box.find(".boks_new_comment_textarea").val().trim()
-            if (!comment) return alert("empty comment")
             var img = $(this).parent().children(".boks_new_comment_picture_input")[0].files[0]
             if (img && img.size > k.max_img_size) return alert("your img is too big: must be less than 5MB")
 
