@@ -405,14 +405,16 @@ var bok = function(x){
         }
 
         bindings.click_new_comment_post = function(){
+            var that = $(this)
             api.is_logged_in(function(er, loggedin){
                 if (!loggedin) return alert("please log in")
 
-                var comments_box = $(this).closest(".boks_comments_box")
+                var comments_box = that.closest(".boks_comments_box")
                 var p = comments_box.attr("data-p")
                 var parentid = comments_box.attr("data-parent")
                 var comment = comments_box.find(".boks_new_comment_textarea").val().trim()
-                var img = $(this).parent().children(".boks_new_comment_picture_input")[0].files[0]
+                if (!comment) return alert("comment can't be empty")
+                var img = that.parent().children(".boks_new_comment_picture_input")[0].files[0]
                 if (img && img.size > k.max_img_size) return alert("your img is too big: must be less than 5MB")
 
                 if (!FormData) return alert("can't upload: please update your browser")

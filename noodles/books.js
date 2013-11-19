@@ -150,6 +150,7 @@ var books = module.exports = (function(){
             },
             function(done){
                 if (!req.files) done({error:"no file"})
+                else done(null)
             }
         ], function(er, re){
             if (er){

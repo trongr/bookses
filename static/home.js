@@ -164,6 +164,7 @@ jQuery(function($){
 
                 var title = $("#upload_book_title").val().trim()
                 var description = $("#upload_book_description").val().trim()
+                if (!title || !description) return alert("title and description can't be empty")
                 var file = $("#local_book_upload")[0].files[0]
                 if (!file) return alert("please choose a file")
                 else if (file.size > k.max_book_size) return alert("your file is too big: must be less than 10MB")
