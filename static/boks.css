@@ -112,11 +112,6 @@ button:hover {
     margin-left: 0;
 }
 
-/* .boks_content_right > .boks_comments_box:hover { */
-/*     box-shadow: 0 0 20px 5px #999; */
-/*     z-index: 1 !important; */
-/* } */
-
 .boks_p_hover {
     box-shadow: 0 0 20px 5px #999 !important;
     z-index: 1 !important;
@@ -252,4 +247,16 @@ button.boks_comment_flag:hover {
     width: 100%;
     font-size: 2em;
     padding: 20px;
+    color: #0f0;
+}
+
+.boks_comments_home_button {
+    width: 100%;
+    font-size: 2em;
+    padding: 20px;
+    color: #f00;
+}
+
+.boks_comments_home_button:hover {
+    color: #f00;
 }

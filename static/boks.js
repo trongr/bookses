@@ -157,6 +157,7 @@ var bok = function(x){
             var datap = ((p || p == 0) ? "data-p='" + p + "'" : "")
             var parent = (parentid ? "data-parent='" + parentid + "'" : "")
             var more_comments = (comments.length > 10 ? "" : "boks_hide")
+            var less_comments = (parentid || comments.length > 10 ? "boks_hide" : "")
             var html = "<div class='boks_comments_box' " + parent + " " + datap + " " + style + ">"
                 + "         <div class='boks_new_comment_box'>"
                 + "             <div class='boks_new_comment_textarea_box'>"
@@ -172,8 +173,9 @@ var bok = function(x){
                 + "         <div class='boks_comments'>"
                 +               content
                 + "         </div>"
-                + "         <div class=''>"
+                + "         <div>"
                 + "             <button class='boks_more_comments_button " + more_comments + "' data-page='0'><i class='icon-chevron-down'></i></button>"
+                + "             <button class='boks_comments_home_button " + less_comments + "'><i class='icon-home'></i></button>"
                 + "         </div>"
                 + "     </div>"
             return html
@@ -250,9 +252,9 @@ var bok = function(x){
                         .on("click", ".boks_comment_content", bindings.click_comment_content)
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
                         .on("mouseenter", ".boks_text p", bindings.mouseenter_p)
-                        .on("mouseleave", ".boks_text p", bindings.mouseleave_p)
                         .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
                         .on("click", ".boks_more_comments_button", bindings.click_more_comments)
+                        .on("click", ".boks_comments_home_button", bindings.click_comments_home)
                         .on("mouseenter", ".boks_content_right > .boks_comments_box", bindings.mouseenter_top_level_comments_box)
                     dom.comments = dom.box.find(".boks_content_right")
                     window.scrollTo(0, 0)
@@ -348,7 +350,9 @@ var bok = function(x){
             dom.comments.children(".boks_comments_box").removeClass("boks_comments_box_hover boks_p_hover")
             var comments_box = dom.comments.find(".boks_comments_box[data-p='" + p + "']")
             if (comments_box.length){
-                comments_box.find(".boks_new_comment_box").eq(0).show()
+                comments_box
+                    .addClass("boks_p_hover")
+                    .find(".boks_new_comment_box").eq(0).show()
                     .find(".boks_new_comment_textarea").focus().val("")
             } else {
                 views.load_new_comments_box(p, top, null).addClass("boks_p_hover")
@@ -446,17 +450,19 @@ var bok = function(x){
             var parentid = container.attr("data-parent")
             async.waterfall([
                 function(done){
-                    if (p) api.get_book_comments(o.bID, p, page, function(er, comments){
+                    if (parentid) api.get_comment_comments(parentid, page, function(er, comments){
                         done(er, comments)
                     })
-                    else api.get_comment_comments(parentid, page, function(er, comments){
+                    else api.get_book_comments(o.bID, p, page, function(er, comments){
                         done(er, comments)
                     })
                 },
                 function(comments, done){
                     if (comments.length) box.append(templates.comments(comments.slice(0, k.page_size)))
-                    if (comments.length <= k.page_size) that.hide()
-                    else that.attr("data-page", page)
+                    if (comments.length <= k.page_size){
+                        that.hide()
+                        that.parent().find(".boks_comments_home_button").show()
+                    } else that.attr("data-page", page)
                     done(null)
                 },
             ], function(er, re){
@@ -478,6 +484,14 @@ var bok = function(x){
 
         bindings.click_choose_comment_image = function(){
             $(this).parent().children(".boks_new_comment_picture_input").click()
+        }
+
+        bindings.click_comments_home = function(){
+            var p = $(this).closest(".boks_comments_box").attr("data-p")
+            var top = $("#" + o.bID + " .boks_text p").eq(p).get(0).offsetTop
+            $("html, body").animate({
+                scrollTop: top
+            }, 100)
         }
 
         return bindings
