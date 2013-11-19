@@ -97,6 +97,17 @@ var bok = function(x){
             })
         }
 
+        api.is_logged_in = function(done){
+            $.ajax({
+                url: "user/login",
+                type: "get",
+                success: function(re){
+                    if (re.loggedin) done(null, re.loggedin)
+                    else done({error:"may not be logged in",re:re})
+                }
+            })
+        }
+
         api.upvote_comment = function(cID, done){
             $.ajax({
                 url: "comment/" + cID + "/upvote",
@@ -394,35 +405,39 @@ var bok = function(x){
         }
 
         bindings.click_new_comment_post = function(){
-            var comments_box = $(this).closest(".boks_comments_box")
-            var p = comments_box.attr("data-p")
-            var parentid = comments_box.attr("data-parent")
-            var comment = comments_box.find(".boks_new_comment_textarea").val().trim()
-            var img = $(this).parent().children(".boks_new_comment_picture_input")[0].files[0]
-            if (img && img.size > k.max_img_size) return alert("your img is too big: must be less than 5MB")
+            api.is_logged_in(function(er, loggedin){
+                if (!loggedin) return alert("please log in")
 
-            if (!FormData) return alert("can't upload: please update your browser")
-            var data = new FormData()
-            data.append("book", o.bID)
-            data.append("p", p)
-            if (parentid) data.append("parent", parentid)
-            data.append("comment", comment)
-            if (img) data.append("img", img)
+                var comments_box = $(this).closest(".boks_comments_box")
+                var p = comments_box.attr("data-p")
+                var parentid = comments_box.attr("data-parent")
+                var comment = comments_box.find(".boks_new_comment_textarea").val().trim()
+                var img = $(this).parent().children(".boks_new_comment_picture_input")[0].files[0]
+                if (img && img.size > k.max_img_size) return alert("your img is too big: must be less than 5MB")
 
-            comments_box.find(".boks_new_comment_box").hide()
+                if (!FormData) return alert("can't upload: please update your browser")
+                var data = new FormData()
+                data.append("book", o.bID)
+                data.append("p", p)
+                if (parentid) data.append("parent", parentid)
+                data.append("comment", comment)
+                if (img) data.append("img", img)
 
-            $.ajax({
-                url: "comment",
-                type: "post",
-                data: data,
-                processData: false,
-                contentType: false,
-                success: function(re){
-                    if (re.comment){
-                        comments_box.children(".boks_comments").prepend(templates.comment(re.comment))
-                    } else if (re.loggedin == false) alert("you have to log in")
-                    else alert(JSON.stringify({error:"create comment",er:re}, 0, 2))
-                }
+                comments_box.find(".boks_new_comment_box").hide()
+
+                $.ajax({
+                    url: "comment",
+                    type: "post",
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    success: function(re){
+                        if (re.comment){
+                            comments_box.children(".boks_comments").prepend(templates.comment(re.comment))
+                        } else if (re.loggedin == false) alert("you have to log in")
+                        else alert(JSON.stringify({error:"create comment",er:re}, 0, 2))
+                    }
+                })
             })
         }
 

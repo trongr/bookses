@@ -159,47 +159,51 @@ jQuery(function($){
         }
 
         bindings.click_post_upload_button = function(){
-            var title = $("#upload_book_title").val().trim()
-            var description = $("#upload_book_description").val().trim()
-            var file = $("#local_book_upload")[0].files[0]
-            if (!file) return alert("please choose a file")
-            else if (file.size > k.max_book_size) return alert("your file is too big: must be less than 10MB")
+            users.api_is_logged_in(function(er, loggedin){
+                if (!loggedin) return alert("please log in")
 
-            if (!FormData) return alert("can't upload: please update your browser")
-            var data = new FormData()
-            data.append("file", file)
-            data.append("title", title)
-            data.append("description", description)
+                var title = $("#upload_book_title").val().trim()
+                var description = $("#upload_book_description").val().trim()
+                var file = $("#local_book_upload")[0].files[0]
+                if (!file) return alert("please choose a file")
+                else if (file.size > k.max_book_size) return alert("your file is too big: must be less than 10MB")
 
-            $.ajax({
-                url: "book",
-                type: "post",
-                data: data,
-                processData: false,
-                contentType: false,
-                success: function(re){
-                    if (re.book){
-                        console.log(JSON.stringify(re.book, 0, 2))
-                    } else if (re.loggedin == false) alert("you have to log in")
-                    else console.log(JSON.stringify({error:"book",er:re}, 0, 2))
-                    dom.upload_progress.css("width", "0")
-                    dom.upload_page.hide()
-                },
-                error: function(xhr, status, er){
-                    console.log(JSON.stringify({error:"upload",xhr:xhr,status:status,er:er}, 0, 2))
-                },
-                xhr: function(){
-                    var xhr = $.ajaxSettings.xhr()
-                    if (xhr && xhr.upload){
-                        xhr.upload.addEventListener('progress', function(event) {
-                            if (event.lengthComputable) {
-                                var percent = event.loaded / file.size * 100
-                                dom.upload_progress.css("width", percent + "%")
-                            }
-                        }, false)
+                if (!FormData) return alert("can't upload: please update your browser")
+                var data = new FormData()
+                data.append("file", file)
+                data.append("title", title)
+                data.append("description", description)
+
+                $.ajax({
+                    url: "book",
+                    type: "post",
+                    data: data,
+                    processData: false,
+                    contentType: false,
+                    success: function(re){
+                        if (re.book){
+                            console.log(JSON.stringify(re.book, 0, 2))
+                        } else if (re.loggedin == false) alert("you have to log in")
+                        else console.log(JSON.stringify({error:"book",er:re}, 0, 2))
+                        dom.upload_progress.css("width", "0")
+                        dom.upload_page.hide()
+                    },
+                    error: function(xhr, status, er){
+                        console.log(JSON.stringify({error:"upload",xhr:xhr,status:status,er:er}, 0, 2))
+                    },
+                    xhr: function(){
+                        var xhr = $.ajaxSettings.xhr()
+                        if (xhr && xhr.upload){
+                            xhr.upload.addEventListener('progress', function(event) {
+                                if (event.lengthComputable) {
+                                    var percent = event.loaded / file.size * 100
+                                    dom.upload_progress.css("width", percent + "%")
+                                }
+                            }, false)
+                        }
+                        return xhr
                     }
-                    return xhr
-                }
+                })
             })
         }
 
