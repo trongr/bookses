@@ -298,6 +298,7 @@ var bok = function(x){
             })
         }
 
+        // mark
         views.load_paragraph_comments = function(p, done){
             async.waterfall([
                 function(done){
@@ -309,6 +310,7 @@ var bok = function(x){
                     if (comments.length){
                         var paragraph = $("#" + o.bID + " .boks_text p").eq(p)
                         var top = paragraph.get(0).offsetTop
+                        paragraph.addClass("p_margin")
                         dom.comments.append(templates.comments_box(comments, p, top, null))
                     }
                     done(null)
@@ -369,7 +371,7 @@ var bok = function(x){
             var p = $(this).index()
             var top = $(this).get(0).offsetTop
             dom.comments.children(".boks_comments_box").removeClass("boks_comments_box_hover boks_p_hover")
-            var comments_box = dom.comments.find(".boks_comments_box[data-p='" + p + "']")
+            var comments_box = dom.comments.children(".boks_comments_box[data-p='" + p + "']")
             if (comments_box.length){
                 comments_box.addClass("boks_p_hover")
                     .find(".boks_new_comment_box").eq(0).show()
@@ -475,7 +477,7 @@ var bok = function(x){
         bindings.click_more_comments = function(){
             var that = $(this)
             var container = that.closest(".boks_comments_box")
-            var box = container.find(".boks_comments")
+            var box = container.children(".boks_comments")
             var page = parseInt(that.attr("data-page")) + 1
             var p = container.attr("data-p")
             var parentid = container.attr("data-parent")
