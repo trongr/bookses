@@ -208,6 +208,7 @@ var bok = function(x){
             return html
         }
 
+        // mark
         templates.comment = function(comment){
             var text = templates.replace_text_with_img(comment.comment)
             var img = (comment.img ? "<div class='boks_comment_img_box'><img class='boks_comment_img' src='" + comment.img + "'></div>" : "")
@@ -365,7 +366,6 @@ var bok = function(x){
             }, 100)
         }
 
-        // mark
         bindings.click_paragraph = function(){
             var p = $(this).index()
             var top = $(this).get(0).offsetTop
@@ -435,6 +435,7 @@ var bok = function(x){
                 if (img) data.append("img", img)
 
                 var new_comment_box = comments_box.find(".boks_new_comment_box").eq(0)
+                var img_src = new_comment_box.find(".boks_new_comment_img").attr("src")
                 new_comment_box.find(".boks_new_comment_img").attr("src", "").hide()
                 new_comment_box.find(".boks_new_comment_textarea").focus().val("")
                 new_comment_box.find(".boks_new_comment_picture_input").replaceWith(templates.comment_img_input())
@@ -448,6 +449,7 @@ var bok = function(x){
                     contentType: false,
                     success: function(re){
                         if (re.comment){
+                            re.comment.img = img_src
                             comments_box.children(".boks_comments").prepend(templates.comment(re.comment))
                         } else if (re.loggedin == false) alert("you have to log in")
                         else alert(JSON.stringify({error:"create comment",er:re}, 0, 2))
