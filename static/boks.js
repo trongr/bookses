@@ -208,7 +208,6 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.comment = function(comment){
             var text = templates.replace_text_with_img(comment.comment)
             var img = (comment.img ? "<div class='boks_comment_img_box'><img class='boks_comment_img' src='" + comment.img + "'></div>" : "")
@@ -526,7 +525,6 @@ var bok = function(x){
             }, 100)
         }
 
-        // mark
         bindings.change_new_comment_picture_input = function(e){
             var file = e.target.files[0]
             var box = $(this).closest(".boks_new_comment_box")

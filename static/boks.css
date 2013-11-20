@@ -153,6 +153,7 @@ button:hover {
 
 .boks_comment_text {
     padding: 15px 15px 15px 15px;
+    white-space: pre-wrap;
 }
 
 .boks_comment_menu {
