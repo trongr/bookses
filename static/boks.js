@@ -161,6 +161,11 @@ var bok = function(x){
             return html
         }
 
+        templates.comment_img_input = function(){
+            return "<input class='boks_new_comment_picture_input' accept='image/*' type='file'>"
+        }
+
+        // mark
         // p and top can be null if comments have a parent, otw parentid can be null
         templates.comments_box = function(comments, p, top, parentid){
             var content = templates.comments(comments.slice(0, k.page_size))
@@ -171,13 +176,16 @@ var bok = function(x){
             var less_comments = (parentid || comments.length > 10 ? "boks_hide" : "")
             var html = "<div class='boks_comments_box' " + parent + " " + datap + " " + style + ">"
                 + "         <div class='boks_new_comment_box'>"
+                + "             <div class='boks_new_comment_img_box'>"
+                + "                 <img class='boks_new_comment_img'>"
+                + "             </div>"
                 + "             <div class='boks_new_comment_textarea_box'>"
                 + "                 <textarea class='boks_new_comment_textarea' placeholder='Comment or add an image'></textarea>"
                 + "             </div>"
                 + "             <div class='boks_new_comment_menu'>"
-                + "                 <input class='boks_new_comment_picture_input' type='file'>"
-                + "                 <button class='boks_new_comment_picture_button'><i class='icon-picture'></i></button>"
                 + "                 <button class='boks_new_comment_post'>POST</button>"
+                +                   templates.comment_img_input()
+                + "                 <button class='boks_new_comment_picture_button'><i class='icon-picture'></i></button>"
                 + "             </div>"
                 + "             <div class='clear_both'></div>"
                 + "         </div>"
@@ -245,6 +253,7 @@ var bok = function(x){
             })
         }
 
+        // mark
         views.load_book = function(done){
             async.waterfall([
                 function(done){
@@ -262,11 +271,12 @@ var bok = function(x){
                         .on("click", ".boks_new_comment_post", bindings.click_new_comment_post)
                         .on("click", ".boks_comment_content", bindings.click_comment_content)
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
-                        .on("mouseenter", ".boks_text p", bindings.mouseenter_p)
                         .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
                         .on("click", ".boks_more_comments_button", bindings.click_more_comments)
                         .on("click", ".boks_comments_home_button", bindings.click_comments_home)
+                        .on("mouseenter", ".boks_text p", bindings.mouseenter_p)
                         .on("mouseenter", ".boks_content_right > .boks_comments_box", bindings.mouseenter_top_level_comments_box)
+                        .on("change", ".boks_new_comment_picture_input", bindings.change_new_comment_picture_input)
                     dom.comments = dom.box.find(".boks_content_right")
                     window.scrollTo(0, 0)
                     done(null)
@@ -355,16 +365,15 @@ var bok = function(x){
             }, 100)
         }
 
+        // mark
         bindings.click_paragraph = function(){
             var p = $(this).index()
             var top = $(this).get(0).offsetTop
             dom.comments.children(".boks_comments_box").removeClass("boks_comments_box_hover boks_p_hover")
             var comments_box = dom.comments.find(".boks_comments_box[data-p='" + p + "']")
             if (comments_box.length){
-                comments_box
-                    .addClass("boks_p_hover")
+                comments_box.addClass("boks_p_hover")
                     .find(".boks_new_comment_box").eq(0).show()
-                    .find(".boks_new_comment_textarea").focus().val("")
             } else {
                 views.load_new_comments_box(p, top, null).addClass("boks_p_hover")
             }
@@ -425,7 +434,11 @@ var bok = function(x){
                 data.append("comment", comment)
                 if (img) data.append("img", img)
 
-                comments_box.find(".boks_new_comment_box").hide()
+                var new_comment_box = comments_box.find(".boks_new_comment_box").eq(0)
+                new_comment_box.find(".boks_new_comment_img").attr("src", "").hide()
+                new_comment_box.find(".boks_new_comment_textarea").focus().val("")
+                new_comment_box.find(".boks_new_comment_picture_input").replaceWith(templates.comment_img_input())
+                new_comment_box.hide()
 
                 $.ajax({
                     url: "comment",
@@ -508,6 +521,19 @@ var bok = function(x){
             $("html, body").animate({
                 scrollTop: top
             }, 100)
+        }
+
+        // mark
+        bindings.change_new_comment_picture_input = function(e){
+            var file = e.target.files[0]
+            var box = $(this).closest(".boks_new_comment_box")
+            var txt = box.find(".boks_new_comment_textarea").focus()
+            var img = box.find(".boks_new_comment_img")
+            var reader = new FileReader()
+            reader.onload = function(e){
+                img.attr("src", e.target.result).show()
+            }
+            reader.readAsDataURL(file)
         }
 
         return bindings
