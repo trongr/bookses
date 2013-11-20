@@ -374,6 +374,7 @@ var bok = function(x){
             if (comments_box.length){
                 comments_box.addClass("boks_p_hover")
                     .find(".boks_new_comment_box").eq(0).show()
+                    .find(".boks_new_comment_textarea").focus().val("")
             } else {
                 views.load_new_comments_box(p, top, null).addClass("boks_p_hover")
             }
@@ -437,7 +438,7 @@ var bok = function(x){
                 var new_comment_box = comments_box.find(".boks_new_comment_box").eq(0)
                 var img_src = new_comment_box.find(".boks_new_comment_img").attr("src")
                 new_comment_box.find(".boks_new_comment_img").attr("src", "").hide()
-                new_comment_box.find(".boks_new_comment_textarea").focus().val("")
+                new_comment_box.find(".boks_new_comment_textarea").val("")
                 new_comment_box.find(".boks_new_comment_picture_input").replaceWith(templates.comment_img_input())
                 new_comment_box.hide()
 
