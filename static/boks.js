@@ -43,14 +43,38 @@ var bok = function(x){
     var color = (function(){
         var color = {}
 
-        // start:result:end == 0:point:grade
-        color.code_point_grade = function(start, end, point, grade){
-            var s = parseInt(start, 16)
-            var e = parseInt(end, 16)
-            return parseInt(point * (e - s) / grade + s)
+        // start:result:end == 0:point:range
+        color.code_point_range = function(start, end, point, range){
+            var sr = parseInt(start.substr(0, 2), 16) // substr(start, length) not (start, end)!
+            var sg = parseInt(start.substr(2, 2), 16)
+            var sb = parseInt(start.substr(4, 2), 16)
+            var er = parseInt(end.substr(0, 2), 16)
+            var eg = parseInt(end.substr(2, 2), 16)
+            var eb = parseInt(end.substr(4, 2), 16)
+            var pr = ("00" + parseInt(point * (er - sr) / range + sr).toString(16)).substr(-2)
+            var pg = ("00" + parseInt(point * (eg - sg) / range + sg).toString(16)).substr(-2)
+            var pb = ("00" + parseInt(point * (eb - sb) / range + sb).toString(16)).substr(-2)
+            return pr + pg + pb
         }
 
         return color
+    }())
+
+    var css = (function(){
+        var css = {}
+
+        css.k = {
+            cold: "dddddd",
+            hot: "00ff00",
+        }
+
+        css.color_code_p_margin = function(p, pop){
+            p.css({
+                "border-left": "5px solid #" + color.code_point_range(css.k.cold, css.k.hot, pop, k.page_size)
+            })
+        }
+
+        return css
     }())
 
     var api = (function(){
@@ -309,7 +333,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         views.load_paragraph_comments = function(p, done){
             async.waterfall([
                 function(done){
@@ -321,7 +344,8 @@ var bok = function(x){
                     if (comments.length){
                         var paragraph = $("#" + o.bID + " .boks_text p").eq(p)
                         var top = paragraph.get(0).offsetTop
-                        paragraph.addClass("p_margin")
+                        var pop = Math.min(comments.length, k.page_size)
+                        css.color_code_p_margin(paragraph, pop)
                         dom.comments.append(templates.comments_box(comments, p, top, null))
                     }
                     done(null)
