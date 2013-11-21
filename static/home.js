@@ -67,18 +67,11 @@ jQuery(function($){
                 + "            <div class='book_num_comments' title='comments'>" + book.replies + "</div>"
                 + "        </div>"
                 + "        <div class='book_main_box'>"
-                + "            <div class='book_title'>"
-                +                  book.title
-                + "            </div>"
-                + "            <div class='book_created'>"
-                +                  moment(book.created).format(k.date_format)
-                + "            </div>"
-                + "            <div class='book_description'>"
-                +                  book.description
-                + "            </div>"
+                + "            <div class='book_title'>" + book.title + "</div>"
+                + "            <div class='book_created'>" + moment(book.created).format(k.date_format) + "</div>"
+                + "            <div class='book_description'>" + book.description + "</div>"
                 + "        </div>"
-                + "        <div class='book_text'>"
-                + "        </div>"
+                + "        <div class='book_text'></div>"
                 + "     </div>"
             return html
         }
