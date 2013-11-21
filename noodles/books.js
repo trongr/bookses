@@ -25,6 +25,7 @@ var k = {
     tables: {
         books: "books",
         comments: "comments",
+        likes: "likes",
         jobs: "jobs",
     },
     page_size: 10,
@@ -428,11 +429,36 @@ var books = module.exports = (function(){
         })
     }
 
+    // mark
     books.upvote_comment = function(req, res){
-        DB.update_entry_by_id(k.tables.comments, req.params.id, {$inc:{votes:1,pop:1}}, function(er, num){
+        async.waterfall([
+            function(done){
+                DB.get_entries(k.tables.likes, {
+                    user: req.session.username,
+                    like: req.params.id
+                }, {}, function(er, entries){
+                    done(er, entries)
+                })
+            },
+            function(entries, done){
+                if (entries.length) done({info:"user already liked this"})
+                else DB.create(k.tables.likes, {
+                    user: req.session.username,
+                    like: req.params.id,
+                    created: new Date(),
+                }, function(er, like){
+                    done(er)
+                })
+            },
+            function(done){
+                DB.update_entry_by_id(k.tables.comments, req.params.id, {$inc:{votes:1,pop:1}}, function(er, num){
+                    done(er, num)
+                })
+            }
+        ], function(er, num){
             if (er){
                 console.log(JSON.stringify({error:"books.upvote_comment",id:req.params.id,er:er}, 0, 2))
-                res.send({error:"upvote comment"})
+                res.send({error:"upvote comment",info:er.info})
             } else {
                 res.send({num:num})
             }
@@ -449,10 +475,34 @@ var books = module.exports = (function(){
     }
 
     books.like_book = function(req, res){
-        DB.update_entry_by_id(k.tables.books, req.params.id, {$inc:{votes:1,pop:1}}, function(er, num){
+        async.waterfall([
+            function(done){
+                DB.get_entries(k.tables.likes, {
+                    user: req.session.username,
+                    like: req.params.id
+                }, {}, function(er, entries){
+                    done(er, entries)
+                })
+            },
+            function(entries, done){
+                if (entries.length) done({info:"user already liked this"})
+                else DB.create(k.tables.likes, {
+                    user: req.session.username,
+                    like: req.params.id,
+                    created: new Date(),
+                }, function(er, like){
+                    done(er)
+                })
+            },
+            function(done){
+                DB.update_entry_by_id(k.tables.books, req.params.id, {$inc:{votes:1,pop:1}}, function(er, num){
+                    done(er, num)
+                })
+            }
+        ], function(er, num){
             if (er){
                 console.log(JSON.stringify({error:"books.like_book",id:req.params.id,er:er}, 0, 2))
-                res.send({error:"like book"})
+                res.send({error:"like book",info:er.info})
             } else {
                 res.send({num:num})
             }

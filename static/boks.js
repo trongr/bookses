@@ -210,7 +210,7 @@ var bok = function(x){
             var datap = ((p || p == 0) ? "data-p='" + p + "'" : "")
             var parent = (parentid ? "data-parent='" + parentid + "'" : "")
             var more_comments = (comments.length > 10 ? "" : "boks_hide")
-            var less_comments = (parentid || comments.length > 10 ? "boks_hide" : "")
+            var home_comments = (parentid ? "boks_hide" : "")
             var html = "<div class='boks_comments_box' " + parent + " " + datap + " " + style + ">"
                 + "         <div class='boks_new_comment_box'>"
                 + "             <div class='boks_new_comment_textarea_box'>"
@@ -230,8 +230,8 @@ var bok = function(x){
                 +               content
                 + "         </div>"
                 + "         <div>"
+                + "             <button class='boks_comments_home_button " + home_comments + "'><i class='icon-home'></i></button>"
                 + "             <button class='boks_more_comments_button " + more_comments + "' data-page='0'><i class='icon-chevron-down'></i></button>"
-                + "             <button class='boks_comments_home_button " + less_comments + "'><i class='icon-home'></i></button>"
                 + "         </div>"
                 + "     </div>"
             return html
@@ -504,7 +504,7 @@ var bok = function(x){
                 boks_comment_votes.html(parseInt(boks_comment_votes.html()) + 1)
                 api.upvote_comment(id, function(er, num){
                     if (er && er.loggedin == false) alert("You have to be logged in")
-                    else if (er) console.log(JSON.stringify(er, 0, 2))
+                    else if (er) alert(JSON.stringify(er, 0, 2))
                 })
             } catch (e){
                 alert("something went wrong. couldn't upvote comment")
