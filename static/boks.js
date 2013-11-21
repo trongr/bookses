@@ -40,6 +40,19 @@ var bok = function(x){
         return page
     }())
 
+    var color = (function(){
+        var color = {}
+
+        // start:result:end == 0:point:grade
+        color.code_point_grade = function(start, end, point, grade){
+            var s = parseInt(start, 16)
+            var e = parseInt(end, 16)
+            return parseInt(point * (e - s) / grade + s)
+        }
+
+        return color
+    }())
+
     var api = (function(){
         var api = {}
 
@@ -219,9 +232,7 @@ var bok = function(x){
                 + "         <div class='boks_comment_text_box'>"
                 + "             <div class='boks_comment_content'>"
                 +                   img
-                + "                 <div class='boks_comment_text'>"
-                +                       text
-                + "                 </div>"
+                + "                 <div class='boks_comment_text'>" + text + "</div>"
                 + "             </div>"
                 + "             <div class='boks_comment_created'>"
                 +                   moment(comment.created).format(k.date_format_alt)
@@ -438,10 +449,10 @@ var bok = function(x){
 
                 var new_comment_box = comments_box.find(".boks_new_comment_box").eq(0)
                 var img_src = new_comment_box.find(".boks_new_comment_img").attr("src")
-                new_comment_box.find(".boks_new_comment_img").attr("src", "").hide()
                 new_comment_box.find(".boks_new_comment_textarea").val("")
                 new_comment_box.find(".boks_new_comment_picture_input").replaceWith(templates.comment_img_input())
-                new_comment_box.hide()
+
+                $("#" + o.bID + " .boks_text p").eq(p).addClass("p_margin")
 
                 $.ajax({
                     url: "comment",
@@ -453,6 +464,8 @@ var bok = function(x){
                         if (re.comment){
                             re.comment.img = img_src
                             comments_box.children(".boks_comments").prepend(templates.comment(re.comment))
+                            new_comment_box.find(".boks_new_comment_img").attr("src", "").hide()
+                            new_comment_box.hide() // hide here to avoid comments_box being hidden
                         } else if (re.loggedin == false) alert("you have to log in")
                         else alert(JSON.stringify({error:"create comment",er:re}, 0, 2))
                     }
