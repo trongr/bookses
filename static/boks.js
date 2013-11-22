@@ -475,6 +475,23 @@ var bok = function(x){
                 var img_src = new_comment_box.find(".boks_new_comment_img").attr("src")
                 new_comment_box.find(".boks_new_comment_textarea").val("")
                 new_comment_box.find(".boks_new_comment_picture_input").replaceWith(templates.comment_img_input())
+                new_comment_box.find(".boks_new_comment_img").attr("src", "").hide()
+                new_comment_box.hide() // hide here to avoid comments_box being hidden
+
+                var fake_comment = {
+                    book: o.bID,
+                    p: p,
+                    parent: parentid,
+                    username: "you",
+                    comment: comment,
+                    img: img_src,
+                    created: new Date(),
+                    votes: 1,
+                    replies: 0,
+                    pop: 1
+                }
+                var new_comment = $(templates.comment(fake_comment))
+                comments_box.children(".boks_comments").prepend(new_comment)
 
                 $("#" + o.bID + " .boks_text p").eq(p).addClass("p_margin")
 
@@ -486,10 +503,7 @@ var bok = function(x){
                     contentType: false,
                     success: function(re){
                         if (re.comment){
-                            re.comment.img = img_src
-                            comments_box.children(".boks_comments").prepend(templates.comment(re.comment))
-                            new_comment_box.find(".boks_new_comment_img").attr("src", "").hide()
-                            new_comment_box.hide() // hide here to avoid comments_box being hidden
+                            new_comment.attr("data-id", re.comment._id)
                         } else if (re.loggedin == false) alert("you have to log in")
                         else alert(JSON.stringify({error:"create comment",er:re}, 0, 2))
                     }
