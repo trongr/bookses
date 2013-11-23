@@ -20,7 +20,8 @@ db.open(function(er, db) {
 
 var k = {
     tmp: "tmp",
-    static_public: "static/public",
+    static_public: "/static/public",
+    static_public_dir: "static/public", // local path
     localhost: "http://localhost:8080",
     tables: {
         books: "books",
@@ -237,7 +238,7 @@ var books = module.exports = (function(){
     }
 
     books.get_book_by_id = function(req, res){
-        DB.get_entry_by_id(req.params.id, function(er, book){
+        DB.get_entry_by_id(k.tables.books, req.params.id, function(er, book){
             if (er){
                 console.log(JSON.stringify({error:"books.get_book_by_id",id:req.params.id,er:er}, 0, 2))
                 res.send({error:"get book by id"})
@@ -310,7 +311,7 @@ var books = module.exports = (function(){
             },
             function(comment, done){
                 done(null, comment)
-                if (req.files.img) child.exec("mv " + req.files.img.path + " " + k.static_public + "/" + comment._id, function(er, stdout, stder){
+                if (req.files.img) child.exec("mv " + req.files.img.path + " " + k.static_public_dir + "/" + comment._id, function(er, stdout, stder){
                     if (er) console.log(JSON.stringify({error:"books.create_comment: mv img",src:req.files.img.path,id:comment._id}, 0, 2))
                 })
                 if (req.body.book) DB.update_entry_by_id(k.tables.books, req.body.book, {$inc:{replies:1,pop:1}}, function(er, num){

@@ -5,7 +5,7 @@ var fs = require("fs")
 
 var k = {
     tmp: "tmp",
-    static_public: "static/public",
+    static_public_dir: "static/public",
 }
 
 var u = (function(){
@@ -60,7 +60,7 @@ var child_book = (function(){
 
     child_book.process_book = function(id, src){
         console.log("processing new book: " + id)
-        var dst = k.static_public + "/" + id
+        var dst = k.static_public_dir + "/" + id
         u.write_book(src, dst, function(er){
             console.log("done processing new book: " + id)
             if (er){

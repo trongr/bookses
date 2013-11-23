@@ -19,7 +19,7 @@ jQuery(function($){
         api.bug = function(error){
             console.log(JSON.stringify(error, 0, 2))
             $.ajax({
-                url: "/bug",
+                url: "bug",
                 type: "post",
                 data: {
                     error: error
@@ -30,7 +30,7 @@ jQuery(function($){
 
         api.get_all_books = function(page, done){
             $.ajax({
-                url: "/books",
+                url: "books",
                 type: "get",
                 data: {
                     page: page
@@ -44,7 +44,7 @@ jQuery(function($){
 
         api.get_book_quotes = function(book_id, done){
             $.ajax({
-                url: "/book/" + book_id + "/quotes",
+                url: "book/" + book_id + "/quotes",
                 type: "get",
                 success: function(re){
                     if (re.quotes) done(null, re.quotes)
@@ -112,7 +112,14 @@ jQuery(function($){
         }
 
         views.load_book = function(box, bID){
-            window.location = "/read/" + bID
+            var book = new bok({
+                box: box,
+                bID: bID,
+                error: function(er){
+                    box.hide()
+                    alert("This book is either being processed or something's gone wrong. Please send me this message: " + JSON.stringify(er, 0, 2))
+                }
+            })
         }
 
         return views
@@ -183,7 +190,7 @@ jQuery(function($){
                 data.append("description", description)
 
                 $.ajax({
-                    url: "/book",
+                    url: "book",
                     type: "post",
                     data: data,
                     processData: false,
@@ -293,7 +300,7 @@ jQuery(function($){
 
         users.api_create_user = function(username, password, done){
             $.ajax({
-                url: "/user/" + username + "/register",
+                url: "user/" + username + "/register",
                 type: "post",
                 data: {password:password},
                 success: function(re){
@@ -305,7 +312,7 @@ jQuery(function($){
 
         users.api_login = function(username, password, done){
             $.ajax({
-                url: "/user/" + username + "/login",
+                url: "user/" + username + "/login",
                 type: "post",
                 data: {password:password},
                 success: function(re){
@@ -317,7 +324,7 @@ jQuery(function($){
 
         users.api_logout = function(done){
             $.ajax({
-                url: "/user/logout",
+                url: "user/logout",
                 type: "post",
                 success: function(re){
                     if (re.loggedout) done(null)
@@ -337,7 +344,7 @@ jQuery(function($){
 
         users.api_is_logged_in = function(done){
             $.ajax({
-                url: "/user/login",
+                url: "user/login",
                 type: "get",
                 success: function(re){
                     if (re.loggedin) done(null, re.loggedin)

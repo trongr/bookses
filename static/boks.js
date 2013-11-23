@@ -11,7 +11,7 @@ var bok = function(x){
     }
 
     var k = {
-        static_public: "static/public",
+        static_public: "/static/public",
         date_format: "D MMMM YYYY",
         date_format_alt: "h:mm A D MMM YYYY",
         page_size: 10,
@@ -83,7 +83,7 @@ var bok = function(x){
         api.bug = function(error){
             console.log(JSON.stringify(error, 0, 2))
             $.ajax({
-                url: "bug",
+                url: "/bug",
                 type: "post",
                 data: {
                     error: error
@@ -93,21 +93,37 @@ var bok = function(x){
         }
 
         api.get_book = function(bID, done){
-            $.ajax({
-                url: k.static_public + "/" + bID,
-                type: "get",
-                success: function(re){
-                    done(null, re)
+            async.waterfall([
+                function(done){
+                    $.ajax({
+                        url: "/book/" + bID,
+                        type: "get",
+                        success: function(re){
+                            if (re.book) done(null, re.book)
+                            else done({error:"api getting book",re:re})
+                        }
+                    })
                 },
-                error: function(xhr, status, er){
-                    done({error:"api getting book", xhr:xhr, status:status, er:er})
+                function(book, done){
+                    $.ajax({
+                        url: book.url,
+                        type: "get",
+                        success: function(re){
+                            done(null, re)
+                        },
+                        error: function(xhr, status, er){
+                            done({error:"api getting file", xhr:xhr, status:status, er:er})
+                        }
+                    })
                 }
+            ], function(er, re){
+                done(er, re)
             })
         }
 
         api.get_book_comments = function(bID, p, page, done){
             $.ajax({
-                url: "book/" + bID + "/comments",
+                url: "/book/" + bID + "/comments",
                 type: "get",
                 data: {
                     p: p,
@@ -122,7 +138,7 @@ var bok = function(x){
 
         api.get_comment_comments = function(id, page, done){
             $.ajax({
-                url: "comment/" + id + "/comments",
+                url: "/comment/" + id + "/comments",
                 type: "get",
                 data: {
                     page: page
@@ -136,7 +152,7 @@ var bok = function(x){
 
         api.is_logged_in = function(done){
             $.ajax({
-                url: "user/login",
+                url: "/user/login",
                 type: "get",
                 success: function(re){
                     if (re.loggedin) done(null, re.loggedin)
@@ -147,7 +163,7 @@ var bok = function(x){
 
         api.upvote_comment = function(cID, done){
             $.ajax({
-                url: "comment/" + cID + "/upvote",
+                url: "/comment/" + cID + "/upvote",
                 type: "post",
                 data: {
 
@@ -161,7 +177,7 @@ var bok = function(x){
 
         api.like_book = function(id, done){
             $.ajax({
-                url: "book/" + id + "/like",
+                url: "/book/" + id + "/like",
                 type: "post",
                 success: function(re){
                     if (re.num) done(null, re.num)
@@ -396,10 +412,7 @@ var bok = function(x){
         }
 
         bindings.click_book_close = function(){
-            $(this).closest(".boks_reader").parent().hide()
-            $("html, body").animate({
-                scrollTop: $("#" + o.bID).offset().top
-            }, 100)
+            window.location = "/"
         }
 
         bindings.click_paragraph = function(){
@@ -496,7 +509,7 @@ var bok = function(x){
                 $("#" + o.bID + " .boks_text p").eq(p).addClass("p_margin")
 
                 $.ajax({
-                    url: "comment",
+                    url: "/comment",
                     type: "post",
                     data: data,
                     processData: false,
