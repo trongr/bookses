@@ -12,3 +12,5 @@ sudo cp configs/boks.nginx /etc/nginx/sites-enabled/
 sudo mv /etc/nginx/sites-enabled/default configs/default.nginx
 sudo service nginx restart
 
+echo setParameter=textSearchEnabled=true | sudo tee -a /etc/mongodb.conf
+sudo service mongodb restart
