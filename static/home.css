@@ -5,11 +5,11 @@ body {
 
 a {
     text-decoration: none;
-    color: #000;
+    color: #999;
 }
 
-a:hover {
-    color: #0f0;
+.a_hover {
+    color: #70ACFF;
 }
 
 input {
@@ -64,10 +64,43 @@ button {
     display: none;
 }
 
-#logo {
+button#logo {
     font-size: 1.5em;
     padding: 5px;
     color: #333;
+}
+
+button#logo:hover {
+    color: #0f0;
+}
+
+#bookses_more_menu_box {
+    display: none;
+    padding: 20px 0 10px 40px;
+}
+
+#bookses_more_menu {
+    display: table;
+    width: 100%;
+}
+
+.menu_item {
+    display: table-row;
+    width: 100%;
+}
+
+.menu_item > * {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.menu_item > a {
+    font-size: 2em;
+}
+
+.menu_item_text {
+    width: 100%;
+    padding-left: 20px;
 }
 
 #tagline_box {
@@ -79,6 +112,45 @@ button {
     font-size: 12pt;
     color: #666;
     padding: 20px;
+}
+
+#tagline:hover {
+    color: #6FF57A;
+}
+
+#info_box {
+    display: none;
+    padding: 20px;
+    font-size: 1em;
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+#info_box_content {
+    display: table;
+    width: 100%;
+}
+
+#info_box_left {
+    display: table-cell;
+    font-size: 5em;
+    vertical-align: top;
+    text-align: center;
+    font-weight: bolder;
+    width: 40%;
+}
+
+#info_box_right {
+    display: table-cell;
+    width: 60%;
+}
+
+#info_box_right b {
+    font-size: 1.3em;
+}
+
+#info_box_right a {
+    font-size: 1.2em;
 }
 
 #upload_page {

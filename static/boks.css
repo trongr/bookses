@@ -257,6 +257,10 @@ img.boks_new_comment_img {
     width: 100%;
     font-size: 2em;
     padding: 20px;
+    color: #5BFC60;
+}
+
+.boks_more_comments_button:hover {
     color: #0f0;
 }
 
@@ -264,7 +268,7 @@ img.boks_new_comment_img {
     width: 100%;
     font-size: 2em;
     padding: 20px;
-    color: #f00;
+    color: #FF3D3D;
 }
 
 .boks_comments_home_button:hover {

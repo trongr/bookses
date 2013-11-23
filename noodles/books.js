@@ -441,7 +441,7 @@ var books = module.exports = (function(){
                 })
             },
             function(entries, done){
-                if (entries.length) done({info:"user already liked this"})
+                if (entries.length) done({info:"you already liked this"})
                 else DB.create(k.tables.likes, {
                     user: req.session.username,
                     like: req.params.id,
@@ -485,7 +485,7 @@ var books = module.exports = (function(){
                 })
             },
             function(entries, done){
-                if (entries.length) done({info:"user already liked this"})
+                if (entries.length) done({info:"you already liked this"})
                 else DB.create(k.tables.likes, {
                     user: req.session.username,
                     like: req.params.id,

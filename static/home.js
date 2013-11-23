@@ -135,6 +135,10 @@ jQuery(function($){
         }
 
         bindings.init = function(){
+            $(".link_box").on("mouseenter", bindings.mouseenter_link_box)
+            $(".link_box").on("mouseleave", bindings.mouseleave_link_box)
+            $("#logo").on("click", bindings.click_logo)
+            $("#tagline").on("click", bindings.click_tagline)
             $("#search_button").on("click", bindings.click_search_button)
             $("#upload_button").on("click", bindings.click_upload_button)
             $("#local_book_upload").on("change", bindings.change_book_input)
@@ -143,12 +147,29 @@ jQuery(function($){
             $("#more_books_button").on("click", bindings.click_more_books)
         }
 
+        bindings.click_tagline = function(){
+            $("#info_box").toggle()
+        }
+
+        bindings.mouseenter_link_box = function(){
+            $(this).find("a").addClass("a_hover")
+        }
+
+        bindings.mouseleave_link_box = function(){
+            $(this).find("a").removeClass("a_hover")
+        }
+
+        bindings.click_logo = function(){
+            $("#bookses_more_menu_box").toggle()
+        }
+
         bindings.click_search_button = function(){
             alert("coming soon")
         }
 
         bindings.click_upload_button = function(){
             dom.upload_page.css({"display":"table"})
+            $("html, body").animate({scrollTop:dom.upload_page.offset().top}, 100)
         }
 
         bindings.click_post_upload_button = function(){
@@ -370,7 +391,7 @@ jQuery(function($){
 
     app.init()
 
-    (function(){
+    ;(function(){
         (function(i,s,o,g,r,a,m){
             i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();
             a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
