@@ -8,6 +8,10 @@ a {
     color: #999;
 }
 
+a:hover {
+    color: #70ACFF;
+}
+
 .a_hover {
     color: #70ACFF;
 }
@@ -34,6 +38,12 @@ button:hover {
 
 .clear_both {
     clear: both;
+}
+
+#error {
+    display: none;
+    padding: 20%;
+    font-size: 2em;
 }
 
 #book {

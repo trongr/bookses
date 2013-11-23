@@ -112,7 +112,7 @@ var bok = function(x){
                             done(null, re)
                         },
                         error: function(xhr, status, er){
-                            done({error:"api getting file", xhr:xhr, status:status, er:er})
+                            done({ready:false})
                         }
                     })
                 }
@@ -300,7 +300,7 @@ var bok = function(x){
 
         views.init = function(){
             views.load_book(function(er){
-                if (er) o.error({error:"loading book",er:er})
+                if (er) o.error(er)
             })
         }
 
@@ -333,8 +333,7 @@ var bok = function(x){
                     done(null)
                 },
             ], function(er, re){
-                if (er) done({error:"views.load_book",er:er})
-                else done(null)
+                done(er)
             })
         }
 

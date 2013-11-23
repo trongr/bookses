@@ -3,7 +3,10 @@ jQuery(function($){
         box: $("#book"),
         bID: document.URL.match(/read\/(.*)$/)[1],
         error: function(er){
-            alert("I think this book is being processed,\nor something has gone wrong and I\ncan't find it")
+            if (er){
+                $("#book").hide()
+                $("#error").show()
+            }
         }
     })
     ;(function(){
