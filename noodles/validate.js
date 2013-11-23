@@ -32,6 +32,12 @@ var validate = module.exports = (function(){
         else done({error:"not a positive integer"})
     }
 
+    validate.search_string = function(text, done){
+        if (!text || text.length == 0) done({error:"empty text"})
+        else if (text.length > 100) done({error:"search string longer than 100 characters"})
+        else done(null)
+    }
+
     return validate
 }())
 

@@ -13,11 +13,6 @@ var db = new mongo.Db(process.env.DB || "bookses", server)
 var validate = require("./validate.js")
 var child = require("child_process")
 
-db.open(function(er, db) {
-    if (er) throw er
-    console.log(module.filename + " connecting to " + (process.env.DB || "bookses"))
-})
-
 var k = {
     tmp: "tmp",
     static_public: "/static/public",
@@ -32,6 +27,20 @@ var k = {
     page_size: 10,
     milliseconds_in_a_day: 24 * 60 * 60 * 1000,
 }
+
+db.open(function(er, db) {
+    if (er) throw er
+    console.log(module.filename + " connecting to " + (process.env.DB || "bookses"))
+    db.collection(k.tables.books, {safe:true}, function(er, docs){
+        if (er) throw er
+        else docs.ensureIndex({
+            title: "text",
+            description: "text"
+        }, function(er, re){
+            if (er) throw er
+        })
+    })
+})
 
 var DB = (function(){
     var DB = {}
@@ -81,6 +90,19 @@ var DB = (function(){
                 if (er) done({error:"db.get_entries",table:table,query:query,aux:aux,er:er})
                 else done(null, entries)
             })
+        })
+    }
+
+    DB.find_books = function(text, aux, done){
+        db.command({
+            text: k.tables.books,
+            search: text
+        }, function(er, re){
+            if (er) done({error:"find books",text:text,er:er})
+            else if (re && re.results){
+                console.log(re.results)
+                done(null, re.results.slice(aux.skip, aux.skip + aux.limit))
+            } else done({error:"find books",er:"mysterious error",re:re})
         })
     }
 
@@ -204,9 +226,15 @@ var books = module.exports = (function(){
     }
 
     books.get_all_books_validate = function(req, res, next){
-        var page = req.query.page || 0
-        validate.integer(page, function(er){
-            if (er) res.send({error:"invalid page",er:er})
+        async.waterfall([
+            function(done){
+                req.query.page = req.query.page || 0
+                validate.integer(req.query.page, function(er){
+                    done(er)
+                })
+            },
+        ], function(er, re){
+            if (er) res.send({error:"get all books",er:er})
             else next(null)
         })
     }
@@ -222,6 +250,39 @@ var books = module.exports = (function(){
             if (er){
                 console.log(JSON.stringify({error:"books.get_all_books",er:er}, 0, 2))
                 res.send({error:"get all books"})
+            } else {
+                res.send({books:entries})
+            }
+        })
+    }
+
+    books.search_validate = function(req, res, next){
+        async.waterfall([
+            function(done){
+                req.query.page = req.query.page || 0
+                validate.integer(req.query.page, function(er){
+                    done(er)
+                })
+            },
+            function(done){
+                validate.search_string(req.query.search, function(er){
+                    done(er)
+                })
+            }
+        ], function(er, re){
+            if (er) res.send({error:"search books",er:er})
+            else next(null)
+        })
+    }
+
+    books.search = function(req, res){
+        DB.find_books(req.query.search, {
+            limit: k.page_size,
+            skip: req.query.page * k.page_size
+        }, function(er, entries){
+            if (er){
+                console.log(JSON.stringify({error:"books.search",er:er}, 0, 2))
+                res.send({error:"search"})
             } else {
                 res.send({books:entries})
             }
@@ -430,7 +491,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.upvote_comment = function(req, res){
         async.waterfall([
             function(done){
@@ -590,12 +650,28 @@ var test = (function(){
         })
     }
 
+    test.find_books = function(){
+        var text = process.argv[2]
+        var page = process.argv[3]
+        request.get({
+            url: k.localhost + "/books/search",
+            qs: {
+                search: text,
+                page: page
+            },
+            json: true,
+        }, function(er, res, body){
+            if (er) console.log(JSON.stringify(er, 0, 2))
+            else console.log(JSON.stringify(body, 0, 2))
+        })
+    }
+
     return test
 }())
 
 console.log("requiring " + module.filename + " from " + require.main.filename)
 if (require.main == module){
-    test.create_book()
+    test.find_books()
 } else {
     press.process_books()
 }
