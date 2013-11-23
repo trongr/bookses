@@ -3,7 +3,7 @@ jQuery(function($){
         box: $("#book"),
         bID: document.URL.match(/read\/(.*)$/)[1],
         error: function(er){
-            alert("This book is either being processed or something's gone wrong. Please send me this message: " + JSON.stringify(er, 0, 2))
+            alert("I think this book is being processed,\nor something has gone wrong and I\ncan't find it")
         }
     })
     ;(function(){
