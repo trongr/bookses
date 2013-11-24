@@ -210,10 +210,11 @@ jQuery(function($){
 
         bindings.click_upload_button = function(){
             dom.upload_page.css({"display":"table"})
-            $("html, body").animate({scrollTop:dom.upload_page.offset().top}, 100)
+            $("html, body").animate({scrollTop:dom.upload_page.offset().top - 10}, 100)
         }
 
         bindings.click_post_upload_button = function(){
+            var post_button = $(this).attr("disabled", true)
             users.api_is_logged_in(function(er, loggedin){
                 if (!loggedin) return alert("please log in")
 
@@ -246,6 +247,9 @@ jQuery(function($){
                     },
                     error: function(xhr, status, er){
                         console.log(JSON.stringify({error:"upload",xhr:xhr,status:status,er:er}, 0, 2))
+                    },
+                    complete: function(){
+                        post_button.attr("disabled", false)
                     },
                     xhr: function(){
                         var xhr = $.ajaxSettings.xhr()
