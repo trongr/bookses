@@ -4,6 +4,8 @@ jQuery(function($){
         static_public: "/static/public",
         date_format: "D MMMM YYYY",
         page: 0,
+        results_page: 0,
+        // mark
         max_book_size: 10485760,
     }
 
@@ -71,7 +73,6 @@ jQuery(function($){
                 + "            <div class='book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "            <div class='book_description'>" + book.description + "</div>"
                 + "        </div>"
-                + "        <div class='book_text'></div>"
                 + "     </div>"
             return html
         }
@@ -94,24 +95,60 @@ jQuery(function($){
                     })
                 },
                 function(books, done){
-                    views.render_books(books)
+                    views.render_books(dom.books, books)
                     done(null)
                 },
             ], function(er, re){
-                if (er) api.bug(er)
+                if (er) alert("Oops! I can't load more books. Please let Trong know about this")
             })
         }
 
-        views.render_books = function(books){
+        // mark
+        views.load_more_results = function(page){
+            var query = $("#search_bar").val().trim()
+            if (!query) return alert("empty search string")
+            async.waterfall([
+                function(done){
+                    $.ajax({
+                        url: "/books/search",
+                        type: "get",
+                        data: {
+                            search: query,
+                            page: page
+                        },
+                        success: function(re){
+                            if (re.books) done(null, re.books)
+                            else done({error:"search books",re:re})
+                        }
+                    })
+                },
+                function(books, done){
+                    var result = []
+                    for (var i = 0; i < books.length; i++){
+                        result.push(books[i].obj)
+                    }
+                    done(null, result)
+                },
+                function(books, done){
+                    views.render_books($("#results"), books)
+                    done(null)
+                }
+            ], function(er, re){
+                if (er) alert("Sorry, no matching books")
+            })
+        }
+
+        views.render_books = function(box, books){
             var html = ""
             for (var i = 0; i < books.length; i++){
                 html += templates.book(books[i])
             }
-            dom.books.append(html)
+            box.append(html)
+                .off()
                 .on("click", ".book_title", bindings.click_book_title)
         }
 
-        views.load_book = function(box, bID){
+        views.load_book = function(bID){
             window.location = "/read/" + bID
         }
 
@@ -122,15 +159,18 @@ jQuery(function($){
         var bindings = {}
 
         bindings.click_book_title = function(){
-            var book = $(this).closest(".book")
-            var box = book.find(".book_text").show()
-            views.load_book(box, book.attr("data-id"))
+            var id = $(this).closest(".book").attr("data-id")
+            views.load_book(id)
         }
 
+        // mark
         bindings.init = function(){
             $(".link_box").on("mouseenter", bindings.mouseenter_link_box)
             $(".link_box").on("mouseleave", bindings.mouseleave_link_box)
-            $("#logo").on("click", bindings.click_logo)
+            $(".menu_item").on("mouseenter", bindings.mouseenter_menu_item)
+            $(".menu_item").on("mouseleave", bindings.mouseleave_menu_item)
+            $(".input_enter_submit input").keypress(bindings.input_enter_submit)
+            $("#more_menu").on("click", bindings.click_more_menu)
             $("#tagline").on("click", bindings.click_tagline)
             $("#search_button").on("click", bindings.click_search_button)
             $("#upload_button").on("click", bindings.click_upload_button)
@@ -138,10 +178,12 @@ jQuery(function($){
             $("#post_upload_button").on("click", bindings.click_post_upload_button)
             $("#cancel_upload_button").on("click", bindings.click_cancel_upload_button)
             $("#more_books_button").on("click", bindings.click_more_books)
+            $("#more_results_button").on("click", bindings.click_more_results)
         }
 
         bindings.click_tagline = function(){
             $("#info_box").toggle()
+            css.fit($("#info_box_left"), $("#info_box_faq"))
         }
 
         bindings.mouseenter_link_box = function(){
@@ -152,12 +194,17 @@ jQuery(function($){
             $(this).find("a").removeClass("a_hover")
         }
 
-        bindings.click_logo = function(){
+        bindings.click_more_menu = function(){
             $("#bookses_more_menu_box").toggle()
         }
 
+        // mark
         bindings.click_search_button = function(){
-            alert("coming soon")
+            k.results_page = 0
+            $("#results").html("")
+            $(".books_list").hide()
+            $("#results_box").show()
+            views.load_more_results(k.results_page++)
         }
 
         bindings.click_upload_button = function(){
@@ -223,6 +270,11 @@ jQuery(function($){
             views.load_books(k.page++)
         }
 
+        // mark
+        bindings.click_more_results = function(){
+            views.load_more_results(k.results_page++)
+        }
+
         bindings.change_book_input = function(e){
             if (!(window.File && window.FileReader && window.Blob)) return
             var file = e.target.files[0].slice(0, 1024)
@@ -230,13 +282,23 @@ jQuery(function($){
             reader.onload = function(e){
                 var height = $("#upload_page_right").height()
                 var width = parseInt($("#upload_page_right").width()) * 60 / 40
-                $("#book_preview").text(e.target.result)
-                    .css({
-                        height:height,
-                        width:width + "px"
-                    })
+                $("#book_preview").text(e.target.result).css({height:height, width:width + "px"})
             }
             reader.readAsText(file)
+        }
+
+        bindings.input_enter_submit = function(e){
+            if (e.which == 13){
+                $(this).parent().find("button").click()
+            }
+        }
+
+        bindings.mouseenter_menu_item = function(){
+            $(this).children(".menu_item_text").show()
+        }
+
+        bindings.mouseleave_menu_item = function(){
+            $(this).children(".menu_item_text").hide()
         }
 
         return bindings
@@ -267,11 +329,13 @@ jQuery(function($){
         }
 
         users.click_login = function(){
-            var username = $("#username").val()
-            var password = $("#password").val()
+            var username = $("#username").val().trim()
+            var password = $("#password").val().trim()
+            if (!username || !password) return alert("Invalid logins")
             users.api_login(username, password, function(er, user){
-                if (er) alert(JSON.stringify(er, 0, 2))
-                else {
+                if (er){
+                    alert("wrong")
+                } else {
                     $("#login_box").hide()
                     $("#logout_box").show()
                 }
@@ -279,8 +343,9 @@ jQuery(function($){
         }
 
         users.click_register = function(){
-            var username = $("#username").val()
-            var password = $("#password").val()
+            var username = $("#username").val().trim()
+            var password = $("#password").val().trim()
+            if (!username || !password) return alert("Please enter a new username and password to register")
             users.api_create_user(username, password, function(er, user){
                 if (er) alert(JSON.stringify(er, 0, 2))
                 else {
@@ -353,16 +418,15 @@ jQuery(function($){
         var css = {}
 
         css.init = function(){
-            css.fit_tagline()
+            css.fit($("#tagline_box"), $("#tagline"))
         }
 
-        css.fit_tagline = function(){
-            var box_width = $("#tagline_box").width() - 100
-            var tagline = $("#tagline")
-            var size = parseInt(tagline.css("font-size"))
-            while (tagline.width() < box_width){
+        css.fit = function(parent, child){
+            var parent_width = parent.width() - 100
+            var size = parseInt(child.css("font-size"))
+            while (child.width() < parent_width){
                 size++
-                tagline.css("font-size", size.toString() + "px")
+                child.css("font-size", size.toString() + "px")
             }
         }
 

@@ -11,46 +11,50 @@
     <title>bookses</title>
 
 </head>
-<body onunload=""> <!-- otw events don't work on back button click -->
-
+<body>
     <div id="banner">
         <div id="banner_left">
-            <button id="logo">bookses</button>
-            <input id="search_bar" placeholder="search books">
-            <button id="search_button"><i class="icon-search"></i>search</button>
-            <button id="upload_button"><i class="icon-upload"></i>upload</button>
+            <button id="more_menu"><i class="icon-list"></i></button>
+            <a href="/" id="logo">bookses</a>
+            <span class="input_enter_submit">
+                <input id="search_bar" placeholder="search books">
+                <button id="search_button"><i class="icon-search"></i></button>
+            </span>
+            <button id="upload_button"><i class="icon-upload"></i></button>
         </div>
         <div id="banner_right">
             <div id="login_box">
-                <input id="username" placeholder="username">
-                <input id="password" type="password" placeholder="password">
-                <button id="login"><i class="icon-unlock"></i>login</button>
-                <button id="register"><i class="icon-key"></i>register</button>
+                <span class="input_enter_submit">
+                    <input id="username" placeholder="username">
+                    <input id="password" type="password" placeholder="password">
+                    <button id="login"><i class="icon-unlock"></i></button>
+                </span>
+                <button id="register"><i class="icon-key"></i></button>
             </div>
             <div id="logout_box">
-                <button id="logout"><i class="icon-lock"></i>logout</button>
+                <button id="logout"><i class="icon-lock"></i></button>
             </div>
         </div>
     </div>
     <div class="clear_both"></div>
 
-    <div id="bookses_more_menu_box" class="link_box">
+    <div id="bookses_more_menu_box">
         <div id="bookses_more_menu">
-            <div class="menu_item">
+            <div class="menu_item link_box">
                 <a href="https://twitter.com/nahnturong" target="_blank"><i class="icon-twitter-sign"></i></a>
-                <div class="menu_item_text">I don't tweet a lot but you can <a href="https://twitter.com/nahnturong" target="_blank">add me.</a></div>
+                <span class="menu_item_text">I don't tweet a lot but you can <a href="https://twitter.com/nahnturong" target="_blank">add me.</a></span>
             </div>
-            <div class="menu_item">
+            <div class="menu_item link_box">
                 <a href="https://moot.it/bookses#!/qa" target="_blank"><i class="icon-question-sign"></i></a>
-                <div class="menu_item_text">Questions or comments? Talk to me <a href="https://moot.it/bookses#!/qa" target="_blank">here.</a></div>
+                <span class="menu_item_text">Questions or comments? Talk to me <a href="https://moot.it/bookses#!/qa" target="_blank">here.</a></span>
             </div>
-            <div class="menu_item">
+            <div class="menu_item link_box">
                 <a href="https://moot.it/bookses#!/bugs" target="_blank"><i class="icon-bug"></i></a>
-                <div class="menu_item_text">Bugs?!! The horrors!! <a href="https://moot.it/bookses#!/bugs" target="_blank">Tell mee!!!</a></div>
+                <span class="menu_item_text">Bugs?! The horrors!! <a href="https://moot.it/bookses#!/bugs" target="_blank">Tell mee!!!</a></span>
             </div>
-            <div class="menu_item">
+            <div class="menu_item link_box">
                 <a id="medkit" href="#"><i class="icon-medkit"></i></a>
-                <div class="menu_item_text">Like bookses? Help me keep it going.</div>
+                <span class="menu_item_text">Like bookses? Help me keep it going.</span>
             </div>
         </div>
     </div>
@@ -63,21 +67,21 @@
 
     <div id="info_box">
         <div id="info_box_content" class="link_box">
-            <div id="info_box_left"><a href="https://moot.it/bookses#!/qa" target="_blank">FAQ</a></div>
+            <div id="info_box_left"><a id="info_box_faq" href="https://moot.it/bookses#!/qa" target="_blank">FAQ</a></div>
             <div id="info_box_right">
-                <b>What makes bookses so fun?</b> Grab a book and find out :)<br><br>
-                <b>Do you have any tips for first time users?</b> You can click on anything that lights up, e.g. the paragraphs.<br><br>
-                <b>Where can I find books to upload?</b> <a href="http://gutenberg.org/" target="_blank">Project Gutenberg</a> is a good place to find free ebooks.<br><br>
+                <b>What makes bookses so fun?</b> Grab a book and find out :)<br><br><br>
+                <b>Do you have any tips for first time users?</b> You can click on anything that lights up, e.g. you can click on the paragraphs to make a comment.<br><br><br>
+                <b>Where can I find books to upload?</b> <a href="http://gutenberg.org/" target="_blank">Project Gutenberg</a> is a good place to find free ebooks.<br><br><br>
                 <b>What about pictures?</b> I recommend posting pictures you own or have permission to, otherwise their owners might complain and I'll have to remove them. You can always take a picture. Landscapes are good for setting the mood. Or you can doodle. Here's one I made: <div style="padding:20px;text-align:right"><img style="width:60%" src="/static/wudan.jpg"></div>
-                <b>Can I request a new feature?</b> <a href="https://moot.it/bookses#!/feature-requests" target="_blank">Yes.</a><br><br>
-                <b>Will there be a mobile version?</b> If a lot of people request it, yes.<br><br>
-                <b>Can you add <a href="http://en.wikipedia.org/wiki/LaTeX" target="_blank">LaTeX</a> support?</b> Hmm. Interesting idea.<br><br>
-                <b>bookses is very similar to <a href="https://medium.com/" target="_blank">Medium,</a> you even have green side bars. What do you say to that?</b> <a href="https://medium.com/" target="_blank">Medium</a> is bookses's arch nemesis and all our ideas came from them. . . . Just kidding. OMG That's a total coincidence, I swear. I think <a href="https://medium.com/" target="_blank">Medium</a> and bookses do different things.<br><br>
-                <b>Are these actual questions from users?</b> Sad to say, I wrote them myself. There aren't any users yet!<br><br>
-                <b>Are you a real person?</b> <a href="https://twitter.com/nahnturong" target="_blank">Yes.</a><br><br>
-                <b>Where do I go to ask more questions?</b> <a href="https://moot.it/bookses#!/qa" target="_blank">Here.</a><br><br>
-                <b>I love what you're doing and I wanna give you a bunch of money! When can I do that?</b> Soon.<br><br>
-                <b>But seriously, what's bookses about?</b> It's about people sharing their imagination!<br><br>
+                <b>Can I request a new feature?</b> <a href="https://moot.it/bookses#!/feature-requests" target="_blank">Yes!</a><br><br><br>
+                <b>Will there be a mobile version?</b> If a lot of people want it, definitely.<br><br><br>
+                <b>Can you add <a href="http://en.wikipedia.org/wiki/LaTeX" target="_blank">LaTeX</a> support?</b> Hmm. Interesting idea.<br><br><br>
+                <b>bookses is very similar to <a href="https://medium.com/" target="_blank">Medium,</a> you even have green side bars. What do you say to that?</b> Medium is bookses's arch nemesis, so all our ideas came from them. . . . Just kidding. OMG That's a total coincidence, I swear! I try to give users a different reading experience.<br><br><br>
+                <b>Are these actual questions from users?</b> Sad to say, I wrote them myself. There aren't any users yet!<br><br><br>
+                <b>Are you a real person?</b> <a href="https://twitter.com/nahnturong" target="_blank">Yes.</a><br><br><br>
+                <b>Where do I go to ask more questions?</b> <a href="https://moot.it/bookses#!/qa" target="_blank">Here.</a><br><br><br>
+                <b>I love what you're doing and I wanna give you a bunch of money! When can I do that?</b> Soon.<br><br><br>
+                <b>But seriously, what's bookses about?</b> It's about people sharing their imagination!<br><br><br>
                 <b>That's beautiful.</b> Thank you.
             </div>
         </div>
@@ -100,9 +104,15 @@
         </div>
     </div>
 
-    <div id="books"></div>
+    <div id="books_box" class="books_list">
+        <div id="books"></div>
+        <button id="more_books_button"><i class="icon-chevron-down"></i></button>
+    </div>
 
-    <button id="more_books_button"><i class="icon-chevron-down"></i></button>
+    <div id="results_box" class="books_list">
+        <div id="results"></div>
+        <button id="more_results_button"><i class="icon-chevron-down"></i></button>
+    </div>
 
 </body>
 </html>

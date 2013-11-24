@@ -3,6 +3,10 @@ body {
     font-family: helvetica, arial, sans;
 }
 
+hr {
+    height: 1px;
+}
+
 a {
     text-decoration: none;
     color: #999;
@@ -76,43 +80,37 @@ button:hover {
     display: none;
 }
 
-button#logo {
+#logo {
     font-size: 1.5em;
     padding: 5px;
     color: #333;
+    font-weight: bolder;
 }
 
-button#logo:hover {
+#logo:hover {
     color: #0f0;
 }
 
 #bookses_more_menu_box {
     display: none;
-    padding: 20px 0 10px 40px;
+    padding: 20px 0 10px 20px;
+    margin-left: 15px;
+    border-left: 5px solid #ccc;
 }
 
-#bookses_more_menu {
-    display: table;
-    width: 100%;
-}
-
-.menu_item {
-    display: table-row;
-    width: 100%;
-}
-
-.menu_item > * {
-    display: table-cell;
-    vertical-align: middle;
+#bookses_more_menu_box:hover {
+    border-left: 5px solid #70ACFF;
 }
 
 .menu_item > a {
     font-size: 2em;
+    vertical-align: middle;
 }
 
 .menu_item_text {
-    width: 100%;
+    width: 100px;
     padding-left: 20px;
+    display: none;
 }
 
 #tagline_box {
@@ -122,6 +120,7 @@ button#logo:hover {
 
 #tagline {
     font-size: 12pt;
+    font-weight: bolder;
     color: #666;
     padding: 20px;
 }
@@ -145,7 +144,7 @@ button#logo:hover {
 
 #info_box_left {
     display: table-cell;
-    font-size: 5em;
+    font-size: 1em;
     vertical-align: top;
     text-align: center;
     font-weight: bolder;
@@ -155,6 +154,12 @@ button#logo:hover {
 #info_box_right {
     display: table-cell;
     width: 60%;
+    padding-left: 20px;
+    border-left: 10px solid #ccc;
+}
+
+#info_box_right:hover {
+    border-left: 10px solid #70ACFF;
 }
 
 #info_box_right b {
@@ -245,7 +250,7 @@ button#logo:hover {
     font-size: 1em;
 }
 
-#books {
+#books, #results {
     display: table;
     border-top: 1px solid #000;
     border-bottom: 1px solid #000;
@@ -264,8 +269,9 @@ button#logo:hover {
 }
 
 .book_votes, .book_num_comments {
-    font-size: 1.5em;
-    color: #555;
+    font-size: 2em;
+    font-weight: bolder;
+    color: #999;
 }
 
 .book_main_box {
@@ -289,22 +295,17 @@ button#logo:hover {
     padding: 0 20px 0 20px;
 }
 
-.book_text {
-    display: none;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
 .book_created {
     color: #555;
     padding: 10px;
 }
 
-#more_books_button {
+#more_books_button, #more_results_button {
     font-size: 3em;
     padding: 30px;
     width: 100%;
+}
+
+#results_box {
+    display: none;
 }

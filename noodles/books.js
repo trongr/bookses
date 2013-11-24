@@ -100,7 +100,6 @@ var DB = (function(){
         }, function(er, re){
             if (er) done({error:"find books",text:text,er:er})
             else if (re && re.results){
-                console.log(re.results)
                 done(null, re.results.slice(aux.skip, aux.skip + aux.limit))
             } else done({error:"find books",er:"mysterious error",re:re})
         })
