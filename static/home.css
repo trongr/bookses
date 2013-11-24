@@ -36,6 +36,10 @@ button:hover {
     color: #0f0;
 }
 
+.pointer {
+    cursor: pointer;
+}
+
 .clear_both {
     clear: both;
 }
@@ -80,14 +84,14 @@ button:hover {
     display: none;
 }
 
-#logo {
+button#logo {
     font-size: 1.5em;
     padding: 5px;
     color: #333;
     font-weight: bolder;
 }
 
-#logo:hover {
+button#logo:hover {
     color: #0f0;
 }
 
@@ -102,15 +106,29 @@ button:hover {
     border-left: 5px solid #70ACFF;
 }
 
-.menu_item > a {
-    font-size: 2em;
+.menu_item {
+    display: table-row;
+}
+
+.menu_item > * {
+    display: table-cell;
     vertical-align: middle;
+    padding: 0 10px 0 10px;
+}
+
+.menu_item_head {
+    text-align: right;
+    font-weight: bolder;
+}
+
+.menu_item_link {
+    font-size: 2em;
+    text-align: center;
 }
 
 .menu_item_text {
-    width: 100px;
-    padding-left: 20px;
-    display: none;
+    visibility: hidden;
+    width: 100%;
 }
 
 #tagline_box {
@@ -154,7 +172,7 @@ button:hover {
 #info_box_right {
     display: table-cell;
     width: 60%;
-    padding-left: 20px;
+    padding: 0 40px 0 40px;
     border-left: 10px solid #ccc;
 }
 

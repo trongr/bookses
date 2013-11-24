@@ -69,7 +69,7 @@ jQuery(function($){
                 + "            <div class='book_num_comments' title='comments'>" + book.replies + "</div>"
                 + "        </div>"
                 + "        <div class='book_main_box'>"
-                + "            <div class='book_title'>" + book.title + "</div>"
+                + "            <div class='book_title pointer'>" + book.title + "</div>"
                 + "            <div class='book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "            <div class='book_description'>" + book.description + "</div>"
                 + "        </div>"
@@ -172,6 +172,7 @@ jQuery(function($){
             $(".menu_item").on("mouseleave", bindings.mouseleave_menu_item)
             $(".input_enter_submit input").keypress(bindings.input_enter_submit)
             $("#more_menu").on("click", bindings.click_more_menu)
+            $("#logo").on("click", bindings.click_logo)
             $("#tagline").on("click", bindings.click_tagline)
             $("#search_button").on("click", bindings.click_search_button)
             $("#upload_button").on("click", bindings.click_upload_button)
@@ -275,7 +276,6 @@ jQuery(function($){
             views.load_books(k.page++)
         }
 
-        // mark
         bindings.click_more_results = function(){
             views.load_more_results(k.results_page++)
         }
@@ -299,11 +299,16 @@ jQuery(function($){
         }
 
         bindings.mouseenter_menu_item = function(){
-            $(this).children(".menu_item_text").show()
+            $(this).children(".menu_item_text").css({visibility:"visible"})
         }
 
         bindings.mouseleave_menu_item = function(){
-            $(this).children(".menu_item_text").hide()
+            $(this).children(".menu_item_text").css({visibility:"hidden"})
+        }
+
+        bindings.click_logo = function(){
+            $(".books_list").hide()
+            $("#books_box").show()
         }
 
         return bindings

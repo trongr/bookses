@@ -1,6 +1,7 @@
 p {
     margin-top: -0.5em; /* cause we use white-space: pre-wrap below for boks_text, for poetry */
     margin-bottom: -0.5em;
+    cursor: pointer;
 }
 
 .p_margin {
@@ -119,6 +120,10 @@ p {
 .boks_comment:hover {
     border-left: 5px solid #0f0;
     border-top: none;
+}
+
+.boks_comment_content {
+    cursor: pointer;
 }
 
 .boks_comment_content:hover {
