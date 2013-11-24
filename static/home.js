@@ -149,7 +149,8 @@ jQuery(function($){
         }
 
         views.load_book = function(bID){
-            window.location = "/read/" + bID
+            // window.location = "/read/" + bID
+            window.open("/read/" + bID)
         }
 
         return views

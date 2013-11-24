@@ -202,7 +202,7 @@ var bok = function(x){
                 + "         <div class='boks_menu'>"
                 + "             <button class='boks_upvote'><i class='icon-heart-empty'></i></button>"
                 + "             <button class='boks_sound'><i class='icon-volume-up'></i></button>"
-                + "             <button class='boks_close'><i class='icon-remove'></i></button>"
+                + "             <button class='boks_close'>B</button>"
                 + "         </div>"
                 + "         <div class='boks_content'>"
                 + "             <div class='boks_content_left'>"
