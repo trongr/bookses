@@ -516,6 +516,7 @@ var bok = function(x){
                     success: function(re){
                         if (re.comment){
                             new_comment.attr("data-id", re.comment._id)
+                            new_comment.find(".boks_comment_username").eq(0).html(re.comment.username)
                         } else if (re.loggedin == false) alert("you have to log in")
                         else alert(JSON.stringify({error:"create comment",er:re}, 0, 2))
                     }

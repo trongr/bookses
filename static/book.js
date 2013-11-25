@@ -1,7 +1,7 @@
 jQuery(function($){
     var book = new bok({
         box: $("#book"),
-        bID: document.URL.match(/read\/(.*)$/)[1],
+        bID: document.URL.match(/read\/([a-zA-Z0-9]+).*$/)[1],
         error: function(er){
             if (er){
                 $("#book").hide()
