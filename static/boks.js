@@ -109,15 +109,15 @@ var bok = function(x){
                         url: book.url,
                         type: "get",
                         success: function(re){
-                            done(null, re)
+                            done(null, book, re)
                         },
                         error: function(xhr, status, er){
                             done({ready:false})
                         }
                     })
                 }
-            ], function(er, re){
-                done(er, re)
+            ], function(er, book, text){
+                done(er, book, text)
             })
         }
 
@@ -197,12 +197,18 @@ var bok = function(x){
             return text.replace(exp,"<img class='boks_img' src='$1'/>");
         }
 
-        templates.reader = function(text){
+        // mark
+        templates.reader = function(book, text){
             var html = "<div id='" + o.bID + "' class='boks_reader'>"
                 + "         <div class='boks_menu'>"
                 + "             <button class='boks_upvote'><i class='icon-heart-empty'></i></button>"
                 + "             <button class='boks_sound'><i class='icon-volume-up'></i></button>"
                 + "             <button class='boks_close'>B</button>"
+                + "         </div>"
+                + "         <div class='boks_book_info'>"
+                + "             <div class='boks_book_title'>" + book.title + "</div>"
+                + "             <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
+                + "             <div class='boks_book_description'>" + templates.replace_text_with_img(book.description) + "</div>"
                 + "         </div>"
                 + "         <div class='boks_content'>"
                 + "             <div class='boks_content_left'>"
@@ -308,12 +314,12 @@ var bok = function(x){
         views.load_book = function(done){
             async.waterfall([
                 function(done){
-                    api.get_book(o.bID, function(er, text){
-                        done(er, text)
+                    api.get_book(o.bID, function(er, book, text){
+                        done(er, book, text)
                     })
                 },
-                function(text, done){
-                    dom.box.html(templates.reader(text)).off()
+                function(book, text, done){
+                    dom.box.html(templates.reader(book, text)).off()
                         .on("click", ".boks_upvote", bindings.click_book_like)
                         .on("click", ".boks_sound", bindings.click_book_sound_toggle)
                         .on("click", ".boks_close", bindings.click_book_close)

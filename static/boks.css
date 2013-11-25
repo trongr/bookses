@@ -55,6 +55,25 @@ p {
     left: 0;
 }
 
+.boks_book_info {
+    padding: 20px 20px 20px 60px;
+}
+
+.boks_book_title {
+    font-size: 3em;
+    font-weight: bolder;
+}
+
+.boks_book_created {
+    color: #666;
+    padding-left: 10px;
+    margin: 10px 0 10px 0;
+}
+
+.boks_book_description {
+    font-size: 1.2em;
+}
+
 .boks_content {
     display: table-row;
     width: 100%;
