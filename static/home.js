@@ -446,6 +446,7 @@ jQuery(function($){
     var app = (function(){
         var app = {}
 
+        // mark
         app.init = function(){
             views.init()
             bindings.init()

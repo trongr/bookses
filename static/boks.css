@@ -1,3 +1,7 @@
+body {
+    position: relative;
+}
+
 p {
     margin-top: -0.5em; /* cause we use white-space: pre-wrap below for boks_text, for poetry */
     margin-bottom: -0.5em;
@@ -25,8 +29,6 @@ p {
 }
 
 .boks_reader {
-    display: table;
-    position: relative;
     width: 100%;
     height: 100%;
     background-color: #eee;
@@ -56,26 +58,34 @@ p {
 }
 
 .boks_book_info {
-    padding: 20px 20px 20px 60px;
+    width: 100%;
+}
+
+.boks_book_title_box {
+    text-align: center;
+    padding-top: 20px;
 }
 
 .boks_book_title {
-    font-size: 3em;
+    font-size: 12pt;
     font-weight: bolder;
 }
 
 .boks_book_created {
     color: #666;
-    padding-left: 10px;
-    margin: 10px 0 10px 0;
+    font-size: 1.2em;
+    padding: 10px 100px 10px 100px;
+    text-align: center;
 }
 
 .boks_book_description {
     font-size: 1.2em;
+    padding: 10px 100px 10px 100px;
+    white-space: pre-wrap;
 }
 
 .boks_content {
-    display: table-row;
+    display: table;
     width: 100%;
 }
 
@@ -91,7 +101,7 @@ p {
 }
 
 .boks_text {
-    padding: 20px 0 0 50px;
+    padding: 20px 0 0 20px;
     white-space: pre-wrap;
     font-family: times, georgia, serif;
 }

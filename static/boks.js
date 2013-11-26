@@ -74,6 +74,17 @@ var bok = function(x){
             })
         }
 
+        css.fit = function(parent, child){
+            var parent_width = parent.width() - 100
+            var size = parseInt(child.css("font-size"))
+            console.log(parent_width)
+            console.log(size)
+            while (child.width() < parent_width){
+                size++
+                child.css("font-size", size.toString() + "px")
+            }
+        }
+
         return css
     }())
 
@@ -93,31 +104,26 @@ var bok = function(x){
         }
 
         api.get_book = function(bID, done){
-            async.waterfall([
-                function(done){
-                    $.ajax({
-                        url: "/book/" + bID,
-                        type: "get",
-                        success: function(re){
-                            if (re.book) done(null, re.book)
-                            else done({error:"api getting book",re:re})
-                        }
-                    })
-                },
-                function(book, done){
-                    $.ajax({
-                        url: book.url,
-                        type: "get",
-                        success: function(re){
-                            done(null, book, re)
-                        },
-                        error: function(xhr, status, er){
-                            done({ready:false})
-                        }
-                    })
+            $.ajax({
+                url: "/book/" + bID,
+                type: "get",
+                success: function(re){
+                    if (re.book) done(null, re.book)
+                    else done({error:"api getting book",re:re})
                 }
-            ], function(er, book, text){
-                done(er, book, text)
+            })
+        }
+
+        api.get_text = function(book, done){
+            $.ajax({
+                url: book.url,
+                type: "get",
+                success: function(re){
+                    done(null, re)
+                },
+                error: function(xhr, status, er){
+                    done({ready:false})
+                }
             })
         }
 
@@ -197,19 +203,23 @@ var bok = function(x){
             return text.replace(exp,"<img class='boks_img' src='$1'/>");
         }
 
+        templates.book_info = function(book){
+            var html = "<div class='boks_book_info'>"
+                + "         <div class='boks_book_title_box'><span class='boks_book_title'>" + book.title + "</span></div>"
+                + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
+                + "         <div class='boks_book_description'>" + templates.replace_text_with_img(book.description) + "</div>"
+                + "     </div>"
+            return html
+        }
+
         // mark
-        templates.reader = function(book, text){
+        templates.reader = function(text){
             var html = "<div id='" + o.bID + "' class='boks_reader'>"
-                + "         <div class='boks_menu'>"
-                + "             <button class='boks_upvote'><i class='icon-heart-empty'></i></button>"
-                + "             <button class='boks_sound'><i class='icon-volume-up'></i></button>"
-                + "             <button class='boks_close'>B</button>"
-                + "         </div>"
-                + "         <div class='boks_book_info'>"
-                + "             <div class='boks_book_title'>" + book.title + "</div>"
-                + "             <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
-                + "             <div class='boks_book_description'>" + templates.replace_text_with_img(book.description) + "</div>"
-                + "         </div>"
+                // + "         <div class='boks_menu'>"
+                // + "             <button class='boks_upvote'><i class='icon-heart-empty'></i></button>"
+                // + "             <button class='boks_sound'><i class='icon-volume-up'></i></button>"
+                // + "             <button class='boks_close'>B</button>"
+                // + "         </div>"
                 + "         <div class='boks_content'>"
                 + "             <div class='boks_content_left'>"
                 + "                 <div class='boks_text'>" + text + "</div>"
@@ -224,7 +234,6 @@ var bok = function(x){
             return "<input class='boks_new_comment_picture_input' accept='image/*' type='file'>"
         }
 
-        // mark
         // p and top can be null if comments have a parent, otw parentid can be null
         templates.comments_box = function(comments, p, top, parentid){
             var content = templates.comments(comments.slice(0, k.page_size))
@@ -314,14 +323,21 @@ var bok = function(x){
         views.load_book = function(done){
             async.waterfall([
                 function(done){
-                    api.get_book(o.bID, function(er, book, text){
-                        done(er, book, text)
+                    api.get_book(o.bID, function(er, book){
+                        done(er, book)
                     })
                 },
-                function(book, text, done){
-                    dom.box.html(templates.reader(book, text)).off()
+                function(book, done){
+                    dom.box.html(templates.book_info(book))
+                    css.fit($(".boks_book_info"), $(".boks_book_title"))
+                    api.get_text(book, function(er, text){
+                        done(er, text)
+                    })
+                },
+                function(text, done){
+                    dom.box.append(templates.reader(text)).off()
                         .on("click", ".boks_upvote", bindings.click_book_like)
-                        .on("click", ".boks_sound", bindings.click_book_sound_toggle)
+                        // .on("click", ".boks_sound", bindings.click_book_sound_toggle) // todo toggle sound
                         .on("click", ".boks_close", bindings.click_book_close)
                         .on("click", ".boks_text p", bindings.click_paragraph)
                         .on("click", ".boks_new_comment_picture_button", bindings.click_choose_comment_image)
@@ -335,7 +351,7 @@ var bok = function(x){
                         .on("mouseenter", ".boks_content_right > .boks_comments_box", bindings.mouseenter_top_level_comments_box)
                         .on("change", ".boks_new_comment_picture_input", bindings.change_new_comment_picture_input)
                     dom.comments = dom.box.find(".boks_content_right")
-                    window.scrollTo(0, 0)
+                    console.log($(".boks_book_info").html())
                     done(null)
                 },
             ], function(er, re){
@@ -573,14 +589,15 @@ var bok = function(x){
             })
         }
 
-        bindings.click_book_sound_toggle = function(){
-            k.sound = !k.sound
-            if (k.sound) $(".boks_sound").html("<i class='icon-volume-off'></i>")
-            else $(".boks_sound").html("<i class='icon-volume-up'></i>")
-        }
+        // todo toggle sound
+        // bindings.click_book_sound_toggle = function(){
+        //     k.sound = !k.sound
+        //     if (k.sound) $(".boks_sound").html("<i class='icon-volume-off'></i>")
+        //     else $(".boks_sound").html("<i class='icon-volume-up'></i>")
+        // }
 
         bindings.mouseenter_top_level_comments_box = function(){
-            if (k.sound) dom.clink.play()
+            // if (k.sound) dom.clink.play() // todo toggle sound
             dom.comments.children(".boks_comments_box").removeClass("boks_comments_box_hover boks_p_hover")
             $(this).addClass("boks_comments_box_hover")
         }

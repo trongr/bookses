@@ -14,10 +14,29 @@
 
 </head>
 <body>
+    <div id="banner">
+        <div id="banner_left">
+            <button id="logo">Bookses</button>
+        </div>
+        <div id="banner_right">
+            <div id="login_box">
+                <span class="input_enter_submit">
+                    <input id="username" placeholder="username">
+                    <input id="password" type="password" placeholder="password">
+                    <button id="login"><i class="icon-unlock"></i></button>
+                </span>
+                <button id="register"><i class="icon-key"></i></button>
+            </div>
+            <div id="logout_box">
+                <button id="logout"><i class="icon-lock"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="clear_both"></div>
 
     <div id="error">
-        I think book is being processed. Please check back in a few
-        minutes. If it still doesn't appear something has gone
+        I think this book is being processed. Please check back in a
+        few minutes. If it still doesn't appear something has gone
         wrong. Please let me
         know <a href="https://moot.it/bookses#!/support"
         target="_blank">here.</a>
@@ -25,9 +44,10 @@
 
     <div id="book"></div>
 
-    <audio id="clink" style="display:none">
-        <source src="/static/clink.mp3">
-        <source src="/static/clink.wav">
-    </audio>
+    <!-- todo toggle sound. load dynamically if user enables sound -->
+    <!-- <audio id="clink" style="display:none"> -->
+    <!--     <source src="/static/clink.mp3"> -->
+    <!--     <source src="/static/clink.wav"> -->
+    <!-- </audio> -->
 </body>
 </html>
