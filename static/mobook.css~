@@ -1,0 +1,54 @@
+body {
+    background-color: #eee;
+    font-family: helvetica, arial, sans;
+}
+
+hr {
+    height: 1px;
+}
+
+a {
+    text-decoration: none;
+    color: #70ACFF;
+}
+
+i {
+    font-size: 1.2em;
+    margin: 2px;
+}
+
+input {
+    border: none;
+}
+
+button {
+    background-color: #eee;
+    color: #555;
+    border: none;
+    font-family: helvetica, arial, sans;
+}
+
+.link {
+    color: #70ACFF;
+}
+
+.clear_both {
+    clear: both;
+}
+
+#error {
+    display: none;
+    padding: 10%;
+}
+
+@media screen and (min-width: 0px) {
+    #error {
+        font-size: 1em;
+    }
+}
+
+@media screen and (min-width: 600px){
+    #error {
+        font-size: 2em;
+    }
+}

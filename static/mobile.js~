@@ -18,6 +18,18 @@ jQuery(function($){
     var api = (function(){
         var api = {}
 
+        api.bug = function(error){
+            console.log(JSON.stringify(error, 0, 2))
+            $.ajax({
+                url: "/bug",
+                type: "post",
+                data: {
+                    error: error
+                },
+                success: function(re){}
+            })
+        }
+
         api.get_all_books = function(page, done){
             $.ajax({
                 url: "/books",
@@ -27,6 +39,17 @@ jQuery(function($){
                 },
                 success: function(re){
                     if (re.books) done(null, re.books)
+                    else done({re:re})
+                }
+            })
+        }
+
+        api.get_book_quotes = function(book_id, done){
+            $.ajax({
+                url: "/book/" + book_id + "/quotes",
+                type: "get",
+                success: function(re){
+                    if (re.quotes) done(null, re.quotes)
                     else done({re:re})
                 }
             })
@@ -125,6 +148,11 @@ jQuery(function($){
                 .on("click", ".book_title", bindings.click_book_title)
         }
 
+        views.load_book = function(bID){
+            // window.location = "/read/" + bID
+            window.open("/read/" + bID)
+        }
+
         return views
     }())
 
@@ -132,7 +160,8 @@ jQuery(function($){
         var bindings = {}
 
         bindings.click_book_title = function(){
-            window.open("/read/" + $(this).closest(".book").attr("data-id"))
+            var id = $(this).closest(".book").attr("data-id")
+            views.load_book(id)
         }
 
         // mark

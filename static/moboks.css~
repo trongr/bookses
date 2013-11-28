@@ -1,0 +1,21 @@
+body {
+
+}
+
+p {
+    margin-top: -0.5em; /* cause we use white-space: pre-wrap below for boks_text, for poetry */
+    margin-bottom: -0.5em;
+}
+
+.boks_text {
+    width: 60%;
+    white-space: pre-wrap;
+}
+
+@media screen and (min-width: 0px) {
+
+}
+
+@media screen and (min-width: 600px){
+
+}

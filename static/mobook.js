@@ -1,7 +1,7 @@
 jQuery(function($){
     var book = new bok({
         box: $("#book"),
-        bID: document.URL.match(/read\/(.*)$/)[1],
+        bID: document.URL.match(/mobile\/read\/([a-zA-Z0-9]+).*$/)[1],
         error: function(er){
             if (er){
                 $("#book").hide()
@@ -9,6 +9,19 @@ jQuery(function($){
             }
         }
     })
+
+    var app = (function(){
+        var app = {}
+
+        app.init = function(){
+
+        }
+
+        return app
+    }())
+
+    app.init()
+
     ;(function(){
         (function(i,s,o,g,r,a,m){
             i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();

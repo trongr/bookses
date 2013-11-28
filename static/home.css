@@ -5,6 +5,8 @@ body {
 
 hr {
     height: 1px;
+    background-color: #000;
+    border: none;
 }
 
 a {
@@ -276,7 +278,6 @@ button#logo:hover {
 
 .book {
     display: table-row;
-    clear: both;
 }
 
 .book_left_box {
