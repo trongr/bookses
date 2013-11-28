@@ -3,34 +3,122 @@ body {
 }
 
 p {
-    margin-top: -0.5em; /* cause we use white-space: pre-wrap below for boks_text, for poetry */
-    margin-bottom: -0.5em;
+    margin: -0.5em 10px -0.5em 0;
+    padding-left: 10px;
+}
+
+.boks_book_info {
+    background-color: #eee;
 }
 
 .boks_book_title_box {
     text-align: center;
+    font-weight: bolder;
 }
 
 .boks_book_created {
     text-align: center;
-    margin: 10px 0 10px 0;
+    margin: 1em;
+    color: #666;
 }
 
 .boks_book_description {
-    padding: 0 40px 20px 40px;
+    padding: 0 10% 20px 10%;
     white-space: pre-wrap;
 }
 
+.boks_book_description img {
+    display: block;
+    width: 100%;
+}
+
+.boks_content {
+    display: table;
+    width: 100%;
+}
+
 .boks_content_left {
+    display: table-cell;
     width: 70%;
 }
 
 .boks_content_right {
+    display: table-cell;
     width: 30%;
 }
 
 .boks_text {
     width: 100%;
-    padding-left: 10px;
     white-space: pre-wrap;
+    background-color: #ddd;
+}
+
+.boks_comments_box {
+    padding: 10px;
+    background-color: #eee;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 70%;
+    overflow-y: scroll;
+}
+
+.boks_comment {
+    border-left: 5px solid #bbb;
+    border-top: 1px solid #bbb;
+}
+
+.boks_comment_img_box {
+    padding: 10px;
+}
+
+.boks_comment_img {
+    width: 100%;
+}
+
+.boks_comment_text {
+    padding: 15px 15px 15px 15px;
+    white-space: pre-wrap;
+}
+
+.boks_comment_menu {
+    clear: both;
+    float: right;
+    margin: 0 10px 0 10px;
+}
+
+.boks_comment_menu button {
+    font-size: 1em;
+    font-weight: lighter;
+    background: none;
+    font-family: helvetica, arial, sans;
+    margin: 10px 0 10px 0;
+}
+
+.boks_comment_created {
+    float: right;
+    padding: 5px 20px 0 0;
+    color: #555;
+}
+
+.boks_comment_username {
+    float: left;
+    padding: 5px 30px 0 30px;
+    font-size: 1em;
+    font-weight: bolder;
+    color: #555;
+}
+
+.boks_more_comments_button {
+    width: 100%;
+    font-size: 2em;
+    padding: 20px;
+    color: #5BFC60;
+}
+
+.boks_comments_home_button {
+    width: 100%;
+    font-size: 2em;
+    padding: 20px;
+    color: #FF3D3D;
 }

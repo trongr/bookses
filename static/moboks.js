@@ -6,7 +6,7 @@ var bok = function(x){
 
     var dom = {
         box: x.box,
-        comments: null,
+        content_right: null,
     }
 
     var k = {
@@ -24,13 +24,14 @@ var bok = function(x){
             pages: {}, // pages already requested
         }
 
+        // let api.book_comments_store worry about caching
         page.get_p = function(p){
-            var q = p - p % page.k.page_size
-            if (page.k.pages[q]){
+            // var q = p - p % page.k.page_size
+            if (page.k.pages[p]){
                 return null
             } else {
-                page.k.pages[q] = true
-                return q
+                page.k.pages[p] = true
+                return p
             }
         }
 
@@ -67,7 +68,8 @@ var bok = function(x){
 
         css.color_code_p_margin = function(p, pop){
             p.css({
-                "border-left": "5px solid #" + color.code_point_range(css.k.cold, css.k.hot, pop, k.page_size)
+                "background-color": "#e8e8e8",
+                "border-right": "5px solid #" + color.code_point_range(css.k.cold, css.k.hot, pop, k.page_size)
             })
         }
 
@@ -110,7 +112,11 @@ var bok = function(x){
             })
         }
 
+        // caching first page of each paragraph's comments
+        api.book_comments = {}
+
         api.get_book_comments = function(bID, p, page, done){
+            if (page == 0 && api.book_comments[p]) return done(null, api.book_comments[p])
             $.ajax({
                 url: "/book/" + bID + "/comments",
                 type: "get",
@@ -119,8 +125,10 @@ var bok = function(x){
                     page: page
                 },
                 success: function(re){
-                    if (re.comments) done(null, re.comments)
-                    else done({error:"api.get_book_comments",re:re})
+                    if (re.comments){
+                        api.book_comments[p] = re.comments
+                        done(null, re.comments)
+                    } else done({error:"api.get_book_comments",re:re})
                 }
             })
         }
@@ -190,28 +198,20 @@ var bok = function(x){
                 + "             <div class='boks_content_left'>"
                 + "                 <div class='boks_text'>" + text + "</div>"
                 + "             </div>"
-                + "             <div class='boks_content_right'></div>"
+                + "             <div class='boks_content_right'><div style='padding:20px'>Paragraphs with green side bars have comments or illustrations. Tap to reveal.</div></div>"
                 + "         </div>"
                 + "     </div>"
             return html
         }
 
+        // mark
         // p and top can be null if comments have a parent, otw parentid can be null
-        templates.comments_box = function(comments, p, top, parentid){
+        templates.comments_box = function(comments, p, parentid){
             var content = templates.comments(comments.slice(0, k.page_size))
-            var style = (top ? "style='position:absolute;top:" + top + ";'" : "")
             var datap = ((p || p == 0) ? "data-p='" + p + "'" : "")
             var parent = (parentid ? "data-parent='" + parentid + "'" : "")
             var more_comments = (comments.length > 10 ? "" : "boks_hide")
-            var html = "<div class='boks_comments_box' " + parent + " " + datap + " " + style + ">"
-                + "         <div class='boks_new_comment_box'>"
-                + "             <div class='boks_new_comment_textarea_box'>"
-                + "                 <textarea class='boks_new_comment_textarea' placeholder='Comment or add an image'></textarea>"
-                + "             </div>"
-                + "             <div class='boks_new_comment_img_box'>"
-                + "                 <img class='boks_new_comment_img'>"
-                + "             </div>"
-                + "         </div>"
+            var html = "<div class='boks_comments_box' " + parent + " " + datap + ">"
                 + "         <div class='boks_comments'>"
                 +               content
                 + "         </div>"
@@ -283,22 +283,57 @@ var bok = function(x){
                 function(book, done){
                     dom.box.html(templates.book_info(book))
                     css.fit($(".boks_book_info"), $(".boks_book_title"))
+                    $(".boks_book_description").flowtype({lineRatio:1})
+                    $(".boks_book_created").flowtype({lineRatio:1})
                     api.get_text(book, function(er, text){
                         done(er, text)
                     })
                 },
                 function(text, done){
                     dom.box.append(templates.reader(text)).off()
-                    dom.comments = dom.box.find(".boks_content_right")
-                    $(".boks_text").flowtype({
-                        minFont: 1,
-                        maxFont: 1000,
-                        lineRatio: 1
-                    })
+                        .on("click", ".boks_text p", bindings.click_p)
+                    $(window).on("scroll", bindings.scroll_window)
+                    dom.content_right = dom.box.find(".boks_content_right")
+                    $(".boks_text").flowtype({lineRatio:1})
                     done(null)
                 },
             ], function(er, re){
                 done(er)
+            })
+        }
+
+        views.load_book_comments = function(q){
+            async.times(k.page_size, function(i, done){
+                var p = page.get_p(q + i)
+                if (p == null) return done(null) // already requested. todo render the closest set of comments
+                views.load_paragraph_comments(p, function(er){
+                    if (er) console.log(JSON.stringify(er, 0, 2))
+                    done(null)
+                })
+            }, function(er, re){
+                if (er) console.log(JSON.stringify({error:"views.load_book_comments",er:er}, 0, 2))
+            })
+        }
+
+        views.load_paragraph_comments = function(p, done){
+            async.waterfall([
+                function(done){
+                    api.get_book_comments(o.bID, p, 0, function(er, comments){
+                        done(er, comments)
+                    })
+                },
+                function(comments, done){
+                    // todo opt. render the closest set of comments
+                    if (comments.length){
+                        var paragraph = $("#" + o.bID + " .boks_text p").eq(p)
+                        var pop = Math.min(comments.length, k.page_size)
+                        css.color_code_p_margin(paragraph, pop)
+                    }
+                    done(null)
+                },
+            ], function(er, re){
+                if (er) done({error:"views.load_paragraph_comments",er:er})
+                else done(null)
             })
         }
 
@@ -307,6 +342,43 @@ var bok = function(x){
 
     var bindings = (function(){
         var bindings = {}
+
+        bindings.scroll_timeout
+
+        bindings.scroll_window = function(){
+            if (bindings.scroll_timeout) return
+            bindings.scroll_timeout = setTimeout(function(){
+                var top = $(window).scrollTop()
+                var bottom = top + window.innerHeight
+                var mid = (top + bottom) / 2
+                var p = $(".boks_text p").filter(function(){
+                    var t = $(this).get(0).offsetTop
+                    var b = $(this).height() + t
+                    if (t < mid && b > mid){
+                        return t < mid && b > mid
+                    }
+                    return false
+                })
+                views.load_book_comments(p.index())
+
+                var comments = dom.content_right.find(".boks_comments_box")
+                if (comments.length){
+                    // offset().top gives the position of fixed elmts, offsetTop doesn't
+                    if (dom.content_right.get(0).offsetTop > comments.offset().top) comments.hide()
+                    else comments.show()
+                }
+
+                bindings.scroll_timeout = null
+            }, 100)
+        }
+
+        bindings.click_p = function(){
+            var p = $(this).index()
+            var comments = api.book_comments[p]
+            if (comments && comments.length){
+                dom.content_right.html(templates.comments_box(comments, p, comments[0].parent))
+            }
+        }
 
         return bindings
     }())

@@ -289,12 +289,6 @@ var bok = function(x){
                 },
                 function(text, done){
                     dom.box.append(templates.reader(text)).off()
-                        .on("click", ".boks_upvote", bindings.click_book_like)
-                        .on("click", ".boks_text p", bindings.click_paragraph)
-                        .on("click", ".boks_comment_content", bindings.click_comment_content)
-                        .on("click", ".boks_comment_reply", bindings.click_comment_reply)
-                        .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
-                        .on("click", ".boks_more_comments_button", bindings.click_more_comments)
                     dom.comments = dom.box.find(".boks_content_right")
                     $(".boks_text").flowtype({
                         minFont: 1,
@@ -308,137 +302,11 @@ var bok = function(x){
             })
         }
 
-        views.load_book_comments = function(p){
-            async.timesSeries(k.page_size, function(i, done){
-                views.load_paragraph_comments(p + i, function(er){
-                    if (er) console.log(JSON.stringify(er, 0, 2))
-                    done(null)
-                })
-            }, function(er, re){
-                if (er) console.log(JSON.stringify({error:"views.load_book_comments",er:er}, 0, 2))
-            })
-        }
-
-        views.load_paragraph_comments = function(p, done){
-            async.waterfall([
-                function(done){
-                    api.get_book_comments(o.bID, p, 0, function(er, comments){
-                        done(er, comments)
-                    })
-                },
-                function(comments, done){
-                    if (comments.length){
-                        var paragraph = $("#" + o.bID + " .boks_text p").eq(p)
-                        var top = paragraph.get(0).offsetTop
-                        var pop = Math.min(comments.length, k.page_size)
-                        css.color_code_p_margin(paragraph, pop)
-                        dom.comments.append(templates.comments_box(comments, p, top, null))
-                    }
-                    done(null)
-                },
-            ], function(er, re){
-                if (er) done({error:"views.load_paragraph_comments",er:er})
-                else done(null)
-            })
-        }
-
-        views.load_comments = function(parentid, p, box, done){
-            async.waterfall([
-                function(done){
-                    api.get_comment_comments(parentid, 0, function(er, comments){ // todo. replace 0 with page
-                        done(er, comments)
-                    })
-                },
-                function(comments, done){
-                    box.html(templates.comments_box(comments, p, null, parentid))
-                    done(null)
-                },
-            ], function(er, re){
-                if (er) done({error:"load_comments",parentid:parentid,er:er})
-                else done(null)
-            })
-        }
-
         return views
     }())
 
     var bindings = (function(){
         var bindings = {}
-
-        bindings.click_book_like = function(){
-            $(this).attr("disabled", true)
-                .find("i").removeClass("icon-heart-empty").addClass("icon-heart")
-            api.like_book(o.bID, function(er, num){
-                if (er) alert("couldn't like book " + JSON.stringify(er, 0, 2))
-            })
-        }
-
-        bindings.click_paragraph = function(){
-            var p = $(this).index()
-            var top = $(this).get(0).offsetTop
-            dom.comments.children(".boks_comments_box").removeClass("boks_comments_box_hover boks_p_hover")
-            var comments_box = dom.comments.children(".boks_comments_box[data-p='" + p + "']")
-            if (comments_box.length){
-                comments_box.addClass("boks_p_hover")
-                    .find(".boks_new_comment_box").eq(0).show()
-                    .find(".boks_new_comment_textarea").focus().val("")
-            } else {
-                views.load_new_comments_box(p, top, null).addClass("boks_p_hover")
-            }
-        }
-
-        bindings.click_comment_content = function(){
-            var comment_box = $(this).closest(".boks_comment")
-            var id = comment_box.attr("data-id")
-            var p = comment_box.attr("data-p")
-            var children_box = comment_box.find(".boks_comments_box_box")
-            views.load_comments(id, p, children_box, function(er){
-                if (er) alert(JSON.stringify(er, 0, 2))
-            })
-        }
-
-        bindings.click_comment_like = function(){
-            try {
-                var id = $(this).closest(".boks_comment").attr("data-id")
-                var boks_comment_votes = $(this).find(".boks_comment_votes")
-                boks_comment_votes.html(parseInt(boks_comment_votes.html()) + 1)
-                api.upvote_comment(id, function(er, num){
-                    if (er && er.loggedin == false) alert("You have to be logged in")
-                    else if (er) alert(JSON.stringify(er, 0, 2))
-                })
-            } catch (e){
-                alert("something went wrong. couldn't upvote comment")
-            }
-        }
-
-        bindings.click_more_comments = function(){
-            var that = $(this)
-            var container = that.closest(".boks_comments_box")
-            var box = container.children(".boks_comments")
-            var page = parseInt(that.attr("data-page")) + 1
-            var p = container.attr("data-p")
-            var parentid = container.attr("data-parent")
-            async.waterfall([
-                function(done){
-                    if (parentid) api.get_comment_comments(parentid, page, function(er, comments){
-                        done(er, comments)
-                    })
-                    else api.get_book_comments(o.bID, p, page, function(er, comments){
-                        done(er, comments)
-                    })
-                },
-                function(comments, done){
-                    if (comments.length) box.append(templates.comments(comments.slice(0, k.page_size)))
-                    if (comments.length <= k.page_size){
-                        that.hide()
-                        that.parent().find(".boks_comments_home_button").show()
-                    } else that.attr("data-page", page)
-                    done(null)
-                },
-            ], function(er, re){
-                if (er) console.log(JSON.stringify(({error:"bindings.click_more_comments",er:er}), 0, 2))
-            })
-        }
 
         return bindings
     }())

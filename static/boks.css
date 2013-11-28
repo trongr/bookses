@@ -74,7 +74,7 @@ p {
 .boks_book_created {
     color: #666;
     font-size: 1.2em;
-    padding: 10px 100px 10px 100px;
+    margin: 1em;
     text-align: center;
 }
 

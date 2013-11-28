@@ -51,7 +51,7 @@ button {
 .book_left_box {
     display: table-cell;
     text-align: center;
-    min-width: 30%;
+    min-width: 10%;
     vertical-align: middle;
 }
 

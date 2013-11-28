@@ -7,15 +7,30 @@ p {
     margin-bottom: -0.5em;
 }
 
-.boks_text {
-    width: 60%;
+.boks_book_title_box {
+    text-align: center;
+}
+
+.boks_book_created {
+    text-align: center;
+    margin: 10px 0 10px 0;
+}
+
+.boks_book_description {
+    padding: 0 40px 20px 40px;
     white-space: pre-wrap;
 }
 
-@media screen and (min-width: 0px) {
-
+.boks_content_left {
+    width: 70%;
 }
 
-@media screen and (min-width: 600px){
+.boks_content_right {
+    width: 30%;
+}
 
+.boks_text {
+    width: 100%;
+    padding-left: 10px;
+    white-space: pre-wrap;
 }

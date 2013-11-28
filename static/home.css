@@ -15,7 +15,7 @@ a {
 }
 
 .a_hover {
-    color: #70ACFF;
+    color: #0f0;
 }
 
 i {
@@ -105,7 +105,7 @@ button#logo:hover {
 }
 
 #bookses_more_menu_box:hover {
-    border-left: 5px solid #70ACFF;
+    border-left: 5px solid #0f0;
 }
 
 .menu_item {
@@ -179,7 +179,7 @@ button#logo:hover {
 }
 
 #info_box_right:hover {
-    border-left: 10px solid #70ACFF;
+    border-left: 10px solid #0f0;
 }
 
 #info_box_right b {
@@ -303,6 +303,7 @@ button#logo:hover {
 
 .book_title {
     font-size: 2em;
+    font-weight: bolder;
 }
 
 .book_title:hover {
