@@ -3,8 +3,20 @@ body {
 }
 
 p {
-    margin: -0.5em 10px -0.5em 0;
+    margin: -0.5em 0 -0.5em 0;
     padding-left: 10px;
+}
+
+.boks_hide {
+    display: none;
+}
+
+.boks_green_underline {
+    border-bottom: 5px solid #0f0;
+}
+
+.boks_red_underline {
+    border-bottom: 5px solid #f00;
 }
 
 .boks_book_info {
@@ -53,14 +65,15 @@ p {
     background-color: #ddd;
 }
 
-.boks_comments_box {
-    padding: 10px;
+.boks_content_right > .boks_comments_box {
     background-color: #eee;
     position: fixed;
     top: 0;
     bottom: 0;
     left: 70%;
+    right: 0;
     overflow-y: scroll;
+    font-size: 0.8em;
 }
 
 .boks_comment {
@@ -69,7 +82,7 @@ p {
 }
 
 .boks_comment_img_box {
-    padding: 10px;
+    padding: 5px;
 }
 
 .boks_comment_img {
@@ -77,33 +90,35 @@ p {
 }
 
 .boks_comment_text {
-    padding: 15px 15px 15px 15px;
+    padding: 10px;
     white-space: pre-wrap;
 }
 
 .boks_comment_menu {
     clear: both;
     float: right;
-    margin: 0 10px 0 10px;
+    margin: 0 5px 0 5px;
 }
 
 .boks_comment_menu button {
-    font-size: 1em;
+    font-size: 1.2em;
     font-weight: lighter;
     background: none;
     font-family: helvetica, arial, sans;
     margin: 10px 0 10px 0;
+    padding: 5px 5px 0 5px;
 }
 
 .boks_comment_created {
+    clear: both;
     float: right;
-    padding: 5px 20px 0 0;
+    padding: 0 10px 0 0;
     color: #555;
 }
 
 .boks_comment_username {
-    float: left;
-    padding: 5px 30px 0 30px;
+    float: right;
+    padding: 0 10px 0 0;
     font-size: 1em;
     font-weight: bolder;
     color: #555;

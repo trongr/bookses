@@ -14,6 +14,7 @@ var bok = function(x){
         date_format: "D MMMM YYYY",
         date_format_alt: "h:mm A D MMM YYYY",
         page_size: 10,
+        request_ahead: 20,
     }
 
     var page = (function(){
@@ -115,8 +116,19 @@ var bok = function(x){
         // caching first page of each paragraph's comments
         api.book_comments = {}
 
+        api.get_book_comments_cache = function(p, page){
+            if (api.book_comments[p] && api.book_comments[p][page]) return api.book_comments[p][page]
+            else return null
+        }
+
+        api.push_book_comments_cache = function(p, page, comments){
+            if (page == 0) api.book_comments[p] = [comments]
+            else api.book_comments[p].push(comments)
+        }
+
         api.get_book_comments = function(bID, p, page, done){
-            if (page == 0 && api.book_comments[p]) return done(null, api.book_comments[p])
+            var cache = api.get_book_comments_cache(p, page)
+            if (cache) return done(null, cache)
             $.ajax({
                 url: "/book/" + bID + "/comments",
                 type: "get",
@@ -126,7 +138,7 @@ var bok = function(x){
                 },
                 success: function(re){
                     if (re.comments){
-                        api.book_comments[p] = re.comments
+                        api.push_book_comments_cache(p, page, re.comments)
                         done(null, re.comments)
                     } else done({error:"api.get_book_comments",re:re})
                 }
@@ -198,7 +210,7 @@ var bok = function(x){
                 + "             <div class='boks_content_left'>"
                 + "                 <div class='boks_text'>" + text + "</div>"
                 + "             </div>"
-                + "             <div class='boks_content_right'><div style='padding:20px'>Paragraphs with green side bars have comments or illustrations. Tap to reveal.</div></div>"
+                + "             <div class='boks_content_right'><div style='padding:20px'>Paragraphs with green side bars have comments or illustrations. Tap to reveal. If you're on the phone it looks better in landscape.</div></div>"
                 + "         </div>"
                 + "     </div>"
             return html
@@ -243,12 +255,8 @@ var bok = function(x){
                 +                   img
                 + "                 <div class='boks_comment_text'>" + text + "</div>"
                 + "             </div>"
-                + "             <div class='boks_comment_created'>"
-                +                   moment(comment.created).format(k.date_format_alt)
-                + "             </div>"
-                + "             <div class='boks_comment_username'>"
-                +                   comment.username
-                + "             </div>"
+                + "             <div class='boks_comment_username'>" + comment.username + "</div>"
+                + "             <div class='boks_comment_created'>" + moment(comment.created).format(k.date_format_alt) + "</div>"
                 + "             <div class='boks_comment_menu'>"
                 + "                 <button class='boks_comment_reply " + has_replies + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
                 + "                 <button class='boks_comment_thumbs_up " + has_votes + "'><i class='icon-thumbs-up-alt'></i><span class='boks_comment_votes'>" + comment.votes + "</span></button>"
@@ -273,6 +281,7 @@ var bok = function(x){
             })
         }
 
+        // mark
         views.load_book = function(done){
             async.waterfall([
                 function(done){
@@ -294,16 +303,22 @@ var bok = function(x){
                         .on("click", ".boks_text p", bindings.click_p)
                     $(window).on("scroll", bindings.scroll_window)
                     dom.content_right = dom.box.find(".boks_content_right")
+                        .on("click", ".boks_more_comments_button", bindings.click_more_comments)
+                        .on("click", ".boks_comment_reply", bindings.click_comment_reply)
+                        .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
                     $(".boks_text").flowtype({lineRatio:1})
                     done(null)
                 },
+                function(done){
+                    views.load_book_comments(0)
+                }
             ], function(er, re){
                 done(er)
             })
         }
 
         views.load_book_comments = function(q){
-            async.times(k.page_size, function(i, done){
+            async.timesSeries(k.request_ahead, function(i, done){
                 var p = page.get_p(q + i)
                 if (p == null) return done(null) // already requested. todo render the closest set of comments
                 views.load_paragraph_comments(p, function(er){
@@ -337,6 +352,24 @@ var bok = function(x){
             })
         }
 
+        // mark
+        views.load_comments = function(parentid, p, box, done){
+            async.waterfall([
+                function(done){
+                    api.get_comment_comments(parentid, 0, function(er, comments){ // todo. replace 0 with page
+                        done(er, comments)
+                    })
+                },
+                function(comments, done){
+                    box.html(templates.comments_box(comments, p, parentid))
+                    done(null)
+                },
+            ], function(er, re){
+                if (er) done({error:"load_comments",parentid:parentid,er:er})
+                else done(null)
+            })
+        }
+
         return views
     }())
 
@@ -354,10 +387,7 @@ var bok = function(x){
                 var p = $(".boks_text p").filter(function(){
                     var t = $(this).get(0).offsetTop
                     var b = $(this).height() + t
-                    if (t < mid && b > mid){
-                        return t < mid && b > mid
-                    }
-                    return false
+                    return t < mid && b > mid
                 })
                 views.load_book_comments(p.index())
 
@@ -369,15 +399,68 @@ var bok = function(x){
                 }
 
                 bindings.scroll_timeout = null
-            }, 100)
+            }, 10)
         }
 
         bindings.click_p = function(){
             var p = $(this).index()
-            var comments = api.book_comments[p]
-            if (comments && comments.length){
-                dom.content_right.html(templates.comments_box(comments, p, comments[0].parent))
-            }
+            api.get_book_comments(o.bID, p, 0, function(er, comments){
+                if (comments && comments.length){
+                    dom.content_right.html(templates.comments_box(comments, p, comments[0].parent))
+                }
+            })
+        }
+
+        bindings.click_more_comments = function(){
+            var that = $(this)
+            var container = that.closest(".boks_comments_box")
+            var box = container.children(".boks_comments")
+            var page = parseInt(that.attr("data-page")) + 1
+            var p = container.attr("data-p")
+            var parentid = container.attr("data-parent")
+            async.waterfall([
+                function(done){
+                    if (parentid) api.get_comment_comments(parentid, page, function(er, comments){
+                        done(er, comments)
+                    })
+                    else api.get_book_comments(o.bID, p, page, function(er, comments){
+                        done(er, comments)
+                    })
+                },
+                function(comments, done){
+                    if (comments.length) box.append(templates.comments(comments.slice(0, k.page_size)))
+                    if (comments.length <= k.page_size) that.hide()
+                    else that.attr("data-page", page)
+                    done(null)
+                },
+            ], function(er, re){
+                if (er) console.log(JSON.stringify(({error:"bindings.click_more_comments",er:er}), 0, 2))
+            })
+        }
+
+        // mark
+        bindings.click_comment_reply = function(){
+            var comment_box = $(this).closest(".boks_comment")
+            var id = comment_box.attr("data-id")
+            var p = comment_box.attr("data-p")
+            var children_box = comment_box.find(".boks_comments_box_box")
+            views.load_comments(id, p, children_box, function(er){
+                if (er) alert(JSON.stringify(er, 0, 2))
+            })
+        }
+
+        bindings.click_comment_like = function(){
+            // try {
+            //     var id = $(this).closest(".boks_comment").attr("data-id")
+            //     var boks_comment_votes = $(this).find(".boks_comment_votes")
+            //     boks_comment_votes.html(parseInt(boks_comment_votes.html()) + 1)
+            //     api.upvote_comment(id, function(er, num){
+            //         if (er && er.loggedin == false) alert("You have to be logged in")
+            //         else if (er) alert(JSON.stringify(er, 0, 2))
+            //     })
+            // } catch (e){
+            //     alert("something went wrong. couldn't upvote comment")
+            // }
         }
 
         return bindings
