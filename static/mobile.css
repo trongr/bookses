@@ -72,6 +72,7 @@ button {
 .book_title {
     font-size: 2em;
     font-weight: bolder;
+    cursor: pointer;
 }
 
 .book_description {

@@ -5,6 +5,7 @@ body {
 p {
     margin: -0.5em 0 -0.5em 0;
     padding-left: 10px;
+    cursor: pointer;
 }
 
 .boks_hide {
@@ -21,6 +22,7 @@ p {
 
 .boks_book_info {
     background-color: #eee;
+    width: 70%;
 }
 
 .boks_book_title_box {
@@ -30,13 +32,15 @@ p {
 
 .boks_book_created {
     text-align: center;
+    font-size: 1em;
     margin: 1em;
     color: #666;
 }
 
 .boks_book_description {
-    padding: 0 10% 20px 10%;
+    padding: 0 20px 20px 20px;
     white-space: pre-wrap;
+    font-size: 1em;
 }
 
 .boks_book_description img {
@@ -45,18 +49,20 @@ p {
 }
 
 .boks_content {
-    display: table;
     width: 100%;
 }
 
 .boks_content_left {
-    display: table-cell;
     width: 70%;
 }
 
 .boks_content_right {
-    display: table-cell;
-    width: 30%;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 70%;
+    right: 0;
+    overflow-y: scroll;
 }
 
 .boks_text {
@@ -65,20 +71,27 @@ p {
     background-color: #ddd;
 }
 
+#boks_p_menu > .boks_reply {
+    margin: 5px;
+}
+
+.boks_reply {
+    font-size: 1.2em;
+    padding: 5px;
+}
+
 .boks_content_right > .boks_comments_box {
     background-color: #eee;
-    position: fixed;
-    top: 0;
-    bottom: 0;
-    left: 70%;
-    right: 0;
-    overflow-y: scroll;
     font-size: 0.8em;
 }
 
 .boks_comment {
     border-left: 5px solid #bbb;
     border-top: 1px solid #bbb;
+}
+
+.boks_comment_content {
+    cursor: pointer;
 }
 
 .boks_comment_img_box {
@@ -131,9 +144,80 @@ p {
     color: #5BFC60;
 }
 
-.boks_comments_home_button {
+.boks_reply_box {
+    background-color: #ddd;
+    width: 90%;
+    height: 100%;
+    margin-left: 10%;
+    padding: 10px 0 0 20px;
+    display: table;
+}
+
+.boks_reply_img_box {
+    display: table-cell;
+    width: 40%;
+    padding: 0 10px 0 10px;
+    text-align: center;
+    vertical-align: top;
+}
+
+img.boks_reply_img {
+    display: none;
+    height: auto;
+    width: 100%
+}
+
+.boks_reply_textarea_box {
+    display: table-cell;
+    width: 60%;
+}
+
+.boks_reply_textarea {
+    font-family: helvetica, arial, sans;
+    font-size: 1.2em;
     width: 100%;
-    font-size: 2em;
-    padding: 20px;
-    color: #FF3D3D;
+    height: 7em;
+    border: none;
+    padding: 10px;
+    resize: none;
+    background-color: #fff;
+}
+
+.boks_reply_menu {
+    vertical-align: middle;
+    margin-bottom: 5px;
+}
+
+.boks_reply_picture_input {
+    display: none;
+}
+
+.boks_reply_picture_button {
+    font-size: 1em;
+    background-color: #ddd;
+}
+
+.boks_reply_post {
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 3px;
+    border: 1px solid #666;
+}
+
+.boks_reply_cancel {
+    float: right;
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 3px;
+    border: 1px solid #666;
+}
+
+.boks_reply_cancel_blank {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 10%;
+    height: 100%;
+    border: none !important;
+    opacity: 0;
 }

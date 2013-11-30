@@ -69,7 +69,7 @@ var bok = function(x){
 
         css.color_code_p_margin = function(p, pop){
             p.css({
-                "background-color": "#e8e8e8",
+                "background-color": "#eaeaea",
                 "border-right": "5px solid #" + color.code_point_range(css.k.cold, css.k.hot, pop, k.page_size)
             })
         }
@@ -210,20 +210,51 @@ var bok = function(x){
                 + "             <div class='boks_content_left'>"
                 + "                 <div class='boks_text'>" + text + "</div>"
                 + "             </div>"
-                + "             <div class='boks_content_right'><div style='padding:20px'>Paragraphs with green side bars have comments or illustrations. Tap to reveal. If you're on the phone it looks better in landscape.</div></div>"
+                + "             <div class='boks_content_right'><div style='padding:20px'>Paragraphs with green side bars have comments or illustrations. Click or tap to reveal. If you're on the phone it looks better in landscape.</div></div>"
                 + "         </div>"
                 + "     </div>"
             return html
         }
 
+        templates.p_menu = function(p){
+            var html = "<div id='boks_p_menu' class='data' data-p='" + p + "'>"
+                + "         <button class='boks_reply'><i class='icon-pencil'></i></button>"
+                + "     </div>"
+            return html
+        }
+
+        templates.comment_img_input = function(){
+            return "<input class='boks_reply_picture_input' accept='image/*' type='file'>"
+        }
+
         // mark
+        templates.reply_box = function(p, parentid){
+            var html = "<div class='boks_reply_box data' data-p='" + p + "' data-parentid='" + parentid + "'>"
+                + "         <div class='boks_reply_cancel boks_reply_cancel_blank'></div>"
+                + "         <div class='boks_reply_textarea_box'>"
+                + "             <div class='boks_reply_menu'>"
+                + "                 <button class='boks_reply_post'>POST</button>"
+                +                   templates.comment_img_input()
+                + "                 <button class='boks_reply_picture_button'><i class='icon-picture'></i></button>"
+                + "                 <button class='boks_reply_cancel'>cancel</button>"
+                + "                 <div class='clear_both'></div>"
+                + "             </div>"
+                + "             <textarea class='boks_reply_textarea' placeholder='Comment or add an image'></textarea>"
+                + "         </div>"
+                + "         <div class='boks_reply_img_box'>"
+                + "             <img class='boks_reply_img'>"
+                + "         </div>"
+                + "     </div>"
+            return html
+        }
+
         // p and top can be null if comments have a parent, otw parentid can be null
         templates.comments_box = function(comments, p, parentid){
             var content = templates.comments(comments.slice(0, k.page_size))
             var datap = ((p || p == 0) ? "data-p='" + p + "'" : "")
             var parent = (parentid ? "data-parent='" + parentid + "'" : "")
             var more_comments = (comments.length > 10 ? "" : "boks_hide")
-            var html = "<div class='boks_comments_box' " + parent + " " + datap + ">"
+            var html = "<div class='boks_comments_box data' " + parent + " " + datap + ">"
                 + "         <div class='boks_comments'>"
                 +               content
                 + "         </div>"
@@ -249,7 +280,7 @@ var bok = function(x){
             var datap = "data-p='" + comment.p + "'"
             var has_replies = (comment.replies > 0 ? "boks_green_underline" : "")
             var has_votes = (comment.votes > 1 ? "boks_red_underline" : "")
-            var html = "<div class='boks_comment' " + dataid + " " + datap + ">"
+            var html = "<div class='boks_comment data' " + dataid + " " + datap + ">"
                 + "         <div class='boks_comment_text_box'>"
                 + "             <div class='boks_comment_content'>"
                 +                   img
@@ -258,6 +289,7 @@ var bok = function(x){
                 + "             <div class='boks_comment_username'>" + comment.username + "</div>"
                 + "             <div class='boks_comment_created'>" + moment(comment.created).format(k.date_format_alt) + "</div>"
                 + "             <div class='boks_comment_menu'>"
+                + "                 <button class='boks_reply'><i class='icon-pencil'></i></button>"
                 + "                 <button class='boks_comment_reply " + has_replies + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
                 + "                 <button class='boks_comment_thumbs_up " + has_votes + "'><i class='icon-thumbs-up-alt'></i><span class='boks_comment_votes'>" + comment.votes + "</span></button>"
                 + "                 <button class='boks_comment_flag'><i class='icon-flag'></i></button>"
@@ -292,8 +324,6 @@ var bok = function(x){
                 function(book, done){
                     dom.box.html(templates.book_info(book))
                     css.fit($(".boks_book_info"), $(".boks_book_title"))
-                    $(".boks_book_description").flowtype({lineRatio:1})
-                    $(".boks_book_created").flowtype({lineRatio:1})
                     api.get_text(book, function(er, text){
                         done(er, text)
                     })
@@ -301,12 +331,23 @@ var bok = function(x){
                 function(text, done){
                     dom.box.append(templates.reader(text)).off()
                         .on("click", ".boks_text p", bindings.click_p)
-                    $(window).on("scroll", bindings.scroll_window)
+                    $(window)
+                        .on("scroll", bindings.scroll_window)
                     dom.content_right = dom.box.find(".boks_content_right")
                         .on("click", ".boks_more_comments_button", bindings.click_more_comments)
+                        .on("click", ".boks_comment_content", bindings.click_comment_reply)
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
                         .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
-                    $(".boks_text").flowtype({lineRatio:1})
+                        .on("click", ".boks_reply", bindings.click_reply)
+                    $("#popup")
+                        .off()
+                        .on("click", ".boks_reply_cancel", bindings.click_reply_cancel)
+                        .on("click", ".boks_reply_picture_button", bindings.click_choose_reply_image)
+                        .on("change", ".boks_reply_picture_input", bindings.change_reply_picture_input)
+                    $(".boks_text").flowtype({
+                        fontRatio: 38,
+                        lineRatio: 1,
+                    })
                     done(null)
                 },
                 function(done){
@@ -352,7 +393,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         views.load_comments = function(parentid, p, box, done){
             async.waterfall([
                 function(done){
@@ -390,30 +430,24 @@ var bok = function(x){
                     return t < mid && b > mid
                 })
                 views.load_book_comments(p.index())
-
-                var comments = dom.content_right.find(".boks_comments_box")
-                if (comments.length){
-                    // offset().top gives the position of fixed elmts, offsetTop doesn't
-                    if (dom.content_right.get(0).offsetTop > comments.offset().top) comments.hide()
-                    else comments.show()
-                }
-
                 bindings.scroll_timeout = null
-            }, 10)
+            }, 100)
         }
 
         bindings.click_p = function(){
             var p = $(this).index()
+            dom.content_right.html(templates.p_menu(p))
+            $("#boks_p_menu > .boks_reply").fadeOut(200).fadeIn(200)
             api.get_book_comments(o.bID, p, 0, function(er, comments){
                 if (comments && comments.length){
-                    dom.content_right.html(templates.comments_box(comments, p, comments[0].parent))
+                    dom.content_right.append(templates.comments_box(comments, p, comments[0].parent))
                 }
             })
         }
 
         bindings.click_more_comments = function(){
             var that = $(this)
-            var container = that.closest(".boks_comments_box")
+            var container = that.closest(".data")
             var box = container.children(".boks_comments")
             var page = parseInt(that.attr("data-page")) + 1
             var p = container.attr("data-p")
@@ -438,9 +472,8 @@ var bok = function(x){
             })
         }
 
-        // mark
         bindings.click_comment_reply = function(){
-            var comment_box = $(this).closest(".boks_comment")
+            var comment_box = $(this).closest(".data")
             var id = comment_box.attr("data-id")
             var p = comment_box.attr("data-p")
             var children_box = comment_box.find(".boks_comments_box_box")
@@ -450,17 +483,45 @@ var bok = function(x){
         }
 
         bindings.click_comment_like = function(){
-            // try {
-            //     var id = $(this).closest(".boks_comment").attr("data-id")
-            //     var boks_comment_votes = $(this).find(".boks_comment_votes")
-            //     boks_comment_votes.html(parseInt(boks_comment_votes.html()) + 1)
-            //     api.upvote_comment(id, function(er, num){
-            //         if (er && er.loggedin == false) alert("You have to be logged in")
-            //         else if (er) alert(JSON.stringify(er, 0, 2))
-            //     })
-            // } catch (e){
-            //     alert("something went wrong. couldn't upvote comment")
-            // }
+            try {
+                var id = $(this).closest(".data").attr("data-id")
+                var boks_comment_votes = $(this).find(".boks_comment_votes")
+                boks_comment_votes.html(parseInt(boks_comment_votes.html()) + 1)
+                api.upvote_comment(id, function(er, num){
+                    if (er && er.loggedin == false) alert("You have to be logged in")
+                    else if (er) alert(JSON.stringify(er, 0, 2))
+                })
+            } catch (e){
+                alert("something went wrong. couldn't upvote comment")
+            }
+        }
+
+        bindings.click_reply = function(){
+            var data_box = $(this).closest(".data")
+            var id = data_box.attr("data-id")
+            var p = data_box.attr("data-p")
+            $("#popup").html(templates.reply_box(p, id)).show()
+        }
+
+        // mark
+        bindings.click_reply_cancel = function(){
+            $("#popup").html("").hide()
+        }
+
+        bindings.click_choose_reply_image = function(){
+            $(this).parent().children(".boks_reply_picture_input").click()
+        }
+
+        bindings.change_reply_picture_input = function(e){
+            var file = e.target.files[0]
+            var box = $(this).closest(".data")
+            var txt = box.find(".boks_reply_textarea").focus()
+            var img = box.find(".boks_reply_img")
+            var reader = new FileReader()
+            reader.onload = function(e){
+                img.attr("src", e.target.result).show()
+            }
+            reader.readAsDataURL(file)
         }
 
         return bindings
