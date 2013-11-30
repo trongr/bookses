@@ -8,6 +8,10 @@ p {
     cursor: pointer;
 }
 
+.p_margin {
+    border-right: 5px solid #0f0 !important;
+}
+
 .boks_hide {
     display: none;
 }
@@ -23,6 +27,7 @@ p {
 .boks_book_info {
     background-color: #eee;
     width: 70%;
+    margin: 20px 0 20px 0;
 }
 
 .boks_book_title_box {
@@ -86,6 +91,7 @@ p {
 }
 
 .boks_comment {
+    margin-left: 1px;
     border-left: 5px solid #bbb;
     border-top: 1px solid #bbb;
 }
@@ -184,6 +190,7 @@ img.boks_reply_img {
 }
 
 .boks_reply_menu {
+    float: right;
     vertical-align: middle;
     margin-bottom: 5px;
 }
@@ -205,7 +212,6 @@ img.boks_reply_img {
 }
 
 .boks_reply_cancel {
-    float: right;
     padding: 10px;
     font-size: 1em;
     border-radius: 3px;
