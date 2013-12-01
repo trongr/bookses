@@ -10,11 +10,30 @@ jQuery(function($){
         }
     })
 
+    var css = (function(){
+        var css = {}
+
+        css.init = function(){
+            css.fit($("#tagline_box"), $("#tagline"))
+        }
+
+        css.fit = function(parent, child){
+            var parent_width = parent.width() - 100
+            var size = parseInt(child.css("font-size"))
+            while (child.width() < parent_width){
+                size++
+                child.css("font-size", size.toString() + "px")
+            }
+        }
+
+        return css
+    }())
+
     var app = (function(){
         var app = {}
 
         app.init = function(){
-
+            css.init()
         }
 
         return app

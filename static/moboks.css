@@ -10,6 +10,7 @@ p {
 
 .p_margin {
     border-right: 5px solid #0f0 !important;
+    background-color: #eaeaea;
 }
 
 .boks_hide {
@@ -218,7 +219,7 @@ img.boks_reply_img {
     border: 1px solid #666;
 }
 
-.boks_reply_cancel_blank {
+.popup_cancel {
     position: fixed;
     top: 0;
     left: 0;

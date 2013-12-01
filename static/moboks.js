@@ -238,7 +238,7 @@ var bok = function(x){
             var datap = (p ? "data-p='" + p + "'" : "")
             var dataparent = (parentid ? "data-parent='" + parentid + "'" : "")
             var html = "<div class='boks_reply_box data' " + datap + " " + dataparent + ">"
-                + "         <div class='boks_reply_cancel boks_reply_cancel_blank'></div>"
+                + "         <div class='boks_reply_cancel popup_cancel'></div>"
                 + "         <div class='boks_reply_textarea_box'>"
                 + "             <button class='boks_reply_cancel'>cancel</button>"
                 + "             <div class='boks_reply_menu'>"
@@ -343,7 +343,6 @@ var bok = function(x){
                         .on("scroll", bindings.scroll_window)
                     dom.content_right = dom.box.find(".boks_content_right")
                         .off()
-                        .on("click", "button", bindings.click_flash)
                         .on("click", ".boks_more_comments_button", bindings.click_more_comments)
                         .on("click", ".boks_comment_content", bindings.click_comment_reply)
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
@@ -462,7 +461,9 @@ var bok = function(x){
             $("#boks_p_menu > .boks_reply").fadeOut(200).fadeIn(200)
             api.get_book_comments(o.bID, p, 0, function(er, comments){
                 if (comments && comments.length){
-                    dom.content_right.append(templates.comments_box(comments, p, comments[0].parent)) // parent should be null
+                    dom.content_right
+                        .append(templates.comments_box(comments, p, comments[0].parent)) // parent should be null
+                        .animate({scrollTop:0}, 100)
                 } else {
                     dom.content_right.append(templates.comments_box([], p, null))
                 }

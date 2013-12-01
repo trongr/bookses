@@ -36,6 +36,54 @@ button {
     clear: both;
 }
 
+#banner {
+    display: table;
+    width: 70%;
+}
+
+#banner button {
+    font-size: 1em;
+    padding: 0;
+}
+
+#banner input {
+    font-size: 1em;
+    padding-left: 5px;
+}
+
+#banner_left {
+    display: table-cell;
+}
+
+#banner_left #search_bar {
+    width: 200px;
+}
+
+#banner_right {
+    display: table-cell;
+    text-align: right;
+}
+
+#logo {
+    font-size: 1.5em;
+    padding: 5px;
+    color: #333;
+    font-weight: bolder;
+}
+
+#tagline_box {
+    text-align: center;
+    padding: 20px 0 20px 0;
+    width: 70%;
+}
+
+#tagline {
+    font-size: 12pt;
+    font-weight: bolder;
+    color: #666;
+    padding: 20px;
+}
+
 #error {
     display: none;
     padding: 10%;

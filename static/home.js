@@ -80,7 +80,6 @@ jQuery(function($){
             })
         }
 
-        // mark
         views.load_more_results = function(page){
             var query = $("#search_bar").val().trim()
             if (!query) return alert("empty search string")
