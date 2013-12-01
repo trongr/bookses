@@ -1,0 +1,54 @@
+div.popup_menu_cancel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 10%;
+    height: 100%;
+    border: none !important;
+    opacity: 0;
+}
+
+button.popup_menu_cancel {
+    border: 1px solid #999;
+    border-radius: 3px;
+    font-size: 1em;
+    padding: 10px;
+    margin: 20px 0 0 20px;
+}
+
+#menu_box {
+    background-color: #ddd;
+    width: 90%;
+    height: 100%;
+    margin-left: 10%;
+    padding: 10px;
+}
+
+#more_menu_box {
+    display: table;
+    margin-left: 10px;
+}
+
+.menu_item {
+    display: table-row;
+}
+
+.menu_item > * {
+    display: table-cell;
+    vertical-align: middle;
+    padding: 0 10px 0 10px;
+}
+
+.menu_item_head {
+    text-align: right;
+    font-weight: bolder;
+}
+
+.menu_item_link {
+    font-size: 2em;
+    text-align: center;
+}
+
+.menu_item_text {
+    width: 100%;
+}

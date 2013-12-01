@@ -71,10 +71,10 @@ server.configure('production', function(){
     server.use(express.errorHandler())
 })
 
-server.get("/", function(req, res){res.render("home.html")})
-server.get("/read/:id", function(req, res){res.render("book.html")})
-server.get("/mobile", function(req, res){res.render("mobile.html")})
-server.get("/mobile/read/:id", function(req, res){res.render("mobook.html")})
+server.get("/", function(req, res){res.render("mobile.html")})
+server.get("/read/:id", function(req, res){res.render("mobook.html")})
+server.get("/old", function(req, res){res.render("home.html")})
+server.get("/old/read/:id", function(req, res){res.render("book.html")})
 
 server.get("/health", function(req, res){res.send({a:1})})
 server.post("/bug", function(req, res){

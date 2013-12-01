@@ -44,7 +44,7 @@ p {
 }
 
 .boks_book_description {
-    padding: 0 20px 20px 20px;
+    padding: 0 40px 40px 40px;
     white-space: pre-wrap;
     font-size: 1em;
 }
@@ -219,7 +219,7 @@ img.boks_reply_img {
     border: 1px solid #666;
 }
 
-.popup_cancel {
+div.popup_cancel {
     position: fixed;
     top: 0;
     left: 0;

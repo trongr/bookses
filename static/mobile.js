@@ -31,114 +31,6 @@ jQuery(function($){
         return api
     }())
 
-    var users = (function(){
-        var users = {}
-
-        users.click_logout = function(){
-            users.api_logout(function(er){
-                if (er) alert("error logging out " + JSON.stringify(er, 0, 2))
-                else {
-                    $("#login_box").show()
-                    $("#logout_box").hide()
-                }
-            })
-        }
-
-        users.click_login = function(e){
-            var username = $("#username").val().trim()
-            var password = $("#password").val().trim()
-            if (!username || !password){
-                alert("Invalid logins")
-                e.stopImmediatePropagation()
-            }
-            users.api_login(username, password, function(er, user){
-                if (er){
-                    alert("wrong")
-                    e.stopImmediatePropagation()
-                } else {
-                    $("#login_box").hide()
-                    $("#logout_box").show()
-                }
-            })
-        }
-
-        users.click_register = function(e){
-            var username = $("#username").val().trim()
-            var password = $("#password").val().trim()
-            if (!username || !password){
-                alert("Please enter a new username and password to register")
-                e.stopImmediatePropagation()
-            }
-            users.api_create_user(username, password, function(er, user){
-                if (er){
-                    alert(JSON.stringify(er, 0, 2))
-                    e.stopImmediatePropagation()
-                } else {
-                    $("#login_box").hide()
-                    $("#logout_box").show()
-                    alert("Registration complete. Your new identity: " + JSON.stringify(user, 0, 2))
-                }
-            })
-        }
-
-        users.api_create_user = function(username, password, done){
-            $.ajax({
-                url: "/user/" + username + "/register",
-                type: "post",
-                data: {password:password},
-                success: function(re){
-                    if (re.user) done(null, re.user)
-                    else done({error:re})
-                }
-            })
-        }
-
-        users.api_login = function(username, password, done){
-            $.ajax({
-                url: "/user/" + username + "/login",
-                type: "post",
-                data: {password:password},
-                success: function(re){
-                    if (re.user) done(null, re.user)
-                    else done({error:re})
-                }
-            })
-        }
-
-        users.api_logout = function(done){
-            $.ajax({
-                url: "/user/logout",
-                type: "post",
-                success: function(re){
-                    if (re.loggedout) done(null)
-                    else done({error:"logging out",re:re})
-                }
-            })
-        }
-
-        users.init_login_boxes = function(){
-            users.api_is_logged_in(function(er, loggedin){
-                if (loggedin){
-                    $("#login_box").hide()
-                    $("#logout_box").show()
-                }
-            })
-        }
-
-        users.api_is_logged_in = function(done){
-            $.ajax({
-                url: "/user/login",
-                type: "get",
-                success: function(re){
-                    if (re.loggedin) done(null, re.loggedin)
-                    else done({error:"may not be logged in",re:re})
-                }
-            })
-        }
-
-        return users
-    }())
-
     var css = (function(){
         var css = {}
 
@@ -174,26 +66,6 @@ jQuery(function($){
                 + "            <div class='book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "            <div class='book_description'>" + book.description + "</div>"
                 + "        </div>"
-                + "     </div>"
-            return html
-        }
-
-        // mark
-        templates.logins = function(){
-            var html = "<div id='login_box'>"
-                + "         <div class='popup_cancel'></div>"
-                + "         <span class='input_enter_submit'>"
-                + "             <input id='username' placeholder='username'><br>"
-                + "             <input id='password' type='password' placeholder='password'><br>"
-                + "             <button id='login'>LOGIN</button><br>"
-                + "         </span>"
-                + "         <button id='register'>REGISTER</button><br>"
-                + "         <button class='popup_cancel'>cancel</button>"
-                + "     </div>"
-                + "     <div id='logout_box'>"
-                + "         <div class='popup_cancel'></div>"
-                + "         <button id='logout'>LOGOUT</button><br>"
-                + "         <button class='popup_cancel'>cancel</button>"
                 + "     </div>"
             return html
         }
@@ -236,7 +108,7 @@ jQuery(function($){
 
         views.load_more_results = function(page){
             var query = $("#search_bar").val().trim()
-            if (!query) return alert("empty search string")
+            if (!query) return alert("Please enter a title or author")
             async.waterfall([
                 function(done){
                     $.ajax({
@@ -260,6 +132,9 @@ jQuery(function($){
                     done(null, result)
                 },
                 function(books, done){
+                    $(".books_list").hide()
+                    $("#results_box").show()
+                    $("#results").html("")
                     views.render_books($("#results"), books)
                     done(null)
                 }
@@ -276,26 +151,19 @@ jQuery(function($){
 
         bindings.init = function(){
             $("body").on("keydown", ".input_enter_submit input", bindings.input_enter_submit)
+            $("#more_menu").on("click", bindings.click_more_menu)
             $("#search_button").on("click", bindings.click_search_button)
             $("#logins").on("click", bindings.click_logins)
             $("#more_books_button").on("click", bindings.click_more_books)
             $("#more_results_button").on("click", bindings.click_more_results)
         }
 
-        // mark
-        bindings.click_logins = function(){
-            $("#popup").html(templates.logins()).show()
-                .off()
-                .on("click", "#login", users.click_login)
-                .on("click", "#register", users.click_register)
-                .on("click", "#logout", users.click_logout)
-                .on("click", ".popup_cancel", bindings.click_popup_cancel)
-                .on("click", "button", function(){bindings.click_popup_cancel()}) // apparently if you put this guy before the other buttons they don't get called
-            users.init_login_boxes()
+        bindings.click_more_menu = function(){
+            menu.show_menu($("#popup"))
         }
 
-        bindings.click_popup_cancel = function(){
-            $("#popup").html("").hide()
+        bindings.click_logins = function(){
+            users.show_login_box($("#popup"))
         }
 
         bindings.input_enter_submit = function(e){
@@ -306,9 +174,6 @@ jQuery(function($){
 
         bindings.click_search_button = function(){
             k.results_page = 0
-            $("#results").html("")
-            $(".books_list").hide()
-            $("#results_box").show()
             views.load_more_results(k.results_page++)
         }
 
@@ -321,7 +186,7 @@ jQuery(function($){
         }
 
         bindings.click_book_title = function(){
-            window.open("/mobile/read/" + $(this).closest(".book").attr("data-id"))
+            window.open("/read/" + $(this).closest(".book").attr("data-id"))
         }
 
         return bindings

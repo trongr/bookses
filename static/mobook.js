@@ -1,7 +1,7 @@
 jQuery(function($){
     var book = new bok({
         box: $("#book"),
-        bID: document.URL.match(/mobile\/read\/([a-zA-Z0-9]+).*$/)[1],
+        bID: document.URL.match(/read\/([a-zA-Z0-9]+).*$/)[1],
         error: function(er){
             if (er){
                 $("#book").hide()
@@ -9,6 +9,32 @@ jQuery(function($){
             }
         }
     })
+
+    var bindings = (function(){
+        var bindings = {}
+
+        bindings.init = function(){
+            $("body").on("keydown", ".input_enter_submit input", bindings.input_enter_submit)
+            // $("#more_menu").on("click", bindings.click_more_menu)
+            $("#logins").on("click", bindings.click_logins)
+        }
+
+        // bindings.click_more_menu = function(){
+        //     menu.show_menu($("#popup"))
+        // }
+
+        bindings.click_logins = function(){
+            users.show_login_box($("#popup"))
+        }
+
+        bindings.input_enter_submit = function(e){
+            if (e.which == 13){
+                $(this).parent().find("button").click()
+            }
+        }
+
+        return bindings
+    }())
 
     var css = (function(){
         var css = {}
@@ -33,6 +59,7 @@ jQuery(function($){
         var app = {}
 
         app.init = function(){
+            bindings.init()
             css.init()
         }
 

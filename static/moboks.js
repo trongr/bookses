@@ -25,7 +25,6 @@ var bok = function(x){
             pages: {}, // pages already requested
         }
 
-        // let api.book_comments_store worry about caching
         page.get_p = function(p){
             // var q = p - p % page.k.page_size
             if (page.k.pages[p]){
@@ -89,17 +88,6 @@ var bok = function(x){
     var api = (function(){
         var api = {}
 
-        api.is_logged_in = function(done){
-            $.ajax({
-                url: "/user/login",
-                type: "get",
-                success: function(re){
-                    if (re.loggedin) done(null, re.loggedin)
-                    else done({error:"may not be logged in",re:re})
-                }
-            })
-        }
-
         api.get_book = function(bID, done){
             $.ajax({
                 url: "/book/" + bID,
@@ -124,22 +112,7 @@ var bok = function(x){
             })
         }
 
-        // caching first page of each paragraph's comments
-        api.book_comments = {}
-
-        api.get_book_comments_cache = function(p, page){
-            if (api.book_comments[p] && api.book_comments[p][page]) return api.book_comments[p][page]
-            else return null
-        }
-
-        api.push_book_comments_cache = function(p, page, comments){
-            if (page == 0) api.book_comments[p] = [comments]
-            else api.book_comments[p].push(comments)
-        }
-
         api.get_book_comments = function(bID, p, page, done){
-            var cache = api.get_book_comments_cache(p, page)
-            if (cache) return done(null, cache)
             $.ajax({
                 url: "/book/" + bID + "/comments",
                 type: "get",
@@ -149,7 +122,6 @@ var bok = function(x){
                 },
                 success: function(re){
                     if (re.comments){
-                        api.push_book_comments_cache(p, page, re.comments)
                         done(null, re.comments)
                     } else done({error:"api.get_book_comments",re:re})
                 }
@@ -348,12 +320,6 @@ var bok = function(x){
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
                         .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
                         .on("click", ".boks_reply", bindings.click_reply)
-                    $("#popup")
-                        .off()
-                        .on("click", ".boks_reply_post", bindings.click_reply_post)
-                        .on("click", ".boks_reply_cancel", bindings.click_reply_cancel)
-                        .on("click", ".boks_reply_picture_button", bindings.click_choose_reply_image)
-                        .on("change", ".boks_reply_picture_input", bindings.change_reply_picture_input)
                     $(".boks_text").flowtype({
                         fontRatio: 38,
                         lineRatio: 1,
@@ -525,13 +491,19 @@ var bok = function(x){
             var data_box = $(this).closest(".data")
             var id = data_box.attr("data-id")
             var p = data_box.attr("data-p")
-            $("#popup").html(templates.reply_box(p, id)).show().find("textarea").focus()
+            $("#popup").html(templates.reply_box(p, id)).show()
+                .off()
+                .on("click", ".boks_reply_post", bindings.click_reply_post)
+                .on("click", ".boks_reply_cancel", bindings.click_reply_cancel)
+                .on("click", ".boks_reply_picture_button", bindings.click_choose_reply_image)
+                .on("change", ".boks_reply_picture_input", bindings.change_reply_picture_input)
+                .find("textarea").focus()
             data_box.find(".boks_comment_content").click()
         }
 
         bindings.click_reply_post = function(){
             var that = $(this)
-            api.is_logged_in(function(er, loggedin){
+            users.is_logged_in(function(er, loggedin){
                 if (!loggedin) return alert("please log in")
 
                 var data_box = that.closest(".data")

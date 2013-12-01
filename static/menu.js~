@@ -1,0 +1,20 @@
+var menu = (function(){
+    var menu = {}
+
+    var templates = (function(){
+        var templates = {}
+
+        templates.menu = function(){
+            var html = ""
+            return html
+        }
+
+        return templates
+    }())
+
+    menu.show_menu = function(box){
+
+    }
+
+    return menu
+}())
