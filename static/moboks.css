@@ -126,7 +126,7 @@ p {
     background: none;
     font-family: helvetica, arial, sans;
     margin: 10px 0 10px 0;
-    padding: 5px 5px 0 5px;
+    padding: 5px 0 0 0;
 }
 
 .boks_comment_created {

@@ -316,6 +316,7 @@ var bok = function(x){
                 },
                 function(book, done){
                     dom.box.html(templates.book_info(book))
+                    $.getScript("//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-529c141a295ddb7e")
                     css.fit($(".boks_book_info"), $(".boks_book_title"))
                     api.get_text(book, function(er, text){
                         done(er, text)
