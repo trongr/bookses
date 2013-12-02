@@ -178,11 +178,18 @@ var bok = function(x){
             return text.replace(exp,"<img class='boks_img' src='$1'/>");
         }
 
+        // mark
         templates.book_info = function(book){
             var html = "<div class='boks_book_info'>"
                 + "         <div class='boks_book_title_box'><span class='boks_book_title'>" + book.title + "</span></div>"
                 + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "         <div class='boks_book_description'>" + templates.replace_text_with_img(book.description) + "</div>"
+                + "         <div class='boks_social'>"
+                + "             <a href=\"http://www.reddit.com/submit\" onclick=\"window.location = 'http://www.reddit.com/submit?url=' + encodeURIComponent(window.location); return false\"> <img src=\"http://www.reddit.com/static/spreddit6.gif\" alt=\"submit to reddit\" border=\"0\" /> </a>"
+                + "             <div class='fb-share-button' data-href='http://bookses.com' data-type='button_count'></div>"
+                + "             <div class='g-plus' data-action='share' data-annotation='bubble' data-height='24'></div>"
+                + "             <a href='https://twitter.com/share' class='twitter-share-button' data-via='nahnturong' data-size='large' data-hashtags='bookses'>Tweet</a>"
+                + "         </div>"
                 + "     </div>"
             return html
         }
@@ -302,6 +309,8 @@ var bok = function(x){
                 },
                 function(book, done){
                     dom.box.html(templates.book_info(book))
+                    views.google_plus_share()
+                    twttr.widgets.load()
                     css.fit($(".boks_book_info"), $(".boks_book_title"))
                     api.get_text(book, function(er, text){
                         done(er, text)
@@ -395,6 +404,12 @@ var bok = function(x){
             }
             $("#" + o.bID + " .boks_text p").eq(comment.p).addClass("p_margin")
             return elmt
+        }
+
+        views.google_plus_share = function(){
+            var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+            po.src = 'https://apis.google.com/js/platform.js';
+            var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
         }
 
         return views
