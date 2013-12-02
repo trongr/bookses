@@ -1,7 +1,7 @@
 var menu = (function(){
     var menu = {}
 
-    menu.k = {
+    var k = {
         box: null
     }
 
@@ -45,15 +45,15 @@ var menu = (function(){
         var bindings = {}
 
         bindings.click_popup_menu_cancel = function(){
-            if (menu.k.box) menu.k.box.html("").hide()
+            if (k.box) k.box.html("").hide()
         }
 
         return bindings
     }())
 
     menu.show_menu = function(box){
-        menu.k.box = box
-        menu.k.box.html(templates.menu()).show()
+        k.box = box
+        k.box.html(templates.menu()).show()
             .off()
             .on("click", ".popup_menu_cancel", bindings.click_popup_menu_cancel)
             .on("click", "button", function(){bindings.click_popup_menu_cancel()})

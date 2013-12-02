@@ -143,6 +143,12 @@ jQuery(function($){
             })
         }
 
+        views.load_new_book = function(book){
+            $(".books_list").hide()
+            $("#books_box").show()
+                .find("#books").prepend(templates.book(book))
+        }
+
         return views
     }())
 
@@ -153,9 +159,25 @@ jQuery(function($){
             $("body").on("keydown", ".input_enter_submit input", bindings.input_enter_submit)
             $("#more_menu").on("click", bindings.click_more_menu)
             $("#search_button").on("click", bindings.click_search_button)
+            $("#upload_button").on("click", bindings.click_upload_button)
             $("#logins").on("click", bindings.click_logins)
             $("#more_books_button").on("click", bindings.click_more_books)
             $("#more_results_button").on("click", bindings.click_more_results)
+        }
+
+        bindings.click_upload_button = function(){
+            var bar = $("#upload_progress")
+            upload.init({
+                box: $("#popup"),
+                progress: function(re){
+                    if (re.percent) bar.css("width", re.percent + "%")
+                },
+                done: function(re){
+                    if (re.book) views.load_new_book(re.book)
+                    else console.log(JSON.stringify(re, 0, 2))
+                    bar.css("width", 0)
+                }
+            })
         }
 
         bindings.click_more_menu = function(){

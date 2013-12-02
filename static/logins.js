@@ -1,7 +1,7 @@
 var users = (function(){
     var users = {}
 
-    users.k = {
+    var k = {
         box: null
     }
 
@@ -34,15 +34,15 @@ var users = (function(){
         var bindings = {}
 
         bindings.click_popup_login_cancel = function(){
-            if (users.k.box) users.k.box.html("").hide()
+            if (k.box) k.box.html("").hide()
         }
 
         return bindings
     }())
 
     users.show_login_box = function(box){
-        users.k.box = box
-        users.k.box.html(templates.logins()).show()
+        k.box = box
+        k.box.html(templates.logins()).show()
             .off()
             .on("click", "#login", users.click_login)
             .on("click", "#register", users.click_register)

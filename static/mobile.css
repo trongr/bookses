@@ -85,6 +85,17 @@ button {
     padding: 20px;
 }
 
+#upload_progress_box {
+    height: 5px;
+    width: 100%;
+}
+
+#upload_progress {
+    width: 0;
+    height: 100%;
+    background-color: #77CFFF;
+}
+
 #books, #results {
     display: table;
     border-top: 1px solid #000;

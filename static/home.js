@@ -5,7 +5,6 @@ jQuery(function($){
         date_format: "D MMMM YYYY",
         page: 0,
         results_page: 0,
-        // mark
         max_book_size: 10485760,
     }
 
