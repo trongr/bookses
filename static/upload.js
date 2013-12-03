@@ -38,7 +38,7 @@ var upload = (function(){
         var bindings = {}
 
         bindings.click_popup_upload_cancel = function(){
-            if (k.box) k.box.html("").hide()
+            if (k.box) k.box.hide()
         }
 
         bindings.click_post_upload_button = function(){
