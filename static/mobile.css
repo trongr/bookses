@@ -114,11 +114,27 @@ button {
     vertical-align: middle;
 }
 
-.book_votes, .book_num_comments {
-    font-weight: bolder;
-    font-size: 2em;
+.book_pop,
+.book_votes,
+.book_num_comments {
+    font-size: 3em;
+    font-weight: lighter;
     color: #999;
-    padding: 0 20px 0 20px;
+    margin: 0 20px 0 20px;
+    white-space: nowrap;
+}
+
+.book_pop > i,
+.book_votes > i,
+.book_num_comments > i {
+    font-size: 0.8em;
+}
+
+.book_pop > span,
+.book_votes > span,
+.book_num_comments > span {
+    font-size: 0.5em;
+    vertical-align: top;
 }
 
 .book_main_box {

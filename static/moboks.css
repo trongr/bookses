@@ -228,3 +228,10 @@ div.popup_cancel {
     border: none !important;
     opacity: 0;
 }
+
+#click_to_reveal {
+    font-size: 1em;
+    background-color: #000;
+    color: #fff;
+    padding: 20px;
+}

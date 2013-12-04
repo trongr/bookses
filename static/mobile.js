@@ -57,9 +57,10 @@ jQuery(function($){
         templates.book = function(book){
             var html = "<div id='" + book._id + "' class='book' data-id='" + book._id + "'>"
                 + "        <div class='book_left_box'>"
-                + "            <div class='book_votes' title='likes'>" + book.votes + "</div>"
-                + "            <hr>"
-                + "            <div class='book_num_comments' title='comments'>" + book.replies + "</div>"
+                + "            <div class='book_pop'>" + book.pop + "<span>" + (book.pop > 1 ? "pts." : "pt.") + "</span></div>"
+                // + "            <div class='book_votes'><i class='icon-thumbs-up-alt'></i>" + book.votes + "</div>"
+                // + "            <hr>"
+                // + "            <div class='book_num_comments'><i class='icon-comment-alt'></i>" + book.replies + "</div>"
                 + "        </div>"
                 + "        <div class='book_main_box'>"
                 + "            <div class='book_title link'>" + book.title + "</div>"

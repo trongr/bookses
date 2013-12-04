@@ -216,7 +216,7 @@ var bok = function(x){
                 + "             <div class='boks_content_left'>"
                 + "                 <div class='boks_text'>" + text + "</div>"
                 + "             </div>"
-                + "             <div class='boks_content_right'><div style='padding:20px'>Paragraphs with green side bars have comments or illustrations. Click or tap to reveal. If you're on the phone it looks better in landscape.</div></div>"
+                + "             <div class='boks_content_right'><div id='click_to_reveal'>Paragraphs with green side bars have comments or illustrations. Click to reveal. If you're on the phone it looks better in landscape.</div></div>"
                 + "         </div>"
                 + "     </div>"
             return html
@@ -224,7 +224,7 @@ var bok = function(x){
 
         templates.p_menu = function(p){
             var html = "<div id='boks_p_menu' class='data' data-p='" + p + "'>"
-                + "         <button class='boks_reply'><i class='icon-pencil'></i></button>"
+                + "         <button class='boks_reply'><i class='icon-pencil'></i> p." + p + "</button>"
                 + "     </div>"
             return html
         }
@@ -293,7 +293,7 @@ var bok = function(x){
                 + "             <div class='boks_comment_created'>" + moment(comment.created).format(k.date_format_alt) + "</div>"
                 + "             <div class='boks_comment_menu'>"
                 + "                 <button class='boks_reply'><i class='icon-pencil'></i></button>"
-                + "                 <button class='boks_comment_reply " + has_replies + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
+                + "                 <button class='boks_comment_reply " + has_replies + "'><i class='icon-comments'></i>" + comment.replies + "</button>"
                 + "                 <button class='boks_comment_thumbs_up " + has_votes + "'><i class='icon-thumbs-up-alt'></i><span class='boks_comment_votes'>" + comment.votes + "</span></button>"
                 + "                 <button class='boks_comment_flag'><i class='icon-flag'></i></button>"
                 + "             </div>"
