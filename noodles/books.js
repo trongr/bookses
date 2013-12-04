@@ -105,6 +105,17 @@ var DB = (function(){
         })
     }
 
+    DB.aggregate = function(table, pipe, done){
+        db.collection(table, {safe:true}, function(er, docs){
+            if (er) return done({error:"db aggregate",table:table,pipe:pipe,er:er})
+            docs.aggregate(pipe, function(er, re){
+                if (er) return done({error:"db aggregate",table:table,pipe:pipe,er:er})
+                else if (re) done(null, re)
+                else done({error:"db aggregate",table:table,pipe:pipe,er:"mysterious error"})
+            })
+        })
+    }
+
     return DB
 }())
 
@@ -569,6 +580,36 @@ var books = module.exports = (function(){
         })
     }
 
+    books.get_paragraphs_validate = function(req, res, next){
+        async.parallel([
+            function(done){
+                validate.id(req.params.id, function(er){
+                    done(er)
+                })
+            },
+        ], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_paragraphs_validate",er:er}, 0, 2))
+                res.send({error:"get book paragraphs"})
+            } else next(null)
+        })
+    }
+
+    books.get_paragraphs = function(req, res){
+        DB.aggregate(k.tables.comments, [{
+            $match: {book:req.params.id}
+        },{
+            $group: {_id:"$p", count:{$sum:1}}
+        },{
+            $sort: {_id:1}
+        }], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"books get paragraphs",id:req.params.id,er:er}, 0, 2))
+                res.send({error:"get book paragraphs"})
+            } else res.send({paragraphs:re})
+        })
+    }
+
     return books
 }())
 
@@ -665,12 +706,18 @@ var test = (function(){
         })
     }
 
+    test.get_paragraphs = function(){
+        setTimeout(function(){
+            books.get_paragraphs(0, 1)
+        }, 2000)
+    }
+
     return test
 }())
 
 console.log("requiring " + module.filename + " from " + require.main.filename)
 if (require.main == module){
-    test.find_books()
+    test.get_paragraphs()
 } else {
     press.process_books()
 }

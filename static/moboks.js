@@ -178,7 +178,6 @@ var bok = function(x){
             return text.replace(exp,"<img class='boks_img' src='$1'/>");
         }
 
-        // mark
         templates.book_info = function(book){
             var html = "<div class='boks_book_info'>"
                 + "         <div class='boks_book_title_box'><span class='boks_book_title'>" + book.title + "</span></div>"
@@ -306,7 +305,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         views.load_book = function(done){
             async.waterfall([
                 function(done){
@@ -326,8 +324,8 @@ var bok = function(x){
                     dom.box.append(templates.reader(text))
                         .off()
                         .on("click", ".boks_text p", bindings.click_p)
-                    $(window)
-                        .on("scroll", bindings.scroll_window)
+                    // mark
+                    // $(window).on("scroll", bindings.scroll_window)
                     dom.content_right = dom.box.find(".boks_content_right")
                         .off()
                         .on("click", ".boks_more_comments_button", bindings.click_more_comments)
@@ -341,14 +339,16 @@ var bok = function(x){
                     })
                     done(null)
                 },
-                function(done){
-                    views.load_book_comments(0)
-                }
+                // mark
+                // function(done){
+                //     views.load_book_comments(0)
+                // }
             ], function(er, re){
                 done(er)
             })
         }
 
+        // mark
         views.load_book_comments = function(q){
             async.timesSeries(k.request_ahead, function(i, done){
                 var p = page.get_p(q + i)
@@ -418,23 +418,24 @@ var bok = function(x){
     var bindings = (function(){
         var bindings = {}
 
-        bindings.scroll_timeout
+        // mark
+        // bindings.scroll_timeout
 
-        bindings.scroll_window = function(){
-            if (bindings.scroll_timeout) return
-            bindings.scroll_timeout = setTimeout(function(){
-                var top = $(window).scrollTop()
-                var bottom = top + window.innerHeight
-                var mid = (top + bottom) / 2
-                var p = $(".boks_text p").filter(function(){
-                    var t = $(this).get(0).offsetTop
-                    var b = $(this).height() + t
-                    return t < mid && b > mid
-                })
-                views.load_book_comments(p.index())
-                bindings.scroll_timeout = null
-            }, 100)
-        }
+        // bindings.scroll_window = function(){
+        //     if (bindings.scroll_timeout) return
+        //     bindings.scroll_timeout = setTimeout(function(){
+        //         var top = $(window).scrollTop()
+        //         var bottom = top + window.innerHeight
+        //         var mid = (top + bottom) / 2
+        //         var p = $(".boks_text p").filter(function(){
+        //             var t = $(this).get(0).offsetTop
+        //             var b = $(this).height() + t
+        //             return t < mid && b > mid
+        //         })
+        //         views.load_book_comments(p.index())
+        //         bindings.scroll_timeout = null
+        //     }, 100)
+        // }
 
         bindings.click_p = function(){
             var p = $(this).index()
