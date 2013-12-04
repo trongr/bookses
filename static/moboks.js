@@ -167,6 +167,17 @@ var bok = function(x){
             })
         }
 
+        api.get_paragraphs = function(done){
+            $.ajax({
+                url: "/book/" + o.bID + "/paragraphs",
+                type: "get",
+                success: function(re){
+                    if (re.paragraphs) done(null, re.paragraphs)
+                    else done(re)
+                }
+            })
+        }
+
         return api
     }())
 
@@ -324,8 +335,6 @@ var bok = function(x){
                     dom.box.append(templates.reader(text))
                         .off()
                         .on("click", ".boks_text p", bindings.click_p)
-                    // mark
-                    // $(window).on("scroll", bindings.scroll_window)
                     dom.content_right = dom.box.find(".boks_content_right")
                         .off()
                         .on("click", ".boks_more_comments_button", bindings.click_more_comments)
@@ -337,51 +346,37 @@ var bok = function(x){
                         fontRatio: 38,
                         lineRatio: 1,
                     })
+                    views.render_paragraphs()
                     done(null)
                 },
-                // mark
-                // function(done){
-                //     views.load_book_comments(0)
-                // }
             ], function(er, re){
                 done(er)
             })
         }
 
-        // mark
-        views.load_book_comments = function(q){
-            async.timesSeries(k.request_ahead, function(i, done){
-                var p = page.get_p(q + i)
-                if (p == null) return done(null) // already requested. todo render the closest set of comments
-                views.load_paragraph_comments(p, function(er){
-                    if (er) console.log(JSON.stringify(er, 0, 2))
+        views.render_paragraphs = function(){
+            async.waterfall([
+                function(done){
+                    api.get_paragraphs(function(er, paragraphs){
+                        done(er, paragraphs)
+                    })
+                },
+                function(paragraphs, done){
                     done(null)
-                })
-            }, function(er, re){
-                if (er) console.log(JSON.stringify({error:"views.load_book_comments",er:er}, 0, 2))
+                    views.highlight_paragraphs(paragraphs)
+                }
+            ], function(er){
+                if (er) alert(JSON.stringify(er, 0, 2))
             })
         }
 
-        views.load_paragraph_comments = function(p, done){
-            async.waterfall([
-                function(done){
-                    api.get_book_comments(o.bID, p, 0, function(er, comments){
-                        done(er, comments)
-                    })
-                },
-                function(comments, done){
-                    // todo opt. render the closest set of comments
-                    if (comments.length){
-                        var paragraph = $("#" + o.bID + " .boks_text p").eq(p)
-                        var pop = Math.min(comments.length, k.page_size)
-                        css.color_code_p_margin(paragraph, pop)
-                    }
-                    done(null)
-                },
-            ], function(er, re){
-                if (er) done({error:"views.load_paragraph_comments",er:er})
-                else done(null)
-            })
+        views.highlight_paragraphs = function(paragraphs){
+            for (var i = 0; i < paragraphs.length; i++){
+                var p = paragraphs[i]._id
+                var pop = Math.min(paragraphs[i].count, k.page_size)
+                var paragraph = $("#" + o.bID + " .boks_text p").eq(p)
+                css.color_code_p_margin(paragraph, pop)
+            }
         }
 
         views.load_comments = function(parentid, p, box, done){
@@ -417,25 +412,6 @@ var bok = function(x){
 
     var bindings = (function(){
         var bindings = {}
-
-        // mark
-        // bindings.scroll_timeout
-
-        // bindings.scroll_window = function(){
-        //     if (bindings.scroll_timeout) return
-        //     bindings.scroll_timeout = setTimeout(function(){
-        //         var top = $(window).scrollTop()
-        //         var bottom = top + window.innerHeight
-        //         var mid = (top + bottom) / 2
-        //         var p = $(".boks_text p").filter(function(){
-        //             var t = $(this).get(0).offsetTop
-        //             var b = $(this).height() + t
-        //             return t < mid && b > mid
-        //         })
-        //         views.load_book_comments(p.index())
-        //         bindings.scroll_timeout = null
-        //     }, 100)
-        // }
 
         bindings.click_p = function(){
             var p = $(this).index()
