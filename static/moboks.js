@@ -195,7 +195,7 @@ var bok = function(x){
                 + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "         <div class='boks_book_description'>" + templates.replace_text_with_img(book.description) + "</div>"
                 + "         <div class='boks_book_para_graph_header'>"
-                + "             ParaGraph. <span>Click on the bars to go to the more interesting parts of this book.</span>"
+                + "             ParaGraph. <span>Click on the graph to go to the good parts.</span>"
                 + "         </div>"
                 + "         <div class='boks_book_para_graph'></div><div class='clear_both'></div>"
                 + "         <div class='boks_social'>"
@@ -215,6 +215,7 @@ var bok = function(x){
         }
 
         templates.para_graph = function(paragraphs){
+            if (paragraphs.length == 0) return ". . . Aw this book has no comment. Be the first!"
             var max = 0
             for (var j = 0; j < paragraphs.length; j++){
                 if (paragraphs[j].count > max) max = paragraphs[j].count
@@ -243,6 +244,7 @@ var bok = function(x){
         templates.p_menu = function(p){
             var html = "<div id='boks_p_menu' class='data' data-p='" + p + "'>"
                 + "         <button class='boks_reply'><i class='icon-pencil'></i> p." + p + "</button>"
+                + "         <button class='boks_go_home'><i class='icon-home'></i></button>"
                 + "     </div>"
             return html
         }
@@ -360,6 +362,7 @@ var bok = function(x){
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
                         .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
                         .on("click", ".boks_reply", bindings.click_reply)
+                        .on("click", ".boks_go_home", bindings.click_go_home)
                     $(".boks_text").flowtype({
                         fontRatio: 38,
                         lineRatio: 1,
@@ -496,6 +499,10 @@ var bok = function(x){
             } catch (e){
                 alert("something went wrong. couldn't upvote comment")
             }
+        }
+
+        bindings.click_go_home = function(){
+            $("html, body").animate({scrollTop:0}, 100)
         }
 
         bindings.click_reply = function(){

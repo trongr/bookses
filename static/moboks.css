@@ -120,13 +120,14 @@ p:hover {
     background-color: #ddd;
 }
 
-#boks_p_menu > .boks_reply {
+#boks_p_menu button {
+    font-size: 1.2em;
+    padding: 5px;
     margin: 5px;
 }
 
-.boks_reply {
-    font-size: 1.2em;
-    padding: 5px;
+.boks_go_home {
+    float: right;
 }
 
 .boks_content_right > .boks_comments_box {
