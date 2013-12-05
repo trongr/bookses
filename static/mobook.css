@@ -28,6 +28,10 @@ button {
     font-family: helvetica, arial, sans;
 }
 
+button:hover {
+    color: #70ACFF;
+}
+
 .link {
     color: #70ACFF;
 }
@@ -69,6 +73,10 @@ button {
     padding: 5px;
     color: #333;
     font-weight: bolder;
+}
+
+#logo:hover {
+    color: #70ACFF;
 }
 
 #tagline_box {

@@ -8,6 +8,10 @@ p {
     cursor: pointer;
 }
 
+p:hover {
+    background-color: #eaeaea;
+}
+
 .p_margin {
     border-right: 5px solid #0f0 !important;
     background-color: #eaeaea;
@@ -46,12 +50,51 @@ p {
 .boks_book_description {
     padding: 0 40px 40px 40px;
     white-space: pre-wrap;
-    font-size: 1em;
+    font-size: 1.2em;
 }
 
 .boks_book_description img {
     display: block;
     width: 100%;
+}
+
+.boks_book_para_graph_header {
+    font-size: 2em;
+    font-weight: bolder;
+    margin: 10px;
+}
+
+.boks_book_para_graph_header span {
+    font-size: 0.5em;
+    font-weight: lighter;
+}
+
+.boks_book_para_graph {
+    margin: 40px;
+    height: 100px;
+}
+
+.boks_para_box {
+    height: 100px;
+    width: 20px;
+    float: left;
+    margin: 1px;
+    position: relative;
+}
+
+.boks_para_bar {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: #6FF57A;
+}
+
+.boks_para_box:hover .boks_para_bar {
+    background-color: #0f0;
+}
+
+.boks_social {
+    margin: 20px;
 }
 
 .boks_content {
@@ -97,8 +140,16 @@ p {
     border-top: 1px solid #bbb;
 }
 
+.boks_comment:hover {
+    border-left: 5px solid #6FF57A;
+}
+
 .boks_comment_content {
     cursor: pointer;
+}
+
+.boks_comment_content:hover {
+    background-color: #fff;
 }
 
 .boks_comment_img_box {
@@ -234,4 +285,6 @@ div.popup_cancel {
     background-color: #000;
     color: #fff;
     padding: 20px;
+    bottom: 0;
+    position: absolute;
 }

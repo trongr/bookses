@@ -194,6 +194,10 @@ var bok = function(x){
                 + "         <div class='boks_book_title_box'><span class='boks_book_title'>" + book.title + "</span></div>"
                 + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "         <div class='boks_book_description'>" + templates.replace_text_with_img(book.description) + "</div>"
+                + "         <div class='boks_book_para_graph_header'>"
+                + "             ParaGraph. <span>Click on the bars to go to the more interesting parts of this book.</span>"
+                + "         </div>"
+                + "         <div class='boks_book_para_graph'></div><div class='clear_both'></div>"
                 + "         <div class='boks_social'>"
                 + "             <div class='addthis_toolbox addthis_default_style addthis_32x32_style'>"
                 + "             <a class='addthis_button_facebook'></a>"
@@ -207,6 +211,20 @@ var bok = function(x){
                 + "             </div>"
                 + "         </div>"
                 + "     </div>"
+            return html
+        }
+
+        templates.para_graph = function(paragraphs){
+            var max = 0
+            for (var j = 0; j < paragraphs.length; j++){
+                if (paragraphs[j].count > max) max = paragraphs[j].count
+            }
+            var html = ""
+            for (var i = 0; i < paragraphs.length; i++){
+                html += "<div class='boks_para_box' data-p='" + paragraphs[i]._id + "'>"
+                    + "      <div class='boks_para_bar' style='height:" + (paragraphs[i].count / max * 100) + "%'></div>"
+                    + "  </div>"
+            }
             return html
         }
 
@@ -346,28 +364,29 @@ var bok = function(x){
                         fontRatio: 38,
                         lineRatio: 1,
                     })
-                    views.render_paragraphs()
                     done(null)
                 },
-            ], function(er, re){
-                done(er)
-            })
-        }
-
-        views.render_paragraphs = function(){
-            async.waterfall([
                 function(done){
                     api.get_paragraphs(function(er, paragraphs){
                         done(er, paragraphs)
                     })
                 },
                 function(paragraphs, done){
+                    done(null, paragraphs)
+                    views.draw_para_graph(paragraphs)
+                },
+                function(paragraphs, done){
                     done(null)
                     views.highlight_paragraphs(paragraphs)
                 }
-            ], function(er){
-                if (er) alert(JSON.stringify(er, 0, 2))
+            ], function(er, re){
+                done(er)
             })
+        }
+
+        views.draw_para_graph = function(paragraphs){
+            $(".boks_book_para_graph").html(templates.para_graph(paragraphs))
+                .on("click", ".boks_para_box", bindings.click_para_box)
         }
 
         views.highlight_paragraphs = function(paragraphs){
@@ -565,6 +584,12 @@ var bok = function(x){
                 img.attr("src", e.target.result).show()
             }
             reader.readAsDataURL(file)
+        }
+
+        bindings.click_para_box = function(){
+            var paragraph = $("#" + o.bID + " .boks_text p").eq($(this).attr("data-p"))
+            $("html, body").animate({scrollTop:paragraph.offset().top}, 100)
+            paragraph.click()
         }
 
         return bindings
