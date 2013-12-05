@@ -65,6 +65,8 @@ var upload = (function(){
                 data.append("title", title)
                 data.append("description", description)
 
+                bindings.click_popup_upload_cancel()
+
                 $.ajax({
                     url: "/book",
                     type: "post",
@@ -82,7 +84,6 @@ var upload = (function(){
                     },
                     complete: function(){
                         k.progress({percent:0})
-                        bindings.click_popup_upload_cancel()
                     },
                     xhr: function(){
                         var xhr = $.ajaxSettings.xhr()
