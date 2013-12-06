@@ -88,7 +88,7 @@ server.get("/books/search", books.search_validate, books.search)
 server.get("/book/:id", books.get_book_by_id_validate, books.get_book_by_id)
 server.post("/book/:id/like", users.authenticate, books.like_book_validate, books.like_book)
 
-server.get("/book/:id/paragraphs", users.authenticate, books.get_paragraphs_validate, books.get_paragraphs)
+server.get("/book/:id/paragraphs", books.get_paragraphs_validate, books.get_paragraphs)
 
 server.post("/comment", users.authenticate, books.create_comment_validate, books.create_comment)
 server.get("/book/:id/comments", books.get_book_comments_validate, books.get_book_comments)

@@ -337,21 +337,34 @@ var bok = function(x){
         }
 
         views.load_book = function(done){
+            var book, paragraphs
             async.waterfall([
                 function(done){
-                    api.get_book(o.bID, function(er, book){
-                        done(er, book)
+                    api.get_book(o.bID, function(er, _book){
+                        book = _book
+                        done(er)
                     })
                 },
-                function(book, done){
+                function(done){
+                    done(null)
                     dom.box.html(templates.book_info(book))
-                    $.getScript("//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-529c141a295ddb7e")
                     css.fit($(".boks_book_info"), $(".boks_book_title"))
+                    $.getScript("//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-529c141a295ddb7e")
+                },
+                function(done){
+                    api.get_paragraphs(function(er, _paragraphs){
+                        paragraphs = _paragraphs
+                        views.draw_para_graph(paragraphs)
+                        done(er)
+                    })
+                },
+                function(done){
                     api.get_text(book, function(er, text){
                         done(er, text)
                     })
                 },
                 function(text, done){
+                    done(null)
                     dom.box.append(templates.reader(text))
                         .off()
                         .on("click", ".boks_text p", bindings.click_p)
@@ -367,21 +380,8 @@ var bok = function(x){
                         fontRatio: 38,
                         lineRatio: 1,
                     })
-                    done(null)
-                },
-                function(done){
-                    api.get_paragraphs(function(er, paragraphs){
-                        done(er, paragraphs)
-                    })
-                },
-                function(paragraphs, done){
-                    done(null, paragraphs)
-                    views.draw_para_graph(paragraphs)
-                },
-                function(paragraphs, done){
-                    done(null)
                     views.highlight_paragraphs(paragraphs)
-                }
+                },
             ], function(er, re){
                 done(er)
             })
