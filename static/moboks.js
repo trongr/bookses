@@ -195,7 +195,7 @@ var bok = function(x){
                 + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "         <div class='boks_book_description'>" + templates.replace_text_with_img(book.description) + "</div>"
                 + "         <div class='boks_book_para_graph_header'>"
-                + "             ParaGraph. <span>Click on the graph to go to the good parts.</span>"
+                + "             ParaGraph. <span>Click on the graph to skip to the good parts.</span>"
                 + "         </div>"
                 + "         <div class='boks_book_para_graph'></div><div class='clear_both'></div>"
                 + "         <div class='boks_social'>"
@@ -377,8 +377,8 @@ var bok = function(x){
                         .on("click", ".boks_reply", bindings.click_reply)
                         .on("click", ".boks_go_home", bindings.click_go_home)
                     $(".boks_text").flowtype({
-                        fontRatio: 38,
-                        lineRatio: 1,
+                        fontRatio: 36,
+                        lineRatio: 1.1,
                     })
                     views.highlight_paragraphs(paragraphs)
                 },

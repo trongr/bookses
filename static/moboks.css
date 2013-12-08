@@ -118,6 +118,7 @@ p:hover {
     width: 100%;
     white-space: pre-wrap;
     background-color: #ddd;
+    font-family: georgia;
 }
 
 #boks_p_menu button {

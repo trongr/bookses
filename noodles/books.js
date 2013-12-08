@@ -203,6 +203,7 @@ var books = module.exports = (function(){
             description: req.body.description,
             url: k.static_public + "/" + id,
             created: new Date(),
+            modified: new Date(),
             votes: 1,
             replies: 0,
             pop: 1,
@@ -252,7 +253,8 @@ var books = module.exports = (function(){
     books.get_all_books = function(req, res){
         var query = {}
         var aux = {
-            sort: [["pop","desc"]],
+            sort: [["modified","desc"]],
+            // sort: [["pop","desc"]],
             limit: k.page_size,
             skip: req.query.page * k.page_size
         }
@@ -368,6 +370,7 @@ var books = module.exports = (function(){
                         p: parseInt(req.body.p),
                         parent: req.body.parent,
                         created: new Date(),
+                        modified: new Date(),
                         votes: 1,
                         replies: 0,
                         pop: 1
@@ -385,10 +388,16 @@ var books = module.exports = (function(){
                 if (req.files.img) child.exec("mv " + req.files.img.path + " " + k.static_public_dir + "/" + comment._id, function(er, stdout, stder){
                     if (er) console.log(JSON.stringify({error:"books.create_comment: mv img",src:req.files.img.path,id:comment._id}, 0, 2))
                 })
-                if (req.body.book) DB.update_entry_by_id(k.tables.books, req.body.book, {$inc:{replies:1,pop:1}}, function(er, num){
+                if (req.body.book) DB.update_entry_by_id(k.tables.books, req.body.book, {
+                    $inc: {replies:1, pop:1},
+                    $set: {modified:new Date()}
+                }, function(er, num){
                     if (er) console.log(JSON.stringify({error:"books.create_comment: updating book pop",id:req.body.book,er:er}, 0, 2))
                 })
-                if (req.body.parent) DB.update_entry_by_id(k.tables.comments, req.body.parent, {$inc:{replies:1,pop:1}}, function(er, num){
+                if (req.body.parent) DB.update_entry_by_id(k.tables.comments, req.body.parent, {
+                    $inc: {replies:1, pop:1},
+                    $set: {modified:new Date()}
+                }, function(er, num){
                     if (er) console.log(JSON.stringify({error:"books.create_comment: updating parent pop",id:req.body.parent,er:er}, 0, 2))
                 })
             }
@@ -438,7 +447,8 @@ var books = module.exports = (function(){
             parent: null
         }
         var aux = {
-            sort: [["pop","desc"]],
+            sort: [["modified","desc"]],
+            // sort: [["pop","desc"]],
             limit: k.page_size + 1,
             skip: req.query.page * k.page_size
         }
@@ -478,7 +488,8 @@ var books = module.exports = (function(){
             parent: req.params.id
         }
         var aux = {
-            sort: [["pop","desc"]],
+            sort: [["modified","desc"]],
+            // sort: [["pop","desc"]],
             limit: k.page_size + 1,
             skip: req.query.page * k.page_size
         }
@@ -522,7 +533,10 @@ var books = module.exports = (function(){
                 })
             },
             function(done){
-                DB.update_entry_by_id(k.tables.comments, req.params.id, {$inc:{votes:1,pop:1}}, function(er, num){
+                DB.update_entry_by_id(k.tables.comments, req.params.id, {
+                    $inc: {votes:1, pop:1},
+                    $set: {modified:new Date()}
+                }, function(er, num){
                     done(er, num)
                 })
             }
@@ -566,7 +580,10 @@ var books = module.exports = (function(){
                 })
             },
             function(done){
-                DB.update_entry_by_id(k.tables.books, req.params.id, {$inc:{votes:1,pop:1}}, function(er, num){
+                DB.update_entry_by_id(k.tables.books, req.params.id, {
+                    $inc: {votes:1, pop:1},
+                    $set: {modified:new Date()}
+                }, function(er, num){
                     done(er, num)
                 })
             }
