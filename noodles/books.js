@@ -26,6 +26,7 @@ var k = {
     },
     page_size: 10,
     milliseconds_in_a_day: 24 * 60 * 60 * 1000,
+    recursion_limit: 10,
 }
 
 db.open(function(er, db) {
@@ -113,6 +114,29 @@ var DB = (function(){
                 else if (re) done(null, re)
                 else done({error:"db aggregate",table:table,pipe:pipe,er:"mysterious error"})
             })
+        })
+    }
+
+    // mark
+    DB.update_comment_recursive = function(id, update, recursion){
+        console.log(id, recursion)
+        if (recursion == 0) return
+        async.waterfall([
+            function(done){
+                DB.update_entry_by_id(k.tables.comments, id, update, function(er, num){
+                    done(er)
+                })
+            },
+            function(done){
+                DB.get_entry_by_id(k.tables.comments, id, function(er, comment){
+                    if (er) done(er)
+                    else if (comment) done(null, comment)
+                    else done({error:"no such comment"})
+                })
+            },
+        ], function(er, comment){
+            if (er) console.log(JSON.stringify({error:"update comment mod time",id:id,recursion:recursion,er:er}, 0, 2))
+            else if (comment.parent) DB.update_comment_recursive(comment.parent, update, --recursion)
         })
     }
 
@@ -394,12 +418,10 @@ var books = module.exports = (function(){
                 }, function(er, num){
                     if (er) console.log(JSON.stringify({error:"books.create_comment: updating book pop",id:req.body.book,er:er}, 0, 2))
                 })
-                if (req.body.parent) DB.update_entry_by_id(k.tables.comments, req.body.parent, {
+                if (req.body.parent) DB.update_comment_recursive(req.body.parent, {
                     $inc: {replies:1, pop:1},
                     $set: {modified:new Date()}
-                }, function(er, num){
-                    if (er) console.log(JSON.stringify({error:"books.create_comment: updating parent pop",id:req.body.parent,er:er}, 0, 2))
-                })
+                }, k.recursion_limit)
             }
         ], function(er, comment){
             if (er){
@@ -533,12 +555,11 @@ var books = module.exports = (function(){
                 })
             },
             function(done){
-                DB.update_entry_by_id(k.tables.comments, req.params.id, {
+                done(null, 1)
+                DB.update_comment_recursive(req.params.id, {
                     $inc: {votes:1, pop:1},
                     $set: {modified:new Date()}
-                }, function(er, num){
-                    done(er, num)
-                })
+                }, k.recursion_limit)
             }
         ], function(er, num){
             if (er){

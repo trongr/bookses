@@ -184,16 +184,16 @@ var bok = function(x){
     var templates = (function(){
         var templates = {}
 
-        templates.replace_text_with_img = function(text){
-            var exp = /\[\[(.*)\]\]/ig;
-            return text.replace(exp,"<img class='boks_img' src='$1'/>");
+        templates.replace_text_with_link = function(text){
+            var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+            return text.replace(exp,"<a href='$1' class='boks_link' target='_blank'>$1</a>");
         }
 
         templates.book_info = function(book){
             var html = "<div class='boks_book_info'>"
                 + "         <div class='boks_book_title_box'><span class='boks_book_title'>" + book.title + "</span></div>"
                 + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
-                + "         <div class='boks_book_description'>" + templates.replace_text_with_img(book.description) + "</div>"
+                + "         <div class='boks_book_description'>" + templates.replace_text_with_link(book.description) + "</div>"
                 + "         <div class='boks_book_para_graph_header'>"
                 + "             ParaGraph. <span>Click on the graph to skip to the good parts.</span>"
                 + "         </div>"
@@ -262,7 +262,7 @@ var bok = function(x){
                 + "                 <button class='boks_reply_post'>POST</button>"
                 + "                 <div class='clear_both'></div>"
                 + "             </div>"
-                + "             <textarea class='boks_reply_textarea' placeholder='Comment or add an image'></textarea>"
+                + "             <textarea class='boks_reply_textarea' placeholder='Comment or add a picture'></textarea>"
                 + "         </div>"
                 + "         <div class='boks_reply_img_box'>"
                 + "             <img class='boks_reply_img'>"
@@ -297,7 +297,7 @@ var bok = function(x){
         }
 
         templates.comment = function(comment){
-            var text = templates.replace_text_with_img(comment.comment)
+            var text = templates.replace_text_with_link(comment.comment)
             var img = (comment.img ? "<div class='boks_comment_img_box'><img class='boks_comment_img' src='" + comment.img + "'></div>" : "")
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
