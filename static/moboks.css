@@ -187,6 +187,7 @@ p:hover {
     float: right;
     padding: 0 10px 0 0;
     color: #555;
+    font-size: 0.9em;
 }
 
 .boks_comment_username {
