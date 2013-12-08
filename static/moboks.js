@@ -377,7 +377,7 @@ var bok = function(x){
                         .on("click", ".boks_reply", bindings.click_reply)
                         .on("click", ".boks_go_home", bindings.click_go_home)
                     $(".boks_text").flowtype({
-                        fontRatio: 36,
+                        fontRatio: 37,
                         lineRatio: 1.1,
                     })
                     views.highlight_paragraphs(paragraphs)
@@ -594,9 +594,12 @@ var bok = function(x){
         }
 
         bindings.click_para_box = function(){
+            $(this).fadeOut(50).fadeIn(100)
             var paragraph = $("#" + o.bID + " .boks_text p").eq($(this).attr("data-p"))
-            $("html, body").animate({scrollTop:paragraph.offset().top}, 100)
-            paragraph.click()
+            setTimeout(function(){
+                $("html, body").animate({scrollTop:paragraph.offset().top}, 100)
+                paragraph.click()
+            }, 300)
         }
 
         return bindings

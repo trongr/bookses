@@ -68,6 +68,10 @@ button:hover {
     text-align: right;
 }
 
+#logins {
+    font-weight: bolder;
+}
+
 #logo {
     font-size: 1.5em;
     padding: 5px;
