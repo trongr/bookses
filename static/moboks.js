@@ -1,3 +1,4 @@
+//
 var bok = function(x){
     var o = {
         bID: x.bID,
@@ -184,9 +185,14 @@ var bok = function(x){
     var templates = (function(){
         var templates = {}
 
+        templates.replace_text_with_p_link = function(text){
+            var exp = /(p([0-9]+))/ig;
+            return text.replace(exp, "<span data-p-link='$2' class='boks_p_link'>$1</span>");
+        }
+
         templates.replace_text_with_link = function(text){
             var exp = /(\b(https?|ftp|file):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
-            return text.replace(exp,"<a href='$1' class='boks_link' target='_blank'>$1</a>");
+            return text.replace(exp, "<a href='$1' class='boks_link' target='_blank'>$1</a>");
         }
 
         templates.book_info = function(book){
@@ -211,6 +217,7 @@ var bok = function(x){
                 + "             <a class='addthis_button_compact'></a><a class='addthis_counter addthis_bubble_style'></a>"
                 + "             </div>"
                 + "         </div>"
+                + "         <div class='boks_spinner'><i class='icon-spin icon-cog'></i><br><span>working real hard . . .</span></div>"
                 + "     </div>"
             return html
         }
@@ -236,7 +243,7 @@ var bok = function(x){
                 + "             <div class='boks_content_left'>"
                 + "                 <div class='boks_text'>" + text + "</div>"
                 + "             </div>"
-                + "             <div class='boks_content_right'><div id='click_to_reveal'>Paragraphs with green side bars have comments or illustrations. Click to reveal. If you're on the phone it looks better in landscape.</div></div>"
+                + "             <div class='boks_content_right'><div id='click_to_reveal'>Click on the paragraphs to make comments. Best viewed in landscape.</div></div>"
                 + "         </div>"
                 + "     </div>"
             return html
@@ -298,7 +305,7 @@ var bok = function(x){
         }
 
         templates.comment = function(comment){
-            var text = templates.replace_text_with_link(comment.comment)
+            var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment))
             var img = (comment.img ? "<div class='boks_comment_img_box'><img class='boks_comment_img' src='" + comment.img + "'></div>" : "")
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
@@ -378,11 +385,13 @@ var bok = function(x){
                         .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
                         .on("click", ".boks_reply", bindings.click_reply)
                         .on("click", ".boks_go_home", bindings.click_go_home)
+                        .on("click", ".boks_p_link", bindings.click_p_link)
                     $(".boks_text").flowtype({
-                        fontRatio: 37,
-                        lineRatio: 1.1,
+                        fontRatio: 40,
+                        lineRatio: 1.4,
                     })
                     views.highlight_paragraphs(paragraphs)
+                    $(".boks_spinner").html("").hide()
                 },
             ], function(er, re){
                 done(er)
@@ -490,17 +499,21 @@ var bok = function(x){
         }
 
         bindings.click_comment_like = function(){
-            try {
-                var id = $(this).closest(".data").attr("data-id")
-                var boks_comment_votes = $(this).find(".boks_comment_votes")
-                boks_comment_votes.html(parseInt(boks_comment_votes.html()) + 1)
-                api.upvote_comment(id, function(er, num){
-                    if (er && er.loggedin == false) alert("You have to be logged in")
-                    else if (er) alert(JSON.stringify(er, 0, 2))
-                })
-            } catch (e){
-                alert("something went wrong. couldn't upvote comment")
-            }
+            var that = $(this)
+            users.is_logged_in(function(er, loggedin){
+                if (!loggedin) return users.show_login_box($("#popup"))
+                try {
+                    var id = that.closest(".data").attr("data-id")
+                    var boks_comment_votes = that.find(".boks_comment_votes")
+                    boks_comment_votes.html(parseInt(boks_comment_votes.html()) + 1)
+                    api.upvote_comment(id, function(er, num){
+                        if (er && er.loggedin == false) alert("You have to be logged in")
+                        else if (er) alert(JSON.stringify(er, 0, 2))
+                    })
+                } catch (e){
+                    alert("something went wrong. couldn't upvote comment")
+                }
+            })
         }
 
         bindings.click_go_home = function(){
@@ -508,70 +521,70 @@ var bok = function(x){
         }
 
         bindings.click_reply = function(){
-            var data_box = $(this).closest(".data")
-            var id = data_box.attr("data-id")
-            var p = data_box.attr("data-p")
-            $("#popup").html(templates.reply_box(p, id)).show()
-                .off()
-                .on("click", ".boks_reply_post", bindings.click_reply_post)
-                .on("click", ".boks_reply_cancel", bindings.click_reply_cancel)
-                .on("click", ".boks_reply_picture_button", bindings.click_choose_reply_image)
-                .on("change", ".boks_reply_picture_input", bindings.change_reply_picture_input)
-                .find("textarea").focus()
-            data_box.find(".boks_comment_content").click()
+            var that = $(this)
+            users.is_logged_in(function(er, loggedin){
+                if (!loggedin) return users.show_login_box($("#popup"))
+                var data_box = that.closest(".data")
+                var id = data_box.attr("data-id")
+                var p = data_box.attr("data-p")
+                $("#popup").html(templates.reply_box(p, id)).show()
+                    .off()
+                    .on("click", ".boks_reply_post", bindings.click_reply_post)
+                    .on("click", ".boks_reply_cancel", bindings.click_reply_cancel)
+                    .on("click", ".boks_reply_picture_button", bindings.click_choose_reply_image)
+                    .on("change", ".boks_reply_picture_input", bindings.change_reply_picture_input)
+                    .find("textarea").focus()
+                data_box.find(".boks_comment_content").click()
+            })
         }
 
         bindings.click_reply_post = function(){
             var that = $(this)
-            users.is_logged_in(function(er, loggedin){
-                if (!loggedin) return alert("please log in")
+            var data_box = that.closest(".data")
+            var p = data_box.attr("data-p")
+            var parentid = data_box.attr("data-parent")
+            var comment = data_box.find(".boks_reply_textarea").val().trim()
+            if (!comment) return alert("comment can't be empty")
+            var img = that.parent().children(".boks_reply_picture_input")[0].files[0]
+            if (img && img.size > k.max_img_size) return alert("your img is too big: must be less than 5MB")
 
-                var data_box = that.closest(".data")
-                var p = data_box.attr("data-p")
-                var parentid = data_box.attr("data-parent")
-                var comment = data_box.find(".boks_reply_textarea").val().trim()
-                if (!comment) return alert("comment can't be empty")
-                var img = that.parent().children(".boks_reply_picture_input")[0].files[0]
-                if (img && img.size > k.max_img_size) return alert("your img is too big: must be less than 5MB")
+            if (!FormData) return alert("can't upload: please update your browser")
+            var data = new FormData()
+            data.append("book", o.bID)
+            data.append("p", p)
+            if (parentid) data.append("parent", parentid)
+            data.append("comment", comment)
+            if (img) data.append("img", img)
 
-                if (!FormData) return alert("can't upload: please update your browser")
-                var data = new FormData()
-                data.append("book", o.bID)
-                data.append("p", p)
-                if (parentid) data.append("parent", parentid)
-                data.append("comment", comment)
-                if (img) data.append("img", img)
+            var img_src = data_box.find(".boks_reply_img").attr("src")
+            bindings.click_reply_cancel()
+            var fake_comment = {
+                book: o.bID,
+                p: p,
+                parent: parentid,
+                username: "you",
+                comment: comment,
+                img: img_src,
+                created: new Date(),
+                votes: 1,
+                replies: 0,
+                pop: 1
+            }
+            var new_comment = views.load_new_comment(fake_comment)
 
-                var img_src = data_box.find(".boks_reply_img").attr("src")
-                bindings.click_reply_cancel()
-                var fake_comment = {
-                    book: o.bID,
-                    p: p,
-                    parent: parentid,
-                    username: "you",
-                    comment: comment,
-                    img: img_src,
-                    created: new Date(),
-                    votes: 1,
-                    replies: 0,
-                    pop: 1
+            $.ajax({
+                url: "/comment",
+                type: "post",
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function(re){
+                    if (re.comment){
+                        new_comment.attr("data-id", re.comment._id)
+                        new_comment.find(".boks_comment_username").eq(0).html(re.comment.username)
+                    } else if (re.loggedin == false) alert("you have to log in")
+                    else alert(JSON.stringify({error:"create comment",er:re}, 0, 2))
                 }
-                var new_comment = views.load_new_comment(fake_comment)
-
-                $.ajax({
-                    url: "/comment",
-                    type: "post",
-                    data: data,
-                    processData: false,
-                    contentType: false,
-                    success: function(re){
-                        if (re.comment){
-                            new_comment.attr("data-id", re.comment._id)
-                            new_comment.find(".boks_comment_username").eq(0).html(re.comment.username)
-                        } else if (re.loggedin == false) alert("you have to log in")
-                        else alert(JSON.stringify({error:"create comment",er:re}, 0, 2))
-                    }
-                })
             })
         }
 
@@ -597,11 +610,21 @@ var bok = function(x){
 
         bindings.click_para_box = function(){
             $(this).fadeOut(50).fadeIn(100)
-            var paragraph = $("#" + o.bID + " .boks_text p").eq($(this).attr("data-p"))
+            var p = $(this).attr("data-p")
             setTimeout(function(){
-                $("html, body").animate({scrollTop:paragraph.offset().top}, 100)
-                paragraph.click()
+                bindings.go_to_p(p)
             }, 300)
+        }
+
+        bindings.click_p_link = function(){
+            var p = $(this).attr("data-p-link")
+            bindings.go_to_p(p)
+        }
+
+        bindings.go_to_p = function(p){
+            var paragraph = $("#" + o.bID + " .boks_text p").eq(p)
+            $("html, body").animate({scrollTop:paragraph.offset().top}, 100)
+            paragraph.click()
         }
 
         return bindings

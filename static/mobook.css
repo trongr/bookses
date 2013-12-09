@@ -40,6 +40,19 @@ button:hover {
     clear: both;
 }
 
+#click_colors {
+    width: 70%;
+    background-color: #000;
+    color: #fff;
+    padding: 20px 10px 20px 0;
+    margin-top: -10px;
+    margin-left: -10px;
+    margin-bottom: 10px;
+    z-index: -1;
+    font-size: 12pt;
+    text-align: center;
+}
+
 #banner {
     display: table;
     width: 70%;

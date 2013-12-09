@@ -11,6 +11,7 @@ var users = (function(){
         templates.logins = function(){
             var html = "<div id='login_box'>"
                 + "         <div class='popup_login_cancel'></div>"
+                + "         <div id='please_log_in'>Please log in or register</div>"
                 + "         <span class='input_enter_submit'>"
                 + "             <input id='username' placeholder='username'><br>"
                 + "             <input id='password' type='password' placeholder='password'><br>"

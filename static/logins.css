@@ -15,6 +15,10 @@ div.popup_login_cancel {
     margin-left: 10%;
 }
 
+#please_log_in {
+    padding: 10px 0 0 15px;
+}
+
 #login_box input {
     font-size: 1em;
     padding: 5px;

@@ -35,6 +35,7 @@ jQuery(function($){
         var css = {}
 
         css.init = function(){
+            css.fit($("#click_colors"), $("#click_colors").children())
             css.fit($("#tagline_box"), $("#tagline"))
             $(".book_description").flowtype({lineRatio:1})
         }
@@ -211,6 +212,7 @@ jQuery(function($){
 
         bindings.click_book_title = function(){
             window.open("/read/" + $(this).closest(".book").attr("data-id"))
+            // window.location = "/read/" + $(this).closest(".book").attr("data-id")
         }
 
         return bindings

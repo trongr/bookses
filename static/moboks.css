@@ -1,3 +1,4 @@
+/*  */
 body {
 
 }
@@ -15,6 +16,10 @@ p:hover {
 .p_margin {
     border-right: 5px solid #0f0 !important;
     background-color: #eaeaea;
+}
+
+.boks_p_link {
+    color: #0b0;
 }
 
 .boks_hide {
@@ -97,6 +102,17 @@ p:hover {
     margin: 20px;
 }
 
+.boks_spinner {
+    text-align: center;
+    font-size: 2em;
+    padding: 40px 0 40px 0;
+}
+
+.boks_spinner span {
+    font-size: 0.5em;
+    line-height: 2em;
+}
+
 .boks_content {
     width: 100%;
 }
@@ -118,7 +134,13 @@ p:hover {
     width: 100%;
     white-space: pre-wrap;
     background-color: #ddd;
-    font-family: helvetica, arial;
+    /* font-family: helvetica, arial; */
+    font-family: georgia, serif;
+    /* font-family: "libre baskerville", georgia, serif; */
+}
+
+#boks_p_menu {
+    background-color: #eee;
 }
 
 #boks_p_menu button {
