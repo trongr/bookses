@@ -244,7 +244,7 @@ var bok = function(x){
 
         templates.p_menu = function(p){
             var html = "<div id='boks_p_menu' class='data' data-p='" + p + "'>"
-                + "         <button class='boks_reply'><i class='icon-pencil'></i> p." + p + "</button>"
+                + "         <button class='boks_reply'><i class='icon-pencil'></i> p" + p + "</button>"
                 + "         <button class='boks_go_home'><i class='icon-home'></i></button>"
                 + "     </div>"
             return html

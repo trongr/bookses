@@ -117,10 +117,9 @@ var DB = (function(){
         })
     }
 
-    // mark
     DB.update_comment_recursive = function(id, update, recursion){
         console.log(id, recursion)
-        if (recursion == 0) return
+        if (recursion < 0) return
         async.waterfall([
             function(done){
                 DB.update_entry_by_id(k.tables.comments, id, update, function(er, num){
@@ -635,9 +634,12 @@ var books = module.exports = (function(){
 
     books.get_paragraphs = function(req, res){
         DB.aggregate(k.tables.comments, [{
-            $match: {book:req.params.id}
+            $match: {
+                book: req.params.id,
+                parent: null
+            }
         },{
-            $group: {_id:"$p", count:{$sum:1}}
+            $group: {_id:"$p", count:{$sum:"$pop"}}
         },{
             $sort: {_id:1}
         }], function(er, re){
