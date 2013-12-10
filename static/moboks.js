@@ -243,7 +243,7 @@ var bok = function(x){
                 + "             <div class='boks_content_left'>"
                 + "                 <div class='boks_text'>" + text + "</div>"
                 + "             </div>"
-                + "             <div class='boks_content_right'><div id='click_to_reveal'>Click on the paragraphs to make comments. Best viewed in landscape.</div></div>"
+                + "             <div class='boks_content_right'><div id='click_to_reveal'>Click on the paragraphs to see and make comments. Best viewed in landscape.</div></div>"
                 + "         </div>"
                 + "     </div>"
             return html
@@ -270,7 +270,7 @@ var bok = function(x){
                 + "                 <button class='boks_reply_post'>POST</button>"
                 + "                 <div class='clear_both'></div>"
                 + "             </div>"
-                + "             <textarea class='boks_reply_textarea' placeholder='Comment or add a picture'></textarea>"
+                + "             <textarea class='boks_reply_textarea' placeholder='Comment or add a picture. Type p394 to go create link to paragraph 394.'></textarea>"
                 + "         </div>"
                 + "         <div class='boks_reply_img_box'>"
                 + "             <img class='boks_reply_img'>"
