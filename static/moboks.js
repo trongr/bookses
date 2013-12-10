@@ -257,6 +257,11 @@ var bok = function(x){
             return html
         }
 
+        templates.reply_img = function(){
+            var html = "<img class='boks_reply_img'>"
+            return html
+        }
+
         templates.reply_box = function(p, parentid){
             var datap = (p ? "data-p='" + p + "'" : "")
             var dataparent = (parentid ? "data-parent='" + parentid + "'" : "")
@@ -266,14 +271,15 @@ var bok = function(x){
                 + "             <button class='boks_reply_cancel'>cancel</button>"
                 + "             <div class='boks_reply_menu'>"
                 + "                 <input class='boks_reply_picture_input' accept='image/*' type='file'>"
+                + "                 <button class='boks_reply_draw'><i class='fontello-fat-pencil'></i>draw</button>"
                 + "                 <button class='boks_reply_picture_button'><i class='icon-picture'></i></button>"
                 + "                 <button class='boks_reply_post'>POST</button>"
                 + "                 <div class='clear_both'></div>"
                 + "             </div>"
-                + "             <textarea class='boks_reply_textarea' placeholder='Comment or add a picture. Type p394 to go create link to paragraph 394.'></textarea>"
+                + "             <textarea class='boks_reply_textarea' placeholder='Comment or add a picture. Type p394 to create a link to paragraph 394.'></textarea>"
                 + "         </div>"
                 + "         <div class='boks_reply_img_box'>"
-                + "             <img class='boks_reply_img'>"
+                +               templates.reply_img()
                 + "         </div>"
                 + "     </div>"
             return html
@@ -334,6 +340,132 @@ var bok = function(x){
         }
 
         return templates
+    }())
+
+    var drawing = (function(){
+        var drawing = {}
+
+        var templates = (function(){
+            var templates = {}
+
+            templates.canvas = function(){
+                var html = "<canvas class='drawing_canvas'></canvas>"
+                return html
+            }
+
+            return templates
+        }())
+
+        drawing.k = {
+            canvas: null,
+            cntxt: null,
+            top: null,
+            left: null,
+            draw: 0,
+        }
+
+        drawing.init = function(box){
+            $canvas = box.html(templates.canvas()).children("canvas")
+            $canvas.attr("width", box.width()).attr("height", box.height())
+            drawing.k.top = $canvas.offset().top;
+            drawing.k.left = $canvas.offset().left;
+
+            drawing.k.canvas = $canvas.get(0)
+            drawing.k.cntxt = drawing.k.canvas.getContext("2d");
+
+            drawing.k.cntxt.lineCap = "round";
+            drawing.k.cntxt.save();
+            drawing.k.cntxt.fillStyle = '#fff';
+            drawing.k.cntxt.fillRect(0, 0, drawing.k.cntxt.canvas.width, drawing.k.cntxt.canvas.height);
+            drawing.k.cntxt.restore();
+
+            $canvas.mousedown(function(e){
+                if(e.button == 0){
+                    drawing.k.draw = 1;
+                    saveActions();
+                    drawing.k.cntxt.beginPath();
+                    drawing.k.cntxt.moveTo(e.pageX-drawing.k.left, e.pageY-drawing.k.top);
+                }
+                else{
+                    drawing.k.draw = 0;
+                }
+            }).mouseup(function(e){
+                if(e.button != 0){
+                    drawing.k.draw = 1;
+                }
+                else{
+                    drawing.k.draw = 0;
+                    drawing.k.cntxt.lineTo(e.pageX-drawing.k.left+1, e.pageY-drawing.k.top+1);
+                    drawing.k.cntxt.stroke();
+                    drawing.k.cntxt.closePath();
+                }
+            }).mousemove(function(e){
+                if(drawing.k.draw == 1){
+                    drawing.k.cntxt.lineTo(e.pageX-drawing.k.left+1, e.pageY-drawing.k.top+1);
+                    drawing.k.cntxt.stroke();
+                }
+            });
+        }
+
+        //To hold the data for each action on the screen
+        var undoHistory = [];
+
+        //Function to save the states in history
+        function saveActions() {
+            var imgData = drawing.k.canvas.toDataURL("image/png");
+            undoHistory.push(imgData);
+            $('#undo').removeAttr('disabled');
+        }
+
+        //Actural Undo Function
+        function undoDraw(){
+            if(undoHistory.length > 0){
+                var undoImg = new Image();
+                $(undoImg).load(function(){
+                    var context = drawing.k.canvas.getContext("2d");
+                    context.drawImage(undoImg, 0,0);
+                });
+                undoImg.src = undoHistory.pop();
+                if(undoHistory.length == 0)
+                    $('#undo').attr('disabled','disabled');
+            }
+        }
+
+        // //Extra Links Code
+        // $('#export').click(function(e){
+        //     e.preventDefault();
+        //     window.open(drawing.k.canvas.toDataURL(), 'Canvas Export','height=400,width=400');
+        //     //console.log(drawing.k.canvas.toDataURL());
+        // });
+        // $('#clear').click(function(e){
+        //     e.preventDefault();
+        //     drawing.k.canvas.width = drawing.k.canvas.width;
+        //     drawing.k.canvas.height = drawing.k.canvas.height;
+        //     $('#colors li:first').click();
+        //     $('#brush_size').change();
+        //     undoHistory = [];
+        // });
+        // $('#brush_size').change(function(e){
+        //     drawing.k.cntxt.lineWidth = $(this).val();
+        // });
+        // $('#colors li').click(function(e){
+        //     e.preventDefault();
+        //     $('#colors li').removeClass('selected');
+        //     $(this).addClass('selected');
+        //     drawing.k.cntxt.strokeStyle = $(this).css('background-color');
+        // });
+
+        // //Undo Binding
+        // $('#undo').click(function(e){
+        //     e.preventDefault();
+        //     undoDraw()
+        // });
+
+        // //Init the brush and color
+        // $('#colors li:first').click();
+        // $('#brush_size').change();
+
+        return drawing
     }())
 
     var views = (function(){
@@ -531,6 +663,7 @@ var bok = function(x){
                     .off()
                     .on("click", ".boks_reply_post", bindings.click_reply_post)
                     .on("click", ".boks_reply_cancel", bindings.click_reply_cancel)
+                    .on("click", ".boks_reply_draw", bindings.click_reply_draw)
                     .on("click", ".boks_reply_picture_button", bindings.click_choose_reply_image)
                     .on("change", ".boks_reply_picture_input", bindings.change_reply_picture_input)
                     .find("textarea").focus()
@@ -600,7 +733,7 @@ var bok = function(x){
             var file = e.target.files[0]
             var box = $(this).closest(".data")
             var txt = box.find(".boks_reply_textarea").focus()
-            var img = box.find(".boks_reply_img")
+            var img = box.find(".boks_reply_img_box").html(templates.reply_img()).children()
             var reader = new FileReader()
             reader.onload = function(e){
                 img.attr("src", e.target.result).show()
@@ -625,6 +758,12 @@ var bok = function(x){
             var paragraph = $("#" + o.bID + " .boks_text p").eq(p)
             $("html, body").animate({scrollTop:paragraph.offset().top}, 100)
             paragraph.click()
+        }
+
+        // mark
+        bindings.click_reply_draw = function(){
+            var box = $(this).closest(".data").find(".boks_reply_img_box")
+            drawing.init(box)
         }
 
         return bindings

@@ -1,0 +1,9 @@
+var drawing = (function(){
+    var drawing = {}
+
+    drawing.init(box){
+
+    }
+
+    return drawing
+}())

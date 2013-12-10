@@ -205,6 +205,11 @@ p:hover {
     padding: 5px 0 0 0;
 }
 
+button.boks_reply_draw {
+    background-color: #ddd;
+    font-size: 1em;
+}
+
 .boks_comment_created {
     clear: both;
     float: right;
@@ -240,7 +245,7 @@ p:hover {
 .boks_reply_img_box {
     display: table-cell;
     width: 40%;
-    padding: 0 10px 0 10px;
+    padding: 0 0 0 10px;
     text-align: center;
     vertical-align: top;
 }
@@ -248,7 +253,14 @@ p:hover {
 img.boks_reply_img {
     display: none;
     height: auto;
-    width: 100%
+    width: 90%;
+    float: left;
+}
+
+.drawing_canvas {
+    width: 90%;
+    height: 90%;
+    float: left;
 }
 
 .boks_reply_textarea_box {
