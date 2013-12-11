@@ -320,8 +320,8 @@ var bok = function(x){
             var html = "<div class='boks_comment data' " + dataid + " " + datap + ">"
                 + "         <div class='boks_comment_text_box'>"
                 + "             <div class='boks_comment_content'>"
-                +                   img
                 + "                 <div class='boks_comment_text'>" + text + "</div>"
+                +                   img
                 + "             </div>"
                 + "             <div class='boks_comment_username'>" + comment.username + "</div>"
                 + "             <div class='boks_comment_created'>" + Date.create(comment.created).long() + "</div>"
@@ -342,8 +342,8 @@ var bok = function(x){
         return templates
     }())
 
-    var drawing = (function(){
-        var drawing = {}
+    var draw = (function(){
+        var draw = {}
 
         var templates = (function(){
             var templates = {}
@@ -356,116 +356,109 @@ var bok = function(x){
             return templates
         }())
 
-        drawing.k = {
+        draw.k = {
             canvas: null,
             cntxt: null,
             top: null,
             left: null,
             draw: 0,
+            history: [],
         }
 
-        drawing.init = function(box){
+        draw.init = function(box){
             $canvas = box.html(templates.canvas()).children("canvas")
-            $canvas.attr("width", box.width()).attr("height", box.height())
-            drawing.k.top = $canvas.offset().top;
-            drawing.k.left = $canvas.offset().left;
+            $canvas.attr("width", box.width() - 30).attr("height", box.height() - 30)
+            draw.k.top = $canvas.offset().top
+            draw.k.left = $canvas.offset().left
 
-            drawing.k.canvas = $canvas.get(0)
-            drawing.k.cntxt = drawing.k.canvas.getContext("2d");
+            draw.k.canvas = $canvas.get(0)
+            draw.k.cntxt = draw.k.canvas.getContext("2d")
 
-            drawing.k.cntxt.lineCap = "round";
-            drawing.k.cntxt.save();
-            drawing.k.cntxt.fillStyle = '#fff';
-            drawing.k.cntxt.fillRect(0, 0, drawing.k.cntxt.canvas.width, drawing.k.cntxt.canvas.height);
-            drawing.k.cntxt.restore();
+            draw.k.cntxt.lineCap = "round"
+            draw.k.cntxt.save()
+            draw.k.cntxt.fillStyle = '#fff'
+            draw.k.cntxt.fillRect(0, 0, draw.k.cntxt.canvas.width, draw.k.cntxt.canvas.height)
+            draw.k.cntxt.restore()
 
             $canvas.mousedown(function(e){
-                if(e.button == 0){
-                    drawing.k.draw = 1;
-                    saveActions();
-                    drawing.k.cntxt.beginPath();
-                    drawing.k.cntxt.moveTo(e.pageX-drawing.k.left, e.pageY-drawing.k.top);
-                }
-                else{
-                    drawing.k.draw = 0;
+                if (e.button == 0){
+                    draw.k.draw = 1
+                    draw.save_history()
+                    draw.k.cntxt.beginPath()
+                    draw.k.cntxt.moveTo(e.pageX - draw.k.left, e.pageY - draw.k.top)
+                } else {
+                    draw.k.draw = 0
                 }
             }).mouseup(function(e){
-                if(e.button != 0){
-                    drawing.k.draw = 1;
-                }
-                else{
-                    drawing.k.draw = 0;
-                    drawing.k.cntxt.lineTo(e.pageX-drawing.k.left+1, e.pageY-drawing.k.top+1);
-                    drawing.k.cntxt.stroke();
-                    drawing.k.cntxt.closePath();
+                if (e.button != 0){
+                    draw.k.draw = 1
+                } else {
+                    draw.k.draw = 0
+                    draw.k.cntxt.lineTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
+                    draw.k.cntxt.stroke()
+                    draw.k.cntxt.closePath()
                 }
             }).mousemove(function(e){
-                if(drawing.k.draw == 1){
-                    drawing.k.cntxt.lineTo(e.pageX-drawing.k.left+1, e.pageY-drawing.k.top+1);
-                    drawing.k.cntxt.stroke();
+                if (draw.k.draw == 1){
+                    draw.k.cntxt.lineTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
+                    draw.k.cntxt.stroke()
                 }
-            });
+            })
         }
 
-        //To hold the data for each action on the screen
-        var undoHistory = [];
-
-        //Function to save the states in history
-        function saveActions() {
-            var imgData = drawing.k.canvas.toDataURL("image/png");
-            undoHistory.push(imgData);
-            $('#undo').removeAttr('disabled');
+        // mark
+        draw.get_file = function(){
+            return draw.dataURL_to_blob(draw.k.canvas.toDataURL())
         }
 
-        //Actural Undo Function
-        function undoDraw(){
-            if(undoHistory.length > 0){
-                var undoImg = new Image();
+        draw.dataURL_to_blob = function(dataURL){
+            var binary = atob(dataURL.split(',')[1])
+            var array = []
+            for (var i = 0; i < binary.length; i++){
+                array.push(binary.charCodeAt(i))
+            }
+            return new Blob([new Uint8Array(array)], {type: 'image/png'})
+        }
+
+        draw.save_history = function(){
+            var imgData = draw.k.canvas.toDataURL("image/png")
+            draw.k.history.push(imgData)
+        }
+
+        draw.undo = function(){
+            if (draw.k.history.length > 0){
+                var undoImg = new Image()
                 $(undoImg).load(function(){
-                    var context = drawing.k.canvas.getContext("2d");
-                    context.drawImage(undoImg, 0,0);
-                });
-                undoImg.src = undoHistory.pop();
-                if(undoHistory.length == 0)
-                    $('#undo').attr('disabled','disabled');
+                    var context = draw.k.canvas.getContext("2d")
+                    context.drawImage(undoImg, 0,0)
+                })
+                undoImg.src = draw.k.history.pop()
             }
         }
 
         // //Extra Links Code
         // $('#export').click(function(e){
-        //     e.preventDefault();
-        //     window.open(drawing.k.canvas.toDataURL(), 'Canvas Export','height=400,width=400');
-        //     //console.log(drawing.k.canvas.toDataURL());
-        // });
-        // $('#clear').click(function(e){
-        //     e.preventDefault();
-        //     drawing.k.canvas.width = drawing.k.canvas.width;
-        //     drawing.k.canvas.height = drawing.k.canvas.height;
-        //     $('#colors li:first').click();
-        //     $('#brush_size').change();
-        //     undoHistory = [];
-        // });
+        //     e.preventDefault()
+        //     window.open(draw.k.canvas.toDataURL(), 'Canvas Export','height=400,width=400')
+        //     //console.log(draw.k.canvas.toDataURL())
+        // })
         // $('#brush_size').change(function(e){
-        //     drawing.k.cntxt.lineWidth = $(this).val();
-        // });
+        //     draw.k.cntxt.lineWidth = $(this).val()
+        // })
         // $('#colors li').click(function(e){
-        //     e.preventDefault();
-        //     $('#colors li').removeClass('selected');
-        //     $(this).addClass('selected');
-        //     drawing.k.cntxt.strokeStyle = $(this).css('background-color');
-        // });
+        //     e.preventDefault()
+        //     $('#colors li').removeClass('selected')
+        //     $(this).addClass('selected')
+        //     draw.k.cntxt.strokeStyle = $(this).css('background-color')
+        // })
 
         // //Undo Binding
         // $('#undo').click(function(e){
-        //     e.preventDefault();
-        //     undoDraw()
-        // });
+        //     e.preventDefault()
+        //     draw.undo()
+        // })
 
-        // //Init the brush and color
-        // $('#colors li:first').click();
-        // $('#brush_size').change();
-
-        return drawing
+        return draw
     }())
 
     var views = (function(){
@@ -689,6 +682,9 @@ var bok = function(x){
             data.append("comment", comment)
             if (img) data.append("img", img)
 
+            // mark
+            data.append("img", draw.get_file())
+
             var img_src = data_box.find(".boks_reply_img").attr("src")
             bindings.click_reply_cancel()
             var fake_comment = {
@@ -763,7 +759,7 @@ var bok = function(x){
         // mark
         bindings.click_reply_draw = function(){
             var box = $(this).closest(".data").find(".boks_reply_img_box")
-            drawing.init(box)
+            draw.init(box)
         }
 
         return bindings

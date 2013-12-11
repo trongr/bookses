@@ -186,7 +186,7 @@ p:hover {
 }
 
 .boks_comment_text {
-    padding: 10px;
+    padding: 10px 10px 0 10px;
     white-space: pre-wrap;
 }
 
@@ -220,7 +220,7 @@ button.boks_reply_draw {
 
 .boks_comment_username {
     float: right;
-    padding: 0 10px 0 0;
+    padding: 5px 10px 0 0;
     font-size: 1em;
     font-weight: bolder;
     color: #555;
@@ -258,8 +258,6 @@ img.boks_reply_img {
 }
 
 .drawing_canvas {
-    width: 90%;
-    height: 90%;
     float: left;
 }
 
