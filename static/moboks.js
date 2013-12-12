@@ -257,11 +257,7 @@ var bok = function(x){
             return html
         }
 
-        templates.reply_img = function(){
-            var html = "<img class='boks_reply_img'>"
-            return html
-        }
-
+        // mark
         templates.reply_box = function(p, parentid){
             var datap = (p ? "data-p='" + p + "'" : "")
             var dataparent = (parentid ? "data-parent='" + parentid + "'" : "")
@@ -270,17 +266,12 @@ var bok = function(x){
                 + "         <div class='boks_reply_textarea_box'>"
                 + "             <button class='boks_reply_cancel'>cancel</button>"
                 + "             <div class='boks_reply_menu'>"
-                + "                 <input class='boks_reply_picture_input' accept='image/*' type='file'>"
-                + "                 <button class='boks_reply_draw'><i class='fontello-fat-pencil'></i>draw</button>"
-                + "                 <button class='boks_reply_picture_button'><i class='icon-picture'></i></button>"
                 + "                 <button class='boks_reply_post'>POST</button>"
                 + "                 <div class='clear_both'></div>"
                 + "             </div>"
                 + "             <textarea class='boks_reply_textarea' placeholder='Comment or add a picture. Type p394 to create a link to paragraph 394.'></textarea>"
                 + "         </div>"
-                + "         <div class='boks_reply_img_box'>"
-                +               templates.reply_img()
-                + "         </div>"
+                + "         <div class='boks_reply_img_box'></div>"
                 + "     </div>"
             return html
         }
@@ -345,29 +336,86 @@ var bok = function(x){
     var draw = (function(){
         var draw = {}
 
-        var templates = (function(){
+        draw.templates = (function(){
             var templates = {}
 
             templates.canvas = function(){
-                var html = "<canvas class='drawing_canvas'></canvas>"
+                var html = "<canvas class='draw_canvas'></canvas>"
+                return html
+            }
+
+            templates.draw_box = function(){
+                var html = "<div class='draw_box'>"
+                    + "         <div class='draw_menu'>"
+                    + "             <input class='draw_picture_input' accept='image/*' type='file'>"
+                    + "             <button class='draw_picture_button'><i class='icon-picture'></i></button>"
+                    + "             <button class='draw_draw_button'><i class='fontello-fat-pencil'></i></button>"
+                    + "         </div>"
+                    + "         <div class='draw_canvas_box'></div>"
+                    + "     </div>"
                 return html
             }
 
             return templates
         }())
 
-        draw.k = {
-            canvas: null,
-            cntxt: null,
-            top: null,
-            left: null,
-            draw: 0,
-            history: [],
-        }
+        draw.bindings = (function(){
+            var bindings = {}
+
+            bindings.click_draw_button = function(){
+                draw.canvas_init()
+            }
+
+            bindings.click_choose_img = function(){
+                $(this).parent().children(".draw_picture_input").click()
+            }
+
+            bindings.change_img_input = function(e){
+                draw.canvas_init()
+                var img = new Image()
+                img.src = URL.createObjectURL(e.target.files[0])
+                img.onload = function(){
+                    var img_fatness = img.width / img.height
+                    var canvas_fatness = draw.k.cntxt.canvas.width / draw.k.cntxt.canvas.height
+                    var w = img.width, h = img.height, x = 0, y = 0
+                    if (img_fatness > canvas_fatness){
+                        var w = draw.k.cntxt.canvas.width
+                        var h = img.height * draw.k.cntxt.canvas.width / img.width
+                        var y = (draw.k.cntxt.canvas.height - h) / 2
+                    } else {
+                        var w = img.width * draw.k.cntxt.canvas.height / img.height
+                        var h = draw.k.cntxt.canvas.height
+                        var x = (draw.k.cntxt.canvas.width - w) / 2
+                    }
+                    draw.k.cntxt.drawImage(img, 0, 0, img.width, img.height, x, y, w, h)
+                }
+            }
+
+            return bindings
+        }())
 
         draw.init = function(box){
-            $canvas = box.html(templates.canvas()).children("canvas")
-            $canvas.attr("width", box.width() - 30).attr("height", box.height() - 30)
+            box.html(draw.templates.draw_box())
+                .off()
+                .on("click", ".draw_draw_button", draw.bindings.click_draw_button)
+                .on("click", ".draw_picture_button", draw.bindings.click_choose_img)
+                .on("change", ".draw_picture_input", draw.bindings.change_img_input)
+            draw.clear()
+        }
+
+        draw.clear = function(){
+            draw.k = {
+                canvas: null,
+                cntxt: null,
+                top: null,
+                left: null,
+                history: [],
+            }
+        }
+
+        draw.canvas_init = function(){
+            $canvas = $(".draw_canvas_box").html(draw.templates.canvas()).find("canvas")
+            $canvas.attr("width", $canvas.parent().width() - 30).attr("height", $canvas.parent().height() - 60)
             draw.k.top = $canvas.offset().top
             draw.k.left = $canvas.offset().left
 
@@ -380,35 +428,38 @@ var bok = function(x){
             draw.k.cntxt.fillRect(0, 0, draw.k.cntxt.canvas.width, draw.k.cntxt.canvas.height)
             draw.k.cntxt.restore()
 
+            // this, cause the other handlers can't tell if mouse up or down outside the canvas
+            var mouse_down
+            document.body.onmousedown = function(){
+                mouse_down = true
+            }
+            document.body.onmouseup = function(){
+                mouse_down = false
+            }
+
             $canvas.mousedown(function(e){
-                if (e.button == 0){
-                    draw.k.draw = 1
-                    draw.save_history()
-                    draw.k.cntxt.beginPath()
-                    draw.k.cntxt.moveTo(e.pageX - draw.k.left, e.pageY - draw.k.top)
-                } else {
-                    draw.k.draw = 0
-                }
+                draw.save_history()
+                draw.k.cntxt.beginPath()
+                draw.k.cntxt.moveTo(e.pageX - draw.k.left, e.pageY - draw.k.top)
             }).mouseup(function(e){
-                if (e.button != 0){
-                    draw.k.draw = 1
-                } else {
-                    draw.k.draw = 0
-                    draw.k.cntxt.lineTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
-                    draw.k.cntxt.stroke()
-                    draw.k.cntxt.closePath()
-                }
+                draw.k.cntxt.lineTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
+                draw.k.cntxt.stroke()
+                draw.k.cntxt.closePath()
             }).mousemove(function(e){
-                if (draw.k.draw == 1){
+                if (mouse_down == true){
                     draw.k.cntxt.lineTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
                     draw.k.cntxt.stroke()
+                }
+            }).on("mouseenter", function(){
+                if (mouse_down == true){
+                    draw.k.cntxt.beginPath()
                 }
             })
         }
 
-        // mark
         draw.get_file = function(){
-            return draw.dataURL_to_blob(draw.k.canvas.toDataURL())
+            if (draw.k.canvas) return draw.dataURL_to_blob(draw.k.canvas.toDataURL())
+            else return null
         }
 
         draw.dataURL_to_blob = function(dataURL){
@@ -656,10 +707,8 @@ var bok = function(x){
                     .off()
                     .on("click", ".boks_reply_post", bindings.click_reply_post)
                     .on("click", ".boks_reply_cancel", bindings.click_reply_cancel)
-                    .on("click", ".boks_reply_draw", bindings.click_reply_draw)
-                    .on("click", ".boks_reply_picture_button", bindings.click_choose_reply_image)
-                    .on("change", ".boks_reply_picture_input", bindings.change_reply_picture_input)
-                    .find("textarea").focus()
+                $("#popup").find("textarea").focus()
+                draw.init($(".boks_reply_img_box"))
                 data_box.find(".boks_comment_content").click()
             })
         }
@@ -671,8 +720,6 @@ var bok = function(x){
             var parentid = data_box.attr("data-parent")
             var comment = data_box.find(".boks_reply_textarea").val().trim()
             if (!comment) return alert("comment can't be empty")
-            var img = that.parent().children(".boks_reply_picture_input")[0].files[0]
-            if (img && img.size > k.max_img_size) return alert("your img is too big: must be less than 5MB")
 
             if (!FormData) return alert("can't upload: please update your browser")
             var data = new FormData()
@@ -680,13 +727,15 @@ var bok = function(x){
             data.append("p", p)
             if (parentid) data.append("parent", parentid)
             data.append("comment", comment)
-            if (img) data.append("img", img)
 
-            // mark
-            data.append("img", draw.get_file())
+            var img = draw.get_file(), img_src
+            if (img){
+                data.append("img", img)
+                img_src = URL.createObjectURL(img)
+            }
 
-            var img_src = data_box.find(".boks_reply_img").attr("src")
             bindings.click_reply_cancel()
+
             var fake_comment = {
                 book: o.bID,
                 p: p,
@@ -721,22 +770,6 @@ var bok = function(x){
             $("#popup").html("").hide()
         }
 
-        bindings.click_choose_reply_image = function(){
-            $(this).parent().children(".boks_reply_picture_input").click()
-        }
-
-        bindings.change_reply_picture_input = function(e){
-            var file = e.target.files[0]
-            var box = $(this).closest(".data")
-            var txt = box.find(".boks_reply_textarea").focus()
-            var img = box.find(".boks_reply_img_box").html(templates.reply_img()).children()
-            var reader = new FileReader()
-            reader.onload = function(e){
-                img.attr("src", e.target.result).show()
-            }
-            reader.readAsDataURL(file)
-        }
-
         bindings.click_para_box = function(){
             $(this).fadeOut(50).fadeIn(100)
             var p = $(this).attr("data-p")
@@ -754,12 +787,6 @@ var bok = function(x){
             var paragraph = $("#" + o.bID + " .boks_text p").eq(p)
             $("html, body").animate({scrollTop:paragraph.offset().top}, 100)
             paragraph.click()
-        }
-
-        // mark
-        bindings.click_reply_draw = function(){
-            var box = $(this).closest(".data").find(".boks_reply_img_box")
-            draw.init(box)
         }
 
         return bindings
