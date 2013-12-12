@@ -719,7 +719,7 @@ var bok = function(x){
             var p = data_box.attr("data-p")
             var parentid = data_box.attr("data-parent")
             var comment = data_box.find(".boks_reply_textarea").val().trim()
-            if (!comment) return alert("comment can't be empty")
+            if (!comment) comment = "."
 
             if (!FormData) return alert("can't upload: please update your browser")
             var data = new FormData()
