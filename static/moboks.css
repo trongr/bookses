@@ -104,14 +104,19 @@ p:hover {
 }
 
 .boks_spinner {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 30%;
+    vertical-align: middle;
     text-align: center;
-    font-size: 2em;
     padding: 40px 0 40px 0;
+    font-size: 2em;
 }
 
 .boks_spinner span {
     font-size: 0.5em;
-    line-height: 2em;
+    line-height: 1em;
 }
 
 .boks_content {

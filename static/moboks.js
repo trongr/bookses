@@ -217,7 +217,7 @@ var bok = function(x){
                 + "             <a class='addthis_button_compact'></a><a class='addthis_counter addthis_bubble_style'></a>"
                 + "             </div>"
                 + "         </div>"
-                + "         <div class='boks_spinner'><i class='icon-spin icon-cog'></i><br><span>working real hard . . .</span></div>"
+                + "         <div class='boks_spinner'><i class='icon-spin icon-cog'></i><br><span>working<br>hard<br>. . .</span></div>"
                 + "     </div>"
             return html
         }
@@ -389,7 +389,9 @@ var bok = function(x){
                         var h = draw.k.cntxt.canvas.height
                         var x = (draw.k.cntxt.canvas.width - w) / 2
                     }
-                    draw.k.cntxt.drawImage(img, 0, 0, img.width, img.height, x, y, w, h)
+                    draw.canvas_init(w, h) // recreate canvas with new size cause you don't want the white padding
+                    draw.k.cntxt.drawImage(img, 0, 0, img.width, img.height, 0, 0, w, h)
+                    // draw.k.cntxt.drawImage(img, 0, 0, img.width, img.height, x, y, w, h)
                 }
             }
 
@@ -448,9 +450,9 @@ var bok = function(x){
             }
         }
 
-        draw.canvas_init = function(){
+        draw.canvas_init = function(width, height){
             $canvas = $(".draw_canvas_box").html(draw.templates.canvas()).find("canvas")
-            $canvas.attr("width", $canvas.parent().width() - 30).attr("height", $canvas.parent().height() - 60)
+            $canvas.attr("width", width || $canvas.parent().width() - 30).attr("height", height || $canvas.parent().height() - 60)
             draw.k.top = $canvas.offset().top
             draw.k.left = $canvas.offset().left
 
