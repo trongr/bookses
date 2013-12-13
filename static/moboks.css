@@ -321,20 +321,22 @@ div.popup_cancel {
     user-select: none;
 }
 
-button.draw_draw_button {
+.draw_menu button {
     background-color: #ddd;
     font-size: 1em;
     padding: 0;
+}
+
+button.draw_draw_button {
+
+}
+
+.draw_picture_button {
+
 }
 
 .draw_picture_input {
     display: none;
-}
-
-.draw_picture_button {
-    font-size: 1em;
-    background-color: #ddd;
-    padding: 0;
 }
 
 .draw_canvas_box {

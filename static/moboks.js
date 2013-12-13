@@ -257,7 +257,6 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.reply_box = function(p, parentid){
             var datap = (p ? "data-p='" + p + "'" : "")
             var dataparent = (parentid ? "data-parent='" + parentid + "'" : "")
@@ -350,6 +349,9 @@ var bok = function(x){
                     + "             <input class='draw_picture_input' accept='image/*' type='file'>"
                     + "             <button class='draw_picture_button'><i class='icon-picture'></i></button>"
                     + "             <button class='draw_draw_button'><i class='fontello-fat-pencil'></i></button>"
+                    + "             <input class='draw_brush_size' type='range' min='1' max='50' value='5'>"
+                    + "             <input class='draw_color' value='000000'>"
+                    + "             <button class='draw_undo_button'>undo</button>"
                     + "         </div>"
                     + "         <div class='draw_canvas_box'></div>"
                     + "     </div>"
@@ -391,6 +393,10 @@ var bok = function(x){
                 }
             }
 
+            bindings.click_draw_undo_button = function(){
+                draw.undo()
+            }
+
             return bindings
         }())
 
@@ -398,6 +404,7 @@ var bok = function(x){
             box.html(draw.templates.draw_box())
                 .off()
                 .on("click", ".draw_draw_button", draw.bindings.click_draw_button)
+                .on("click", ".draw_undo_button", draw.bindings.click_draw_undo_button)
                 .on("click", ".draw_picture_button", draw.bindings.click_choose_img)
                 .on("change", ".draw_picture_input", draw.bindings.change_img_input)
             draw.clear()
@@ -410,6 +417,34 @@ var bok = function(x){
                 top: null,
                 left: null,
                 history: [],
+                brush_size: $(".draw_brush_size"),
+                color: $(".draw_color").spectrum({
+                    color: "#000",
+                    showInput: true,
+                    className: "full-spectrum",
+                    showInitial: true,
+                    showPalette: true,
+                    showSelectionPalette: true,
+                    maxPaletteSize: 10,
+                    preferredFormat: "hex",
+                    localStorageKey: "spectrum.js",
+                    palette: [
+                        ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
+                         "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
+                        ["rgb(152, 0, 0)", "rgb(255, 0, 0)", "rgb(255, 153, 0)", "rgb(255, 255, 0)", "rgb(0, 255, 0)",
+                         "rgb(0, 255, 255)", "rgb(74, 134, 232)", "rgb(0, 0, 255)", "rgb(153, 0, 255)", "rgb(255, 0, 255)"],
+                        ["rgb(230, 184, 175)", "rgb(244, 204, 204)", "rgb(252, 229, 205)", "rgb(255, 242, 204)", "rgb(217, 234, 211)",
+                         "rgb(208, 224, 227)", "rgb(201, 218, 248)", "rgb(207, 226, 243)", "rgb(217, 210, 233)", "rgb(234, 209, 220)",
+                         "rgb(221, 126, 107)", "rgb(234, 153, 153)", "rgb(249, 203, 156)", "rgb(255, 229, 153)", "rgb(182, 215, 168)",
+                         "rgb(162, 196, 201)", "rgb(164, 194, 244)", "rgb(159, 197, 232)", "rgb(180, 167, 214)", "rgb(213, 166, 189)",
+                         "rgb(204, 65, 37)", "rgb(224, 102, 102)", "rgb(246, 178, 107)", "rgb(255, 217, 102)", "rgb(147, 196, 125)",
+                         "rgb(118, 165, 175)", "rgb(109, 158, 235)", "rgb(111, 168, 220)", "rgb(142, 124, 195)", "rgb(194, 123, 160)",
+                         "rgb(166, 28, 0)", "rgb(204, 0, 0)", "rgb(230, 145, 56)", "rgb(241, 194, 50)", "rgb(106, 168, 79)",
+                         "rgb(69, 129, 142)", "rgb(60, 120, 216)", "rgb(61, 133, 198)", "rgb(103, 78, 167)", "rgb(166, 77, 121)",
+                         "rgb(91, 15, 0)", "rgb(102, 0, 0)", "rgb(120, 63, 4)", "rgb(127, 96, 0)", "rgb(39, 78, 19)",
+                         "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]
+                    ]
+                })
             }
         }
 
@@ -422,6 +457,7 @@ var bok = function(x){
             draw.k.canvas = $canvas.get(0)
             draw.k.cntxt = draw.k.canvas.getContext("2d")
 
+            draw.k.cntxt.lineJoin = "round"
             draw.k.cntxt.lineCap = "round"
             draw.k.cntxt.save()
             draw.k.cntxt.fillStyle = '#fff'
@@ -439,6 +475,8 @@ var bok = function(x){
 
             $canvas.mousedown(function(e){
                 draw.save_history()
+                draw.k.cntxt.lineWidth = draw.k.brush_size.val()
+                draw.k.cntxt.strokeStyle = draw.k.color.val()
                 draw.k.cntxt.beginPath()
                 draw.k.cntxt.moveTo(e.pageX - draw.k.left, e.pageY - draw.k.top)
             }).mouseup(function(e){
@@ -486,28 +524,6 @@ var bok = function(x){
                 undoImg.src = draw.k.history.pop()
             }
         }
-
-        // //Extra Links Code
-        // $('#export').click(function(e){
-        //     e.preventDefault()
-        //     window.open(draw.k.canvas.toDataURL(), 'Canvas Export','height=400,width=400')
-        //     //console.log(draw.k.canvas.toDataURL())
-        // })
-        // $('#brush_size').change(function(e){
-        //     draw.k.cntxt.lineWidth = $(this).val()
-        // })
-        // $('#colors li').click(function(e){
-        //     e.preventDefault()
-        //     $('#colors li').removeClass('selected')
-        //     $(this).addClass('selected')
-        //     draw.k.cntxt.strokeStyle = $(this).css('background-color')
-        // })
-
-        // //Undo Binding
-        // $('#undo').click(function(e){
-        //     e.preventDefault()
-        //     draw.undo()
-        // })
 
         return draw
     }())

@@ -35,7 +35,7 @@ jQuery(function($){
         var css = {}
 
         css.init = function(){
-            css.fit($("#click_colors"), $("#click_colors").children())
+            // css.fit($("#click_colors"), $("#click_colors").children())
             css.fit($("#tagline_box"), $("#tagline"))
             $(".book_description").flowtype({lineRatio:1})
         }
