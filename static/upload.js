@@ -18,7 +18,7 @@ var upload = (function(){
                 + "             <input id='upload_book_title' placeholder='title'><br>"
                 + "             <textarea id='upload_book_description' placeholder='description'></textarea><br>"
                 + "             <input id='local_book_upload' type='file'><br>"
-                + "             <label id='text_files_only'>NOTE. Bookses only supports plain text files at the moment</label><br>"
+                + "             <label id='text_files_only'>NOTE. Bookses only supports plain text files at the moment.</label><br>"
                 + "             <div class='clear_both'></div>"
                 + "             <button id='post_upload_button'>UPLOAD</button>"
                 + "             <button class='popup_upload_cancel'>cancel</button>"

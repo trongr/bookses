@@ -1,21 +1,5 @@
-/*  */
 body {
 
-}
-
-p {
-    margin: -0.5em 0 -0.5em 0;
-    padding-left: 10px;
-    cursor: pointer;
-}
-
-p:hover {
-    background-color: #eaeaea;
-}
-
-.p_margin {
-    border-right: 5px solid #0f0 !important;
-    background-color: #eaeaea;
 }
 
 .boks_p_link {
@@ -37,7 +21,7 @@ p:hover {
 
 .boks_book_info {
     background-color: #eee;
-    width: 70%;
+    width: 65%;
     margin: 20px 0 20px 0;
 }
 
@@ -124,25 +108,38 @@ p:hover {
 }
 
 .boks_content_left {
-    width: 70%;
+    width: 65%;
 }
 
 .boks_content_right {
     position: fixed;
     top: 0;
     bottom: 0;
-    left: 70%;
+    left: 65%;
     right: 0;
     overflow-y: scroll;
 }
 
 .boks_text {
+    font-size: 1.2em;
     width: 100%;
-    white-space: pre-wrap;
     background-color: #ddd;
-    /* font-family: helvetica, arial; */
     font-family: georgia, serif;
-    /* font-family: "libre baskerville", georgia, serif; */
+}
+
+p.paragraph:hover {
+    background-color: #eaeaea;
+}
+
+.p_margin {
+    border-right: 5px solid #0f0 !important;
+    background-color: #eaeaea;
+}
+
+p.paragraph {
+    margin: 2px;
+    padding: 10px;
+    cursor: pointer;
 }
 
 #boks_p_menu {
@@ -152,7 +149,7 @@ p:hover {
 #boks_p_menu button {
     font-size: 1.2em;
     padding: 5px;
-    margin: 5px;
+    margin: 5px 0 5px 0;
 }
 
 .boks_go_home {
@@ -162,6 +159,28 @@ p:hover {
 .boks_content_right > .boks_comments_box {
     background-color: #eee;
     font-size: 0.8em;
+}
+
+.edit_p_text {
+    min-height: 6em;
+    margin-top: 1.5em;
+    margin-left: 5px;
+    padding: 10px;
+    background-color: #fff;
+}
+
+.edit_p_info {
+    padding: 5px;
+    color: #999;
+    font-size: 0.8em;
+}
+
+.edit_p_post {
+    padding: 15px;
+    margin: 5px;
+    font-size: 1em;
+    border: 1px solid #000;
+    border-radius: 3px;
 }
 
 .boks_comment {

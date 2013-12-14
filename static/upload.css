@@ -20,6 +20,7 @@ div.popup_upload_cancel {
 #upload_box_left {
     display: table-cell;
     width: 60%;
+    min-width: 400px;
 }
 
 #upload_box input {

@@ -217,7 +217,7 @@ var bok = function(x){
                 + "             <a class='addthis_button_compact'></a><a class='addthis_counter addthis_bubble_style'></a>"
                 + "             </div>"
                 + "         </div>"
-                + "         <div class='boks_spinner'><i class='icon-spin icon-cog'></i><br><span>working<br>hard<br>. . .</span></div>"
+                + "         <div class='boks_spinner'><i class='icon-spin icon-cog'></i><br><span>working<br>real<br>hard<br>. . .</span></div>"
                 + "     </div>"
             return html
         }
@@ -249,10 +249,21 @@ var bok = function(x){
             return html
         }
 
+        // mark
         templates.p_menu = function(p){
             var html = "<div id='boks_p_menu' class='data' data-p='" + p + "'>"
-                + "         <button class='boks_reply'><i class='icon-pencil'></i> p" + p + "</button>"
+                + "         <button class='boks_edit_p'>Edit p" + p + "</button>"
+                + "         <button class='boks_reply'><i class='icon-pencil'></i></button>"
                 + "         <button class='boks_go_home'><i class='icon-home'></i></button>"
+                + "     </div>"
+            return html
+        }
+
+        templates.edit_p_box = function(p){
+            var html = "<div class='edit_p_box data' data-p='" + p + "'>"
+                + "         <div class='edit_p_text'></div>"
+                + "         <div class='edit_p_info'>Edit or format this paragraph. Everyone can vote on the version to show readers.</div>"
+                + "         <button class='edit_p_post'>POST</button>"
                 + "     </div>"
             return html
         }
@@ -348,10 +359,10 @@ var bok = function(x){
                     + "         <div class='draw_menu'>"
                     + "             <input class='draw_picture_input' accept='image/*' type='file'>"
                     + "             <button class='draw_picture_button'><i class='icon-picture'></i></button>"
+                    + "             <button class='draw_undo_button'><i class='icon-undo'></i></button>"
                     + "             <button class='draw_draw_button'><i class='fontello-fat-pencil'></i></button>"
-                    + "             <input class='draw_brush_size' type='range' min='1' max='50' value='5'>"
                     + "             <input class='draw_color' value='000000'>"
-                    + "             <button class='draw_undo_button'>undo</button>"
+                    + "             <input class='draw_brush_size' type='range' min='1' max='50' value='5'>"
                     + "         </div>"
                     + "         <div class='draw_canvas_box'></div>"
                     + "     </div>"
@@ -562,28 +573,34 @@ var bok = function(x){
                     })
                 },
                 function(done){
-                    api.get_text(book, function(er, text){
-                        done(er, text)
-                    })
+                    // todo see if this stops browser hanging on long books
+                    setTimeout(function(){
+                        api.get_text(book, function(er, text){
+                            done(er, text)
+                        })
+                    }, 0)
                 },
                 function(text, done){
                     done(null)
                     dom.box.append(templates.reader(text))
                         .off()
-                        .on("click", ".boks_text p", bindings.click_p)
+                        .on("click", ".boks_text p.paragraph", bindings.click_p)
                     dom.content_right = dom.box.find(".boks_content_right")
                         .off()
                         .on("click", ".boks_more_comments_button", bindings.click_more_comments)
                         .on("click", ".boks_comment_content", bindings.click_comment_reply)
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
                         .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
+                    // mark
+                        .on("click", ".boks_edit_p", bindings.click_edit_p)
+                        .on("click", ".boks_edit_p_post", bindings.click_edit_p_post)
                         .on("click", ".boks_reply", bindings.click_reply)
                         .on("click", ".boks_go_home", bindings.click_go_home)
                         .on("click", ".boks_p_link", bindings.click_p_link)
-                    $(".boks_text").flowtype({
-                        fontRatio: 40,
-                        lineRatio: 1.4,
-                    })
+                    // $(".boks_text").flowtype({
+                    //     fontRatio: 40,
+                    //     lineRatio: 1.4,
+                    // })
                     views.highlight_paragraphs(paragraphs)
                     $(".boks_spinner").html("").hide()
                 },
@@ -601,7 +618,7 @@ var bok = function(x){
             for (var i = 0; i < paragraphs.length; i++){
                 var p = paragraphs[i]._id
                 var pop = Math.min(paragraphs[i].count, k.page_size)
-                var paragraph = $("#" + o.bID + " .boks_text p").eq(p)
+                var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(p)
                 css.color_code_p_margin(paragraph, pop)
             }
         }
@@ -630,7 +647,7 @@ var bok = function(x){
             } else {
                 $(".boks_content_right .boks_comments").eq(0).prepend(elmt)
             }
-            $("#" + o.bID + " .boks_text p").eq(comment.p).addClass("p_margin")
+            $("#" + o.bID + " .boks_text p.paragraph").eq(comment.p).addClass("p_margin")
             return elmt
         }
 
@@ -802,9 +819,45 @@ var bok = function(x){
         }
 
         bindings.go_to_p = function(p){
-            var paragraph = $("#" + o.bID + " .boks_text p").eq(p)
+            var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(p)
             $("html, body").animate({scrollTop:paragraph.offset().top}, 100)
             paragraph.click()
+        }
+
+        // mark
+        bindings.click_edit_p = function(){
+            var p = $(this).closest(".data").attr("data-p")
+            var text = $("#" + o.bID + " .boks_text p.paragraph").eq(p).html()
+            dom.content_right.html(templates.p_menu(p))
+            dom.content_right.append(templates.edit_p_box(p))
+                .find(".edit_p_text").hallo({
+                    plugins: {
+                        halloformat: {
+                            formattings: {
+                                underline: true
+                            }
+                        },
+                        halloheadings: {},
+                    },
+                    toolbar: 'halloToolbarFixed'
+                })
+                .html(text)
+                .focus()
+                .trigger("halloactivated")
+            dom.content_right.append(templates.comments_box([], p, null))
+            // api.get_book_comments(o.bID, p, 0, function(er, comments){
+            //     if (comments && comments.length){
+            //         dom.content_right
+            //             .append(templates.comments_box(comments, p, comments[0].parent)) // parent should be null
+            //             .animate({scrollTop:0}, 100)
+            //     } else {
+            //         dom.content_right.append(templates.comments_box([], p, null))
+            //     }
+            // })
+        }
+
+        bindings.click_edit_p_post = function(){
+
         }
 
         return bindings

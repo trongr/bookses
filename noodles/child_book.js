@@ -32,7 +32,7 @@ var u = (function(){
             var prev_line = ""
             var trailing = /\s*$/;
             var i = 0
-            out.write("<p>\n")
+            out.write("<p class='paragraph'>\n")
             new lazy(fs.createReadStream(src)).lines.forEach(function(line){
                 if (line) var l = line.toString()
                 else l = "\n"
