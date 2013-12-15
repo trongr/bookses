@@ -1,4 +1,3 @@
-//
 var bok = function(x){
     var o = {
         bID: x.bID,
@@ -249,7 +248,6 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.p_menu = function(p){
             var html = "<div id='boks_p_menu' class='data' data-p='" + p + "'>"
                 + "         <button class='boks_edit_p'>Edit p" + p + "</button>"
@@ -259,8 +257,10 @@ var bok = function(x){
             return html
         }
 
+        // mark
         templates.edit_p_box = function(p){
             var html = "<div class='edit_p_box data' data-p='" + p + "'>"
+                + "         <div class='edit_p_toolbar'></div>"
                 + "         <div class='edit_p_text'></div>"
                 + "         <div class='edit_p_info'>Edit or format this paragraph. Everyone can vote on the version to show readers.</div>"
                 + "         <button class='edit_p_post'>POST</button>"
@@ -357,10 +357,11 @@ var bok = function(x){
             templates.draw_box = function(){
                 var html = "<div class='draw_box'>"
                     + "         <div class='draw_menu'>"
+                    + "             <button class='draw_draw_button'><i class='icon-file-alt'></i></button>"
                     + "             <input class='draw_picture_input' accept='image/*' type='file'>"
                     + "             <button class='draw_picture_button'><i class='icon-picture'></i></button>"
                     + "             <button class='draw_undo_button'><i class='icon-undo'></i></button>"
-                    + "             <button class='draw_draw_button'><i class='fontello-fat-pencil'></i></button>"
+                    + "             <button class='draw_pencil_tool'><i class='fontello-fat-pencil'></i></button>"
                     + "             <input class='draw_color' value='000000'>"
                     + "             <input class='draw_brush_size' type='range' min='1' max='50' value='5'>"
                     + "         </div>"
@@ -593,7 +594,7 @@ var bok = function(x){
                         .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
                     // mark
                         .on("click", ".boks_edit_p", bindings.click_edit_p)
-                        .on("click", ".boks_edit_p_post", bindings.click_edit_p_post)
+                        .on("click", ".edit_p_post", bindings.click_edit_p_post)
                         .on("click", ".boks_reply", bindings.click_reply)
                         .on("click", ".boks_go_home", bindings.click_go_home)
                         .on("click", ".boks_p_link", bindings.click_p_link)
@@ -834,16 +835,19 @@ var bok = function(x){
                     plugins: {
                         halloformat: {
                             formattings: {
-                                underline: true
+                                underline: true,
+                                strikethrough: true
                             }
                         },
                         halloheadings: {},
+                        hallojustify: {},
+                        hallolists: {},
                     },
-                    toolbar: 'halloToolbarFixed'
+                    toolbar: 'halloToolbarFixed',
+                    parentElement: $(".edit_p_toolbar")
                 })
                 .html(text)
-                .focus()
-                .trigger("halloactivated")
+                .focus().trigger("halloactivated")
             dom.content_right.append(templates.comments_box([], p, null))
             // api.get_book_comments(o.bID, p, 0, function(er, comments){
             //     if (comments && comments.length){
@@ -856,8 +860,12 @@ var bok = function(x){
             // })
         }
 
+        // mark
         bindings.click_edit_p_post = function(){
-
+            var parent = $(this).closest(".data")
+            var p = parent.attr("data-p")
+            var text = parent.find(".edit_p_text").html()
+            $("#" + o.bID + " .boks_text p.paragraph").eq(p).html(text)
         }
 
         return bindings

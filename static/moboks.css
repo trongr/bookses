@@ -161,12 +161,16 @@ p.paragraph {
     font-size: 0.8em;
 }
 
+.edit_p_toolbar {
+    padding: 5px;
+}
+
+.edit_p_toolbar .ui-button {
+    margin: 0 0 5px 0;
+}
+
 .edit_p_text {
-    min-height: 6em;
-    margin-top: 1.5em;
-    margin-left: 5px;
-    padding: 10px;
-    background-color: #fff;
+    min-height: 7em;
 }
 
 .edit_p_info {
@@ -263,7 +267,7 @@ p.paragraph {
 
 .boks_reply_img_box {
     display: table-cell;
-    width: 40%;
+    width: 50%;
     padding: 0 0 0 10px;
     vertical-align: top;
 }
@@ -277,14 +281,14 @@ img.boks_reply_img {
 
 .boks_reply_textarea_box {
     display: table-cell;
-    width: 60%;
+    width: 50%;
 }
 
 .boks_reply_textarea {
     font-family: helvetica, arial, sans;
     font-size: 1.2em;
     width: 100%;
-    height: 7em;
+    height: 14em;
     border: none;
     padding: 10px;
     resize: none;

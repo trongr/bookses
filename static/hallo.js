@@ -1050,16 +1050,16 @@
               throw new Error "SelectionNotSet"
             catch error
               widget.options.editable.restoreSelection(widget.lastSelection)
-      
+
             document.execCommand "insertImage", null, jQuery(this).attr('src')
             img = document.getSelection().anchorNode.firstChild
             jQuery(img).attr "alt", jQuery(".caption").value
-      
+
             triggerModified = () ->
               widget.element.trigger "hallomodified"
             window.setTimeout triggerModified, 100
             widget._closeDialog()
-      
+
             addImage = "##{widget.options.uuid}-#{widget.widgetName-addimage"
             @options.dialog.find(".halloimage-activeImage, addImage).click insertImage
       */
@@ -2404,9 +2404,10 @@
           _this.setPosition();
           return _this.toolbar.show();
         });
-        return this.element.on('hallodeactivated', function(event, data) {
-          return _this.toolbar.hide();
-        });
+        // mark
+        // return this.element.on('hallodeactivated', function(event, data) {
+        //   return _this.toolbar.hide();
+        // });
       }
     });
   })(jQuery);
