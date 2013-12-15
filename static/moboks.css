@@ -49,14 +49,13 @@ body {
 }
 
 .boks_book_para_graph_header {
-    font-size: 2em;
-    font-weight: bolder;
     margin: 10px;
 }
 
 .boks_book_para_graph_header span {
-    font-size: 0.5em;
-    font-weight: lighter;
+    font-size: 2em;
+    font-weight: bolder;
+    font-variant: small-caps;
 }
 
 .boks_book_para_graph {
@@ -118,6 +117,7 @@ body {
     left: 65%;
     right: 0;
     overflow-y: scroll;
+    border-left: 1px solid #bbb;
 }
 
 .boks_text {
@@ -144,12 +144,20 @@ p.paragraph {
 
 #boks_p_menu {
     background-color: #eee;
+    margin-left: 1px;
+    border-bottom: 1px solid #bbb;
 }
 
 #boks_p_menu button {
     font-size: 1.2em;
     padding: 5px;
     margin: 5px 0 5px 0;
+}
+
+#boks_p_menu .boks_p_link {
+    margin: 10px;
+    cursor: pointer;
+    font-weight: lighter;
 }
 
 .boks_go_home {
@@ -171,12 +179,17 @@ p.paragraph {
 
 .edit_p_text {
     min-height: 7em;
+    padding: 10px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
 
 .edit_p_info {
-    padding: 5px;
+    padding: 10px;
     color: #999;
     font-size: 0.8em;
+    text-align: right;
 }
 
 .edit_p_post {

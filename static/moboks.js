@@ -201,7 +201,7 @@ var bok = function(x){
                 // + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "         <div class='boks_book_description'>" + templates.replace_text_with_link(book.description) + "</div>"
                 + "         <div class='boks_book_para_graph_header'>"
-                + "             ParaGraph. <span>Click on the graph to skip to the good parts.</span>"
+                + "             <span>ParaGraph.</span> Click on the graph to skip to the good parts."
                 + "         </div>"
                 + "         <div class='boks_book_para_graph'></div><div class='clear_both'></div>"
                 + "         <div class='boks_social'>"
@@ -250,7 +250,8 @@ var bok = function(x){
 
         templates.p_menu = function(p){
             var html = "<div id='boks_p_menu' class='data' data-p='" + p + "'>"
-                + "         <button class='boks_edit_p'>Edit p" + p + "</button>"
+                + "         <span class='boks_p_link' data-p-link='" + p + "'>p" + p + "</span>"
+                + "         <button class='boks_edit_p'><i class='icon-font'></i></button>"
                 + "         <button class='boks_reply'><i class='icon-pencil'></i></button>"
                 + "         <button class='boks_go_home'><i class='icon-home'></i></button>"
                 + "     </div>"
@@ -260,9 +261,9 @@ var bok = function(x){
         // mark
         templates.edit_p_box = function(p){
             var html = "<div class='edit_p_box data' data-p='" + p + "'>"
+                + "         <div class='edit_p_info'>Edit or format this paragraph. Everyone can vote on the best version to display.</div>"
                 + "         <div class='edit_p_toolbar'></div>"
                 + "         <div class='edit_p_text'></div>"
-                + "         <div class='edit_p_info'>Edit or format this paragraph. Everyone can vote on the version to show readers.</div>"
                 + "         <button class='edit_p_post'>POST</button>"
                 + "     </div>"
             return html
