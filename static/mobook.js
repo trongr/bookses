@@ -45,7 +45,7 @@ jQuery(function($){
         }
 
         css.fit = function(parent, child){
-            var parent_width = parent.width() - 100
+            var parent_width = parent.width() - 50
             var size = parseInt(child.css("font-size"))
             while (child.width() < parent_width){
                 size++

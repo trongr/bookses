@@ -100,13 +100,17 @@ button:hover {
     text-align: center;
     padding: 20px 0 20px 0;
     width: 65%;
+    border-bottom: 1px solid #999;
 }
 
 #tagline {
     font-size: 12pt;
     font-weight: bolder;
     color: #666;
-    padding: 20px;
+}
+
+#tagline:hover {
+    color: #70ACFF;
 }
 
 #error {

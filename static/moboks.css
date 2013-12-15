@@ -50,6 +50,7 @@ body {
 
 .boks_book_para_graph_header {
     margin: 10px;
+    border-bottom: 1px solid #bbb;
 }
 
 .boks_book_para_graph_header span {
@@ -82,8 +83,19 @@ body {
     background-color: #0f0;
 }
 
+.boks_social_share_me {
+    margin: 10px;
+    border-bottom: 1px solid #bbb;
+}
+
+.boks_social_share_me span {
+    font-size: 2em;
+    font-weight: bolder;
+    font-variant: small-caps;
+}
+
 .boks_social {
-    margin: 20px;
+    margin: 20px 0 20px 40px;
 }
 
 .boks_spinner {
@@ -158,6 +170,16 @@ p.paragraph {
     margin: 10px;
     cursor: pointer;
     font-weight: lighter;
+    color: #000;
+}
+
+#boks_p_menu .boks_p_link:hover {
+    color: #0f0;
+}
+
+#boks_p_menu .boks_edit_p {
+    border-bottom: 6px solid #70ACFF;
+    padding: 5px 0 0 0;
 }
 
 .boks_go_home {
@@ -183,16 +205,19 @@ p.paragraph {
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
+    background-color: #ddd;
 }
 
 .edit_p_info {
     padding: 10px;
-    color: #999;
+    color: #fff;
+    background-color: #000;
     font-size: 0.8em;
     text-align: right;
 }
 
 .edit_p_post {
+    float: right;
     padding: 15px;
     margin: 5px;
     font-size: 1em;
@@ -227,7 +252,7 @@ p.paragraph {
 }
 
 .boks_comment_text {
-    padding: 10px 10px 0 10px;
+    padding: 15px 15px 5px 15px;
     white-space: pre-wrap;
 }
 
@@ -305,7 +330,15 @@ img.boks_reply_img {
     border: none;
     padding: 10px;
     resize: none;
-    background-color: #fff;
+    background-color: #eee;
+}
+
+.comment_or_pic {
+    margin-top: 5px;
+    color: #fff;
+    background-color: #000;
+    padding: 10px;
+    text-align: right;
 }
 
 .boks_reply_menu {
@@ -343,8 +376,13 @@ div.popup_cancel {
     background-color: #000;
     color: #fff;
     padding: 20px;
-    bottom: 0;
-    position: absolute;
+    text-align: right;
+}
+
+#click_to_reveal span {
+    font-size: 1.5em;
+    border-bottom: 2px solid #fff;
+    line-height: 1.5em;
 }
 
 .draw_box {

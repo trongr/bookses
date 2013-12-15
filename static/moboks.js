@@ -74,7 +74,7 @@ var bok = function(x){
         }
 
         css.fit = function(parent, child){
-            var parent_width = parent.width() - 100
+            var parent_width = parent.width() - 50
             var size = parseInt(child.css("font-size"))
             while (child.width() < parent_width){
                 size++
@@ -201,9 +201,12 @@ var bok = function(x){
                 // + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "         <div class='boks_book_description'>" + templates.replace_text_with_link(book.description) + "</div>"
                 + "         <div class='boks_book_para_graph_header'>"
-                + "             <span>ParaGraph.</span> Click on the graph to skip to the good parts."
+                + "             <span>ParaGraph.</span> Click on the graph to skip to the good parts"
                 + "         </div>"
                 + "         <div class='boks_book_para_graph'></div><div class='clear_both'></div>"
+                + "         <div class='boks_social_share_me'>"
+                + "             <span>Like this book?</span> Spread the word!"
+                + "         </div>"
                 + "         <div class='boks_social'>"
                 + "             <div class='addthis_toolbox addthis_default_style addthis_32x32_style'>"
                 + "             <a class='addthis_button_facebook'></a>"
@@ -222,7 +225,7 @@ var bok = function(x){
         }
 
         templates.para_graph = function(paragraphs){
-            if (paragraphs.length == 0) return ". . . Aw this book has no comment. Be the first!"
+            if (paragraphs.length == 0) return ". . . Aw this book has no comment. <a href='#click_to_reveal'>Be the first!</a>"
             var max = 0
             for (var j = 0; j < paragraphs.length; j++){
                 if (paragraphs[j].count > max) max = paragraphs[j].count
@@ -240,9 +243,10 @@ var bok = function(x){
             var html = "<div id='" + o.bID + "' class='boks_reader'>"
                 + "         <div class='boks_content'>"
                 + "             <div class='boks_content_left'>"
+                + "                 <div id='click_to_reveal'><span>QUICK START GUIDE</span><br>Click on the paragraphs to see and make comments. If you're on the phone it looks better in landscape.</div>"
                 + "                 <div class='boks_text'>" + text + "</div>"
                 + "             </div>"
-                + "             <div class='boks_content_right'><div id='click_to_reveal'>Click on the paragraphs to see and make comments. Best viewed in landscape.</div></div>"
+                + "             <div class='boks_content_right'></div>"
                 + "         </div>"
                 + "     </div>"
             return html
@@ -265,6 +269,7 @@ var bok = function(x){
                 + "         <div class='edit_p_toolbar'></div>"
                 + "         <div class='edit_p_text'></div>"
                 + "         <button class='edit_p_post'>POST</button>"
+                + "         <div class='clear_both'></div>"
                 + "     </div>"
             return html
         }
@@ -280,7 +285,8 @@ var bok = function(x){
                 + "                 <button class='boks_reply_post'>POST</button>"
                 + "                 <div class='clear_both'></div>"
                 + "             </div>"
-                + "             <textarea class='boks_reply_textarea' placeholder='Comment or add a picture. Type p394 to create a link to paragraph 394.'></textarea>"
+                + "             <textarea class='boks_reply_textarea'></textarea>"
+                + "             <div class='comment_or_pic'>Comment or add a picture. Type p394 to create a link to paragraph 394.⎯⎯⎯⎯⎯If you're on desktop try the drawing pad on the right.</div>"
                 + "         </div>"
                 + "         <div class='boks_reply_img_box'></div>"
                 + "     </div>"
@@ -565,7 +571,6 @@ var bok = function(x){
                     done(null)
                     dom.box.html(templates.book_info(book))
                     css.fit($(".boks_book_info"), $(".boks_book_title"))
-                    $.getScript("//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-529c141a295ddb7e")
                 },
                 function(done){
                     api.get_paragraphs(function(er, _paragraphs){
@@ -605,6 +610,8 @@ var bok = function(x){
                     // })
                     views.highlight_paragraphs(paragraphs)
                     $(".boks_spinner").html("").hide()
+                    // addthis.init() // don't need this cause script already loaded
+                    addthis.toolbox(".addthis_toolbox")
                 },
             ], function(er, re){
                 done(er)
