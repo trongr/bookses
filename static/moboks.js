@@ -129,6 +129,17 @@ var bok = function(x){
             })
         }
 
+        api.get_comment = function(id, done){
+            $.ajax({
+                url: "/comment/" + id,
+                type: "get",
+                success: function(re){
+                    if (re.comment) done(null, re.comment)
+                    else done({error:"api getting comment",re:re})
+                }
+            })
+        }
+
         api.get_comment_comments = function(id, page, done){
             $.ajax({
                 url: "/comment/" + id + "/comments",
@@ -263,7 +274,6 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.edit_p_box = function(p){
             var html = "<div class='edit_p_box data' data-p='" + p + "'>"
                 + "         <div class='edit_p_info'>Edit or format this paragraph. Everyone can vote on the best version to display.</div>"
@@ -550,6 +560,64 @@ var bok = function(x){
         return draw
     }())
 
+    var edits = (function(){
+        var edits = {}
+
+        edits.originals = {} // stores original paragraphs
+
+        edits.get_edits = function(done){
+            $.ajax({
+                url: "/book/" + o.bID + "/edits",
+                type: "get",
+                success: function(re){
+                    if (re.edits) done(null, re.edits)
+                    else done(re)
+                }
+            })
+        }
+
+        edits.get_edit = function(id, done){
+            api.get_comment(id, function(er, entry){
+                done(er, entry)
+            })
+        }
+
+        edits.render_edits = function(entries, done){
+            async.eachSeries(entries, function(entry, done){
+                var p = entry._id
+                var id = entry.edit
+                var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(p)
+                edits.originals[p] = paragraph.html()
+                edits.get_edit(id, function(er, entry){
+                    if (er) console.log(JSON.stringify(er, 0, 2))
+                    else paragraph.html(entry.comment)
+                    done(null)
+                })
+            }, function(er){
+                done(er)
+            })
+        }
+
+        edits.init = function(){
+            async.waterfall([
+                function(done){
+                    edits.get_edits(function(er, entries){
+                        done(er, entries)
+                    })
+                },
+                function(entries, done){
+                    edits.render_edits(entries, function(er){
+                        done(er)
+                    })
+                },
+            ], function(er, re){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+            })
+        }
+
+        return edits
+    }())
+
     var views = (function(){
         var views = {}
 
@@ -599,12 +667,14 @@ var bok = function(x){
                         .on("click", ".boks_comment_content", bindings.click_comment_reply)
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
                         .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
-                    // mark
                         .on("click", ".boks_edit_p", bindings.click_edit_p)
                         .on("click", ".edit_p_post", bindings.click_edit_p_post)
                         .on("click", ".boks_reply", bindings.click_reply)
                         .on("click", ".boks_go_home", bindings.click_go_home)
                         .on("click", ".boks_p_link", bindings.click_p_link)
+                },
+                function(done){
+                    done(null)
                     // $(".boks_text").flowtype({
                     //     fontRatio: 40,
                     //     lineRatio: 1.4,
@@ -614,6 +684,10 @@ var bok = function(x){
                     // addthis.init() // don't need this cause script already loaded
                     addthis.toolbox(".addthis_toolbox")
                 },
+                function(done){
+                    done(null)
+                    edits.init()
+                }
             ], function(er, re){
                 done(er)
             })

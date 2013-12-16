@@ -23,7 +23,7 @@ var validate = module.exports = (function(){
 
     validate.text_length = function(text, done){
         if (!text || text.length == 0) done({error:"empty text"})
-        else if (text.length > 1000) done({error:"text longer than 1000 characters"})
+        else if (text.length > 10000) done({error:"text longer than 10000 characters"})
         else done(null)
     }
 

@@ -41,6 +41,12 @@ db.open(function(er, db) {
             if (er) throw er
         })
     })
+    db.collection(k.tables.comments, {safe:true}, function(er, docs){
+        if (er) throw er
+        else docs.ensureIndex({p:1, parent:1}, function(er, re){
+            if (er) throw er
+        })
+    })
 })
 
 var DB = (function(){
@@ -649,6 +655,67 @@ var books = module.exports = (function(){
                 console.log(JSON.stringify({error:"books get paragraphs",id:req.params.id,er:er}, 0, 2))
                 res.send({error:"get book paragraphs"})
             } else res.send({paragraphs:re})
+        })
+    }
+
+    books.get_book_edits_validate = function(req, res, next){
+        async.parallel([
+            function(done){
+                validate.id(req.params.id, function(er){
+                    done(er)
+                })
+            },
+        ], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_book_edits_validate",er:er}, 0, 2))
+                res.send({error:"get book edits",er:er})
+            } else next(null)
+        })
+    }
+
+    books.get_book_edits = function(req, res){
+        DB.aggregate(k.tables.comments, [{
+            $match: {
+                book: req.params.id,
+                parent: null,
+                edit: true
+            }
+        },{
+            $sort: {modified:-1}
+        },{
+            $group: {
+                _id: "$p",
+                edit: {$first:"$_id"},
+            }
+        },{
+            $sort: {_id:1}
+        }], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"books get book edits",id:req.params.id,er:er}, 0, 2))
+                res.send({error:"get book edits"})
+            } else res.send({edits:re})
+        })
+    }
+
+    books.get_comment_validate = function(req, res, next){
+        validate.id(req.params.id, function(er){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_comment_validate",er:er}, 0, 2))
+                res.send({error:"get comment validate",er:er})
+            } else next(null)
+        })
+    }
+
+    books.get_comment = function(req, res){
+        DB.get_entry_by_id(k.tables.comments, req.params.id, function(er, comment){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_comment",id:req.params.id,er:er}, 0, 2))
+                res.send({error:"get comment by id"})
+            } else if (comment){
+                res.send({comment:comment})
+            } else {
+                res.send({error:"get comment by id",info:"no such comment"})
+            }
         })
     }
 
