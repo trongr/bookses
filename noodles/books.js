@@ -644,7 +644,8 @@ var books = module.exports = (function(){
         DB.aggregate(k.tables.comments, [{
             $match: {
                 book: req.params.id,
-                parent: null
+                parent: null,
+                edit: false
             }
         },{
             $group: {_id:"$p", count:{$sum:"$pop"}}

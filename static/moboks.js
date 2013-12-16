@@ -68,7 +68,6 @@ var bok = function(x){
 
         css.color_code_p_margin = function(p, pop){
             p.css({
-                "background-color": "#eaeaea",
                 "border-right": "5px solid #" + color.code_point_range(css.k.cold, css.k.hot, pop, k.page_size)
             })
         }
@@ -280,7 +279,11 @@ var bok = function(x){
                 + "         <div class='edit_p_toolbar'></div>"
                 + "         <div class='edit_p_text'></div>"
                 + "         <button class='edit_p_post'>POST</button>"
+                + "         <button class='edit_p_cancel'>cancel</button>"
                 + "         <div class='clear_both'></div>"
+                + "         <div class='edit_p_original_header'>Original</div>"
+                + "         <div class='edit_p_original'></div>"
+                + "         <div class='edit_p_versions_header'>Edits</div>"
                 + "     </div>"
             return html
         }
@@ -334,8 +337,8 @@ var bok = function(x){
             var img = (comment.img ? "<div class='boks_comment_img_box'><img class='boks_comment_img' src='" + comment.img + "'></div>" : "")
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
-            var has_replies = (comment.replies > 0 ? "boks_green_underline" : "")
-            var has_votes = (comment.votes > 1 ? "boks_red_underline" : "")
+            var has_replies = (comment.replies > 0 ? "has_comments" : "")
+            var has_votes = (comment.votes > 1 ? "has_likes" : "")
             var html = "<div class='boks_comment data' " + dataid + " " + datap + ">"
                 + "         <div class='boks_comment_text_box'>"
                 + "             <div class='boks_comment_content'>"
@@ -346,8 +349,8 @@ var bok = function(x){
                 + "             <div class='boks_comment_created'>" + Date.create(comment.created).long() + "</div>"
                 // + "             <div class='boks_comment_created'>" + moment(comment.created).format(k.date_format_alt) + "</div>"
                 + "             <div class='boks_comment_menu'>"
-                + "                 <button class='boks_reply'><i class='icon-pencil'></i></button>"
-                + "                 <button class='boks_comment_reply " + has_replies + "'><i class='icon-comments'></i>" + comment.replies + "</button>"
+                + "                 <button class='boks_reply boks_green_underline'><i class='icon-pencil'></i></button>"
+                + "                 <button class='boks_comment_reply " + has_replies + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
                 + "                 <button class='boks_comment_thumbs_up " + has_votes + "'><i class='icon-thumbs-up-alt'></i><span class='boks_comment_votes'>" + comment.votes + "</span></button>"
                 + "                 <button class='boks_comment_flag'><i class='icon-flag'></i></button>"
                 + "             </div>"
@@ -565,6 +568,10 @@ var bok = function(x){
 
         edits.originals = {} // stores original paragraphs
 
+        edits.get_original = function(p){
+            return edits.originals[p]
+        }
+
         edits.get_edits = function(done){
             $.ajax({
                 url: "/book/" + o.bID + "/edits",
@@ -590,7 +597,7 @@ var bok = function(x){
                 edits.originals[p] = paragraph.html()
                 edits.get_edit(id, function(er, entry){
                     if (er) console.log(JSON.stringify(er, 0, 2))
-                    else paragraph.html(entry.comment)
+                    else paragraph.html(entry.comment).addClass("has_edits")
                     done(null)
                 })
             }, function(er){
@@ -668,6 +675,7 @@ var bok = function(x){
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
                         .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
                         .on("click", ".boks_edit_p", bindings.click_edit_p)
+                        .on("click", ".edit_p_cancel", bindings.click_edit_p_cancel)
                         .on("click", ".edit_p_post", bindings.click_edit_p_post)
                         .on("click", ".boks_reply", bindings.click_reply)
                         .on("click", ".boks_go_home", bindings.click_go_home)
@@ -915,36 +923,37 @@ var bok = function(x){
                 if (!loggedin) return users.show_login_box($("#popup"))
                 var p = that.closest(".data").attr("data-p")
                 var text = $("#" + o.bID + " .boks_text p.paragraph").eq(p).html()
-                dom.content_right.html(templates.p_menu(p))
-                dom.content_right.append(templates.edit_p_box(p))
-                    .find(".edit_p_text").hallo({
-                        plugins: {
-                            halloformat: {
-                                formattings: {
-                                    underline: true,
-                                    strikethrough: true
-                                }
-                            },
-                            halloheadings: {},
-                            hallojustify: {},
-                            hallolists: {},
+                var box = dom.content_right.html(templates.p_menu(p))
+                box.append(templates.edit_p_box(p))
+                box.find(".edit_p_text").hallo({
+                    plugins: {
+                        halloformat: {
+                            formattings: {
+                                underline: true,
+                                strikethrough: true
+                            }
                         },
-                        toolbar: 'halloToolbarFixed',
-                        parentElement: $(".edit_p_toolbar")
-                    })
-                    .html(text)
-                    .focus().trigger("halloactivated")
-                dom.content_right.append(templates.comments_box([], p, null))
+                        halloheadings: {},
+                        hallojustify: {},
+                        hallolists: {},
+                    },
+                    toolbar: 'halloToolbarFixed',
+                    parentElement: $(".edit_p_toolbar")
+                }).html(text).focus().trigger("halloactivated")
+                box.find(".edit_p_original").html(edits.get_original(p) || text)
+                box.append(templates.comments_box([], p, null))
                 api.get_book_comments(o.bID, p, true, 0, function(er, comments){
                     if (comments && comments.length){
-                        dom.content_right
-                            .append(templates.comments_box(comments, p, comments[0].parent)) // parent should be null
-                            .animate({scrollTop:0}, 100)
+                        box.append(templates.comments_box(comments, p, comments[0].parent)).animate({scrollTop:0}, 100)
                     } else {
-                        dom.content_right.append(templates.comments_box([], p, null))
+                        box.append(templates.comments_box([], p, null))
                     }
                 })
             })
+        }
+
+        bindings.click_edit_p_cancel = function(){
+            $(this).closest(".data").remove()
         }
 
         // mark
