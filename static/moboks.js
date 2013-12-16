@@ -916,7 +916,6 @@ var bok = function(x){
             paragraph.click()
         }
 
-        // mark
         bindings.click_edit_p = function(){
             var that = $(this)
             users.is_logged_in(function(er, loggedin){
@@ -956,7 +955,6 @@ var bok = function(x){
             $(this).closest(".data").remove()
         }
 
-        // mark
         bindings.click_edit_p_post = function(){
             var parent = $(this).closest(".data")
             var p = parent.attr("data-p")
