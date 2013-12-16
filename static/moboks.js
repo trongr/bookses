@@ -112,13 +112,14 @@ var bok = function(x){
             })
         }
 
-        api.get_book_comments = function(bID, p, page, done){
+        api.get_book_comments = function(bID, p, edit, page, done){
             $.ajax({
                 url: "/book/" + bID + "/comments",
                 type: "get",
                 data: {
                     p: p,
-                    page: page
+                    edit: edit,
+                    page: page,
                 },
                 success: function(re){
                     if (re.comments){
@@ -670,7 +671,7 @@ var bok = function(x){
             var p = $(this).index()
             dom.content_right.html(templates.p_menu(p))
             $("#boks_p_menu > .boks_reply").fadeOut(200).fadeIn(200)
-            api.get_book_comments(o.bID, p, 0, function(er, comments){
+            api.get_book_comments(o.bID, p, false, 0, function(er, comments){
                 if (comments && comments.length){
                     dom.content_right
                         .append(templates.comments_box(comments, p, comments[0].parent)) // parent should be null
@@ -693,7 +694,7 @@ var bok = function(x){
                     if (parentid) api.get_comment_comments(parentid, page, function(er, comments){
                         done(er, comments)
                     })
-                    else api.get_book_comments(o.bID, p, page, function(er, comments){
+                    else api.get_book_comments(o.bID, p, false, page, function(er, comments){
                         done(er, comments)
                     })
                 },
@@ -835,37 +836,41 @@ var bok = function(x){
 
         // mark
         bindings.click_edit_p = function(){
-            var p = $(this).closest(".data").attr("data-p")
-            var text = $("#" + o.bID + " .boks_text p.paragraph").eq(p).html()
-            dom.content_right.html(templates.p_menu(p))
-            dom.content_right.append(templates.edit_p_box(p))
-                .find(".edit_p_text").hallo({
-                    plugins: {
-                        halloformat: {
-                            formattings: {
-                                underline: true,
-                                strikethrough: true
-                            }
+            var that = $(this)
+            users.is_logged_in(function(er, loggedin){
+                if (!loggedin) return users.show_login_box($("#popup"))
+                var p = that.closest(".data").attr("data-p")
+                var text = $("#" + o.bID + " .boks_text p.paragraph").eq(p).html()
+                dom.content_right.html(templates.p_menu(p))
+                dom.content_right.append(templates.edit_p_box(p))
+                    .find(".edit_p_text").hallo({
+                        plugins: {
+                            halloformat: {
+                                formattings: {
+                                    underline: true,
+                                    strikethrough: true
+                                }
+                            },
+                            halloheadings: {},
+                            hallojustify: {},
+                            hallolists: {},
                         },
-                        halloheadings: {},
-                        hallojustify: {},
-                        hallolists: {},
-                    },
-                    toolbar: 'halloToolbarFixed',
-                    parentElement: $(".edit_p_toolbar")
+                        toolbar: 'halloToolbarFixed',
+                        parentElement: $(".edit_p_toolbar")
+                    })
+                    .html(text)
+                    .focus().trigger("halloactivated")
+                dom.content_right.append(templates.comments_box([], p, null))
+                api.get_book_comments(o.bID, p, true, 0, function(er, comments){
+                    if (comments && comments.length){
+                        dom.content_right
+                            .append(templates.comments_box(comments, p, comments[0].parent)) // parent should be null
+                            .animate({scrollTop:0}, 100)
+                    } else {
+                        dom.content_right.append(templates.comments_box([], p, null))
+                    }
                 })
-                .html(text)
-                .focus().trigger("halloactivated")
-            dom.content_right.append(templates.comments_box([], p, null))
-            // api.get_book_comments(o.bID, p, 0, function(er, comments){
-            //     if (comments && comments.length){
-            //         dom.content_right
-            //             .append(templates.comments_box(comments, p, comments[0].parent)) // parent should be null
-            //             .animate({scrollTop:0}, 100)
-            //     } else {
-            //         dom.content_right.append(templates.comments_box([], p, null))
-            //     }
-            // })
+            })
         }
 
         // mark
@@ -873,7 +878,45 @@ var bok = function(x){
             var parent = $(this).closest(".data")
             var p = parent.attr("data-p")
             var text = parent.find(".edit_p_text").html()
+            if (text.trim() == "") text = "<br>" // just being careful
             $("#" + o.bID + " .boks_text p.paragraph").eq(p).html(text)
+
+            if (!FormData) return alert("can't edit paragraph: please update your browser")
+            var data = new FormData()
+            data.append("book", o.bID)
+            data.append("p", p)
+            data.append("edit", true)
+            data.append("comment", text)
+
+            var fake_comment = {
+                book: o.bID,
+                p: p,
+                parent: null,
+                username: "you",
+                comment: text,
+                created: new Date(),
+                votes: 1,
+                replies: 0,
+                pop: 1
+            }
+            var new_comment = views.load_new_comment(fake_comment)
+            parent.remove()
+
+            $.ajax({
+                url: "/comment",
+                type: "post",
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function(re){
+                    if (re.comment){
+                        new_comment.attr("data-id", re.comment._id)
+                        new_comment.find(".boks_comment_username").eq(0).html(re.comment.username)
+                    } else if (re.loggedin == false) alert("you have to log in")
+                    else alert(JSON.stringify({error:"edit paragraph",er:re}, 0, 2))
+                }
+            })
+
         }
 
         return bindings

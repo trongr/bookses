@@ -27,6 +27,12 @@ var validate = module.exports = (function(){
         else done(null)
     }
 
+    validate.text_length_zero_ok = function(text, done){
+        if (!text) done({error:"null text"})
+        else if (text.length > 1000) done({error:"text longer than 1000 characters"})
+        else done(null)
+    }
+
     validate.integer = function(d, done){
         if (/^[0-9]+$/.test(d)) done(null)
         else done({error:"not a positive integer"})

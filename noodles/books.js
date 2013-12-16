@@ -391,6 +391,7 @@ var books = module.exports = (function(){
                         comment: req.body.comment,
                         book: req.body.book,
                         p: parseInt(req.body.p),
+                        edit: (req.body.edit == "true"),
                         parent: req.body.parent,
                         created: new Date(),
                         modified: new Date(),
@@ -465,7 +466,8 @@ var books = module.exports = (function(){
         var query = {
             book: req.params.id,
             p: req.query.p,
-            parent: null
+            parent: null,
+            edit: (req.query.edit == "true")
         }
         var aux = {
             sort: [["modified","desc"]],
