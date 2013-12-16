@@ -38,7 +38,7 @@ var u = (function(){
                 else l = "\n"
                 if (l.length == 1){ // current line blank
                 } else if (prev_line.length == 1){ // new paragraph
-                    out.write("</p>\n<p>\n")
+                    out.write("</p>\n<p class='paragraph'>\n")
                     out.write(l.replace(trailing, "\n"))
                 } else { // inside paragraph
                     out.write(l.replace(trailing, "\n"))
