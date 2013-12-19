@@ -269,6 +269,7 @@ var bok = function(x){
                 + "         <button class='boks_edit_p'><i class='icon-font'></i></button>"
                 + "         <button class='boks_reply'><i class='icon-pencil'></i></button>"
                 + "         <button class='boks_go_home'><i class='icon-home'></i></button>"
+                + "         <div class='boks_reply_box_box'></div>"
                 + "     </div>"
             return html
         }
@@ -292,17 +293,14 @@ var bok = function(x){
             var datap = (p ? "data-p='" + p + "'" : "")
             var dataparent = (parentid ? "data-parent='" + parentid + "'" : "")
             var html = "<div class='boks_reply_box data' " + datap + " " + dataparent + ">"
-                + "         <div class='boks_reply_cancel popup_cancel'></div>"
-                + "         <div class='boks_reply_textarea_box'>"
-                + "             <button class='boks_reply_cancel'>cancel</button>"
-                + "             <div class='boks_reply_menu'>"
-                + "                 <button class='boks_reply_post'>POST</button>"
-                + "                 <div class='clear_both'></div>"
-                + "             </div>"
-                + "             <textarea class='boks_reply_textarea'></textarea>"
-                + "             <div class='comment_or_pic'>Comment or add a picture. Type p394 to create a link to paragraph 394.-----If you're on desktop try the drawing pad on the right.</div>"
-                + "         </div>"
-                + "         <div class='boks_reply_img_box'></div>"
+                + "         <div class='boks_reply_info'>Comment or add a picture. Type p394 to create a link to paragraph 394.</div>"
+                + "         <div class='boks_reply_toolbar'></div>"
+                + "         <div class='boks_reply_text'></div>"
+                + "         <div class='boks_reply_img'><img></div>"
+                + "         <button class='boks_reply_post'>POST</button>"
+                + "         <button class='boks_reply_cancel'>cancel</button>"
+                + "         <button class='boks_reply_img_button'><i class='icon-picture'></i></button>"
+                + "         <div class='clear_both'></div>"
                 + "     </div>"
             return html
         }
@@ -356,6 +354,7 @@ var bok = function(x){
                 + "             </div>"
                 + "             <div class='clear_both'></div>"
                 + "         </div>"
+                + "         <div class='boks_reply_box_box'></div>"
                 + "         <div class='boks_comments_box_box'></div>"
                 + "     </div>"
             return html
@@ -377,6 +376,7 @@ var bok = function(x){
 
             templates.draw_box = function(){
                 var html = "<div class='draw_box'>"
+                    + "         <button class='draw_cancel'><i class='icon-remove'></i></button>"
                     + "         <div class='draw_menu'>"
                     + "             <button class='draw_draw_button'><i class='icon-file-alt'></i></button>"
                     + "             <input class='draw_picture_input' accept='image/*' type='file'>"
@@ -406,9 +406,13 @@ var bok = function(x){
             }
 
             bindings.change_img_input = function(e){
+                bindings.load_img(URL.createObjectURL(e.target.files[0]))
+            }
+
+            bindings.load_img = function(url){
                 draw.canvas_init()
                 var img = new Image()
-                img.src = URL.createObjectURL(e.target.files[0])
+                img.src = url
                 img.onload = function(){
                     var img_fatness = img.width / img.height
                     var canvas_fatness = draw.k.cntxt.canvas.width / draw.k.cntxt.canvas.height
@@ -424,7 +428,6 @@ var bok = function(x){
                     }
                     draw.canvas_init(w, h) // recreate canvas with new size cause you don't want the white padding
                     draw.k.cntxt.drawImage(img, 0, 0, img.width, img.height, 0, 0, w, h)
-                    // draw.k.cntxt.drawImage(img, 0, 0, img.width, img.height, x, y, w, h)
                 }
             }
 
@@ -432,21 +435,35 @@ var bok = function(x){
                 draw.undo()
             }
 
+            bindings.click_cancel = function(){
+                $("#popup").hide()
+                draw.k.preview.attr("src", URL.createObjectURL(draw.get_file())).show()
+            }
+
             return bindings
         }())
 
-        draw.init = function(box){
-            box.html(draw.templates.draw_box())
+        draw.init = function(img){
+            $("#popup").html(draw.templates.draw_box()).show()
                 .off()
+                .on("click", ".draw_cancel", draw.bindings.click_cancel)
                 .on("click", ".draw_draw_button", draw.bindings.click_draw_button)
                 .on("click", ".draw_undo_button", draw.bindings.click_draw_undo_button)
                 .on("click", ".draw_picture_button", draw.bindings.click_choose_img)
                 .on("change", ".draw_picture_input", draw.bindings.change_img_input)
             draw.clear()
+            draw.k.preview = img
+            if (img.attr("src")) draw.bindings.load_img(img.attr("src"))
+            else draw.draw()
+        }
+
+        draw.draw = function(){
+            draw.bindings.click_draw_button()
         }
 
         draw.clear = function(){
             draw.k = {
+                preview: null,
                 canvas: null,
                 cntxt: null,
                 top: null,
@@ -656,7 +673,6 @@ var bok = function(x){
                     })
                 },
                 function(done){
-                    // todo see if this stops browser hanging on long books
                     setTimeout(function(){
                         api.get_text(book, function(er, text){
                             done(er, text)
@@ -680,16 +696,14 @@ var bok = function(x){
                         .on("click", ".boks_reply", bindings.click_reply)
                         .on("click", ".boks_go_home", bindings.click_go_home)
                         .on("click", ".boks_p_link", bindings.click_p_link)
+                        .on("click", ".boks_reply_post", bindings.click_reply_post)
+                        .on("click", ".boks_reply_cancel", bindings.click_reply_cancel)
+                        .on("click", ".boks_reply_img_button", bindings.click_reply_img)
                 },
                 function(done){
                     done(null)
-                    // $(".boks_text").flowtype({
-                    //     fontRatio: 40,
-                    //     lineRatio: 1.4,
-                    // })
                     views.highlight_paragraphs(paragraphs)
                     $(".boks_spinner").html("").hide()
-                    // addthis.init() // don't need this cause script already loaded
                     addthis.toolbox(".addthis_toolbox")
                 },
                 function(done){
@@ -718,7 +732,7 @@ var bok = function(x){
         views.load_comments = function(parentid, p, box, done){
             async.waterfall([
                 function(done){
-                    api.get_comment_comments(parentid, 0, function(er, comments){ // todo. replace 0 with page
+                    api.get_comment_comments(parentid, 0, function(er, comments){
                         done(er, comments)
                     })
                 },
@@ -749,7 +763,8 @@ var bok = function(x){
         var bindings = {}
 
         bindings.click_p = function(){
-            var p = $(this).index()
+            var that = $(this)
+            var p = that.index()
             dom.content_right.html(templates.p_menu(p))
             $("#boks_p_menu > .boks_reply").fadeOut(200).fadeIn(200)
             api.get_book_comments(o.bID, p, false, 0, function(er, comments){
@@ -760,6 +775,7 @@ var bok = function(x){
                 } else {
                     dom.content_right.append(templates.comments_box([], p, null))
                 }
+                $("html, body").animate({scrollTop:that.offset().top}, 100)
             })
         }
 
@@ -823,18 +839,31 @@ var bok = function(x){
         }
 
         bindings.click_reply = function(){
+            draw.clear()
             var that = $(this)
             users.is_logged_in(function(er, loggedin){
                 if (!loggedin) return users.show_login_box($("#popup"))
+                $(".edit_p_box").remove()
                 var data_box = that.closest(".data")
                 var id = data_box.attr("data-id")
                 var p = data_box.attr("data-p")
-                $("#popup").html(templates.reply_box(p, id)).show()
-                    .off()
-                    .on("click", ".boks_reply_post", bindings.click_reply_post)
-                    .on("click", ".boks_reply_cancel", bindings.click_reply_cancel)
-                $("#popup").find("textarea").focus()
-                draw.init($(".boks_reply_img_box"))
+                var box = data_box.find(".boks_reply_box_box").eq(0)
+                box.html(templates.reply_box(p, id))
+                box.find(".boks_reply_text").hallo({
+                    plugins: {
+                        halloformat: {
+                            formattings: {
+                                underline: true,
+                                strikethrough: true
+                            }
+                        },
+                        halloheadings: {},
+                        hallojustify: {},
+                        hallolists: {},
+                    },
+                    toolbar: 'halloToolbarFixed',
+                    parentElement: box.find(".boks_reply_toolbar").eq(0)
+                }).focus().trigger("halloactivated")
                 data_box.find(".boks_comment_content").click()
             })
         }
@@ -844,7 +873,7 @@ var bok = function(x){
             var data_box = that.closest(".data")
             var p = data_box.attr("data-p")
             var parentid = data_box.attr("data-parent")
-            var comment = data_box.find(".boks_reply_textarea").val().trim()
+            var comment = data_box.find(".boks_reply_text").html().trim()
             if (!comment) comment = "."
 
             if (!FormData) return alert("can't upload: please update your browser")
@@ -860,7 +889,7 @@ var bok = function(x){
                 img_src = URL.createObjectURL(img)
             }
 
-            bindings.click_reply_cancel()
+            data_box.remove()
 
             var fake_comment = {
                 book: o.bID,
@@ -894,7 +923,11 @@ var bok = function(x){
         }
 
         bindings.click_reply_cancel = function(){
-            $("#popup").html("").hide()
+            $(this).closest(".data").remove()
+        }
+
+        bindings.click_reply_img = function(){
+            draw.init($(this).closest(".data").find("img"))
         }
 
         bindings.click_para_box = function(){

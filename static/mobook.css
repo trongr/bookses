@@ -41,7 +41,7 @@ button:hover {
 }
 
 #click_colors {
-    width: 65%;
+    width: 60%;
     background-color: #000;
     color: #fff;
     padding: 20px 10px 20px 0;
@@ -55,7 +55,7 @@ button:hover {
 
 #banner {
     display: table;
-    width: 65%;
+    width: 60%;
 }
 
 #banner button {
@@ -99,7 +99,7 @@ button:hover {
 #tagline_box {
     text-align: center;
     padding: 20px 0 20px 0;
-    width: 65%;
+    width: 60%;
     border-bottom: 1px solid #999;
 }
 

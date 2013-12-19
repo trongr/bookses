@@ -30,7 +30,7 @@ body {
 
 .boks_book_info {
     background-color: #eee;
-    width: 65%;
+    width: 60%;
     margin: 20px 0 20px 0;
 }
 
@@ -128,14 +128,14 @@ body {
 }
 
 .boks_content_left {
-    width: 65%;
+    width: 60%;
 }
 
 .boks_content_right {
     position: fixed;
     top: 0;
     bottom: 0;
-    left: 65%;
+    left: 60%;
     right: 0;
     overflow-y: scroll;
     border-left: 1px solid #bbb;
@@ -169,7 +169,7 @@ p.paragraph:hover {
     border-bottom: 1px solid #bbb;
 }
 
-#boks_p_menu button {
+#boks_p_menu > button {
     font-size: 1.2em;
     padding: 5px;
     margin: 5px 0 5px 0;
@@ -202,7 +202,7 @@ p.paragraph:hover {
 
 .boks_content_right > .boks_comments_box {
     background-color: #eee;
-    font-size: 0.8em;
+    font-size: 1em;
 }
 
 .edit_p_toolbar {
@@ -235,8 +235,6 @@ p.paragraph:hover {
     padding: 15px;
     margin: 5px;
     font-size: 1em;
-    /* border: 1px solid #000; */
-    /* border-radius: 3px; */
 }
 
 .edit_p_post {
@@ -250,7 +248,6 @@ p.paragraph:hover {
 
 .edit_p_original_header, .edit_p_versions_header {
     margin: 30px 10px 10px 10px;
-    border-bottom: 2px solid #bbb;
     font-size: 1.4em;
     font-weight: bolder;
     font-variant: small-caps;
@@ -291,10 +288,10 @@ p.paragraph:hover {
 
 .boks_comment_text {
     padding: 15px 15px 5px 15px;
-    white-space: pre-wrap;
 }
 
 .boks_comment_menu {
+    font-size: 0.9em;
     clear: both;
     float: right;
     margin: 0 5px 0 5px;
@@ -332,71 +329,62 @@ p.paragraph:hover {
     color: #5BFC60;
 }
 
-.boks_reply_box {
-    background-color: #ddd;
-    width: 90%;
-    height: 100%;
-    margin-left: 10%;
-    padding: 10px 0 0 20px;
-    display: table;
+.boks_reply_toolbar {
+    padding: 5px;
 }
 
-.boks_reply_img_box {
-    display: table-cell;
-    width: 50%;
-    padding: 0 0 0 10px;
-    vertical-align: top;
+.boks_reply_toolbar .ui-button {
+    margin: 0 0 5px 0;
 }
 
-img.boks_reply_img {
-    display: none;
-    height: auto;
-    width: 90%;
-    float: left;
-}
-
-.boks_reply_textarea_box {
-    display: table-cell;
-    width: 50%;
-}
-
-.boks_reply_textarea {
-    font-family: helvetica, arial, sans;
-    font-size: 1.2em;
-    width: 100%;
-    height: 14em;
-    border: none;
+.boks_reply_text {
+    min-height: 7em;
     padding: 10px;
-    resize: none;
-    background-color: #eee;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    background-color: #ddd;
 }
 
-.comment_or_pic {
-    margin-top: 5px;
+.boks_reply_img {
+    padding: 5px;
+}
+
+.boks_reply_img img {
+    display: none;
+    width: 100%;
+    height: auto;
+}
+
+.boks_reply_info {
+    padding: 10px;
     color: #fff;
     background-color: #000;
-    padding: 10px;
+    font-size: 0.8em;
     text-align: right;
 }
 
-.boks_reply_menu {
+.boks_reply_cancel {
     float: right;
-    vertical-align: middle;
-    margin-bottom: 5px;
+    padding: 15px;
+    margin: 5px;
+    font-size: 1em;
 }
 
 .boks_reply_post {
-    padding: 10px;
+    float: right;
+    padding: 15px;
+    margin: 5px;
     font-size: 1em;
+    border: 1px solid #000;
     border-radius: 3px;
-    border: 1px solid #666;
 }
 
-.boks_reply_cancel {
-    padding: 10px;
+.boks_reply_img_button {
+    float: left;
+    padding: 15px;
+    margin: 5px;
     font-size: 1em;
-    border-radius: 3px;
-    border: 1px solid #666;
 }
 
 div.popup_cancel {
@@ -424,12 +412,14 @@ div.popup_cancel {
 }
 
 .draw_box {
-    width: 100%;
+    margin-left: 20%;
+    width: 80%;
     height: 100%;
 }
 
 .draw_menu {
-    padding: 5px 0 5px 0;
+    background-color: none;
+    padding: 5px;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -khtml-user-select: none;
@@ -439,17 +429,23 @@ div.popup_cancel {
 }
 
 .draw_menu button {
-    background-color: #ddd;
+    background: none;
+    color: #fff;
     font-size: 1em;
     padding: 0;
 }
 
-button.draw_draw_button {
-
+.draw_menu button:hover {
+    color: #71F3B0;
 }
 
-.draw_picture_button {
-
+.draw_cancel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: none;
+    color: #fff;
+    font-size: 1em;
 }
 
 .draw_picture_input {
