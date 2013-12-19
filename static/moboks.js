@@ -300,7 +300,7 @@ var bok = function(x){
                 + "                 <div class='clear_both'></div>"
                 + "             </div>"
                 + "             <textarea class='boks_reply_textarea'></textarea>"
-                + "             <div class='comment_or_pic'>Comment or add a picture. Type p394 to create a link to paragraph 394.⎯⎯⎯⎯⎯If you're on desktop try the drawing pad on the right.</div>"
+                + "             <div class='comment_or_pic'>Comment or add a picture. Type p394 to create a link to paragraph 394.-----If you're on desktop try the drawing pad on the right.</div>"
                 + "         </div>"
                 + "         <div class='boks_reply_img_box'></div>"
                 + "     </div>"
@@ -739,7 +739,6 @@ var bok = function(x){
             } else {
                 $(".boks_content_right .boks_comments").eq(0).prepend(elmt)
             }
-            $("#" + o.bID + " .boks_text p.paragraph").eq(comment.p).addClass("p_margin")
             return elmt
         }
 
@@ -876,6 +875,7 @@ var bok = function(x){
                 pop: 1
             }
             var new_comment = views.load_new_comment(fake_comment)
+            $("#" + o.bID + " .boks_text p.paragraph").eq(fake_comment.p).addClass("p_margin")
 
             $.ajax({
                 url: "/comment",
@@ -981,6 +981,7 @@ var bok = function(x){
                 pop: 1
             }
             var new_comment = views.load_new_comment(fake_comment)
+            $("#" + o.bID + " .boks_text p.paragraph").eq(fake_comment.p).addClass("has_edits")
             parent.remove()
 
             $.ajax({
