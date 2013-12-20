@@ -187,6 +187,15 @@ button:hover {
     padding: 0 10px 0 10px;
 }
 
+.first_letter {
+    float: left;
+    font-size: 4em;
+    font-family: serif, times, georgia;
+    height: 0.8em;
+    line-height: 1em;
+    margin: -5px 10px 0 -10px;
+}
+
 .book_created {
     color: #555;
     padding: 10px;

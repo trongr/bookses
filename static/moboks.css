@@ -1,5 +1,24 @@
+/*  */
 body {
 
+}
+
+.first_letter {
+    float: left;
+    font-size: 4em;
+    font-family: serif, times, georgia;
+    height: 0.8em;
+    line-height: 1em;
+    margin: -5px 10px 0 -10px;
+}
+
+.first_letter_small {
+    float: left;
+    font-size: 2.5em;
+    font-family: serif, times, georgia;
+    height: 0.8em;
+    line-height: 1em;
+    margin: -5px 5px 0 0;
 }
 
 .boks_p_link {
@@ -111,7 +130,7 @@ body {
     position: absolute;
     right: 0;
     top: 0;
-    width: 30%;
+    width: 40%;
     vertical-align: middle;
     text-align: center;
     padding: 40px 0 40px 0;
@@ -435,7 +454,8 @@ div.popup_cancel {
     padding: 0;
 }
 
-.draw_menu button:hover {
+.draw_menu button:hover,
+.draw_cancel:hover {
     color: #71F3B0;
 }
 
@@ -446,6 +466,11 @@ div.popup_cancel {
     background: none;
     color: #fff;
     font-size: 1em;
+    margin: 5px;
+}
+
+.draw_save_quit {
+    margin: 0 40px 0 0;
 }
 
 .draw_picture_input {

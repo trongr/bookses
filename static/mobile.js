@@ -55,6 +55,11 @@ jQuery(function($){
     var templates = (function(){
         var templates = {}
 
+        templates.drop_caps = function(text){
+            var html = "<div class='first_letter'>" + text[0] + "</div>" + text.slice(1)
+            return html
+        }
+
         templates.book = function(book){
             var html = "<div id='" + book._id + "' class='book' data-id='" + book._id + "'>"
                 + "        <div class='book_left_box'>"
@@ -67,7 +72,7 @@ jQuery(function($){
                 + "            <div class='book_title link'>" + book.title + "</div>"
                 + "            <div class='book_created'>" + Date.create(book.created).long() + "</div>"
                 // + "            <div class='book_created'>" + moment(book.created).format(k.date_format) + "</div>"
-                + "            <div class='book_description'>" + book.description + "</div>"
+                + "            <div class='book_description'>" + templates.drop_caps(book.description) + "</div>"
                 + "        </div>"
                 + "     </div>"
             return html

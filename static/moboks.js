@@ -205,12 +205,18 @@ var bok = function(x){
             return text.replace(exp, "<a href='$1' class='boks_link' target='_blank'>$1</a>");
         }
 
+        templates.drop_caps = function(text){
+            var html = "<div class='first_letter'>" + text[0] + "</div>" + text.slice(1)
+            return html
+        }
+
         templates.book_info = function(book){
+            var description = templates.drop_caps(book.description)
             var html = "<div class='boks_book_info'>"
                 + "         <div class='boks_book_title_box'><span class='boks_book_title'>" + book.title + "</span></div>"
                 + "         <div class='boks_book_created'>" + Date.create(book.created).long() + "</div>"
                 // + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
-                + "         <div class='boks_book_description'>" + templates.replace_text_with_link(book.description) + "</div>"
+                + "         <div class='boks_book_description'>" + description + "</div>"
                 + "         <div class='boks_book_para_graph_header'>"
                 + "             <span>ParaGraph.</span> Click on the graph to skip to the good parts"
                 + "         </div>"
@@ -254,7 +260,7 @@ var bok = function(x){
             var html = "<div id='" + o.bID + "' class='boks_reader'>"
                 + "         <div class='boks_content'>"
                 + "             <div class='boks_content_left'>"
-                + "                 <div id='click_to_reveal'><span>QUICK START GUIDE</span><br>Click on the paragraphs to see and make comments. If you're on the phone it looks better in landscape.</div>"
+                + "                 <div id='click_to_reveal'><span>QUICK START GUIDE</span><br>Click on the paragraphs to see and write comments. Help make Bookses beautiful by editing and formatting the text.</div>"
                 + "                 <div class='boks_text'>" + text + "</div>"
                 + "             </div>"
                 + "             <div class='boks_content_right'></div>"
@@ -376,8 +382,9 @@ var bok = function(x){
 
             templates.draw_box = function(){
                 var html = "<div class='draw_box'>"
-                    + "         <button class='draw_cancel'><i class='icon-remove'></i></button>"
+                    + "         <button class='draw_cancel'><i class='icon-trash'></i></button>"
                     + "         <div class='draw_menu'>"
+                    + "             <button class='draw_save_quit'>save & quit</button>"
                     + "             <button class='draw_draw_button'><i class='icon-file-alt'></i></button>"
                     + "             <input class='draw_picture_input' accept='image/*' type='file'>"
                     + "             <button class='draw_picture_button'><i class='icon-picture'></i></button>"
@@ -435,7 +442,13 @@ var bok = function(x){
                 draw.undo()
             }
 
-            bindings.click_cancel = function(){
+            bindings.click_draw_cancel = function(){
+                draw.k.preview.attr("src", "").hide()
+                draw.clear()
+                $("#popup").html("").hide()
+            }
+
+            bindings.click_save_quit = function(){
                 $("#popup").hide()
                 draw.k.preview.attr("src", URL.createObjectURL(draw.get_file())).show()
             }
@@ -446,7 +459,8 @@ var bok = function(x){
         draw.init = function(img){
             $("#popup").html(draw.templates.draw_box()).show()
                 .off()
-                .on("click", ".draw_cancel", draw.bindings.click_cancel)
+                .on("click", ".draw_cancel", draw.bindings.click_draw_cancel)
+                .on("click", ".draw_save_quit", draw.bindings.click_save_quit)
                 .on("click", ".draw_draw_button", draw.bindings.click_draw_button)
                 .on("click", ".draw_undo_button", draw.bindings.click_draw_undo_button)
                 .on("click", ".draw_picture_button", draw.bindings.click_choose_img)
