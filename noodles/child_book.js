@@ -46,8 +46,10 @@ var u = (function(){
                 prev_line = l
             }).on("pipe", function(){
                 out.write("</p>\n")
-                out.end()
-                done(null)
+                setTimeout(function(){
+                    out.end()
+                    done(null)
+                }, 1000) // have to do this cause we don't want the stream ending before writing to out
             })
         })
     }
@@ -65,9 +67,9 @@ var child_book = (function(){
             console.log("done processing new book: " + id)
             if (er){
                 console.log(JSON.stringify({error:"child_book.process_book",id:id,src:src,er:er}, 0, 2))
-                u.rm(dst, function(er){if (er) console.log(JSON.stringify(er, 0, 2))})
+                // u.rm(dst, function(er){if (er) console.log(JSON.stringify(er, 0, 2))})
             }
-            u.rm(src, function(er){if (er) console.log(JSON.stringify(er, 0, 2))})
+            // u.rm(src, function(er){if (er) console.log(JSON.stringify(er, 0, 2))})
         })
     }
 

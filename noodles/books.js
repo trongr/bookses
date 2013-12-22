@@ -154,7 +154,7 @@ var press = (function(){
     press.working = false
 
     press.process_books = function(){
-        new cron("*/13 * * * * *", function(){
+        new cron("*/5 * * * * *", function(){
             if (press.working) return
             else press.working = true
             async.waterfall([

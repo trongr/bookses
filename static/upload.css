@@ -41,10 +41,17 @@ div.popup_upload_cancel {
     resize: none;
 }
 
-#upload_box label#text_files_only {
-    float: right;
-    color: #333;
+#upload_box #text_files_only {
+    width: 100%;
+    text-align: right;
+    color: #fff;
+    background-color: #000;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
     font-size: 0.8em;
+    padding: 10px;
+    margin: 0 0 5px 0;
 }
 
 button.popup_upload_cancel {
