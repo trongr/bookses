@@ -516,7 +516,7 @@ var books = module.exports = (function(){
         var query = {
             book: req.params.id,
             parent: null,
-            edit: false
+            // edit: false // let people choose to show edits on front end
         }
         var aux = {
             sort: [["modified","desc"]],

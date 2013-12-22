@@ -498,8 +498,18 @@ div.popup_cancel {
     font-variant: small-caps;
 }
 
+.latest_comments_menu {
+    float: right;
+    margin: 0 10px 5px 0;
+}
+
+.show_latest_edits,
+.watch_this_book {
+    font-size: 1em;
+}
+
 .boks_latest_comments {
-    height: 60%;
+    height: 80%;
     width: 100%;
     overflow-y: scroll;
     overflow-x: hidden;
@@ -521,6 +531,7 @@ div.popup_cancel {
     padding: 5px;
     background-color: #fff;
     box-shadow: 0 0 5px 5px #999;
+    cursor: pointer;
 }
 
 .latest_comment:hover {
@@ -563,4 +574,8 @@ div.popup_cancel {
     float: right;
     color: #666;
     padding: 0 5px 0 0;
+}
+
+.is_edit {
+    display: none;
 }

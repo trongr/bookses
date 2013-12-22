@@ -251,13 +251,19 @@ var bok = function(x){
                 + "             <span>ParaGraph.</span> Click on the graph to skip to the good parts"
                 + "         </div>"
                 + "         <div class='boks_book_para_graph'></div><div class='clear_both'></div>"
-                + "         <div class='boks_latest_comments_header'><span>Latest Conversations</span></div>"
+                + "         <div class='boks_latest_comments_header'>"
+                + "             <span>Latest Activity</span>"
+                + "         </div>"
+                + "         <div class='latest_comments_menu'>"
+                + "             <button class='show_latest_edits'>Show book edits</button>"
+                // + "             <button class='watch_this_book'><i class='icon-eye-open'></i></button>"
+                + "         </div>"
+                + "         <div class='clear_both'></div>"
                 + "         <div class='boks_latest_comments'></div>"
                 + "         <div class='boks_spinner'><i class='icon-spin icon-cog'></i><br><span>working<br>real<br>hard<br>. . .</span></div>"
                 + "     </div>"
             return html
         }
-        // mark
 
         templates.para_graph = function(paragraphs){
             if (paragraphs.length == 0) return ". . . Aw this book has no comment. <a href='#click_to_reveal'>Be the first!</a>"
@@ -394,6 +400,7 @@ var bok = function(x){
 
         // mark
         templates.latest_comment = function(comment){
+            var is_edit = (comment.edit ? "is_edit" : "")
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
             var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment))
@@ -402,7 +409,7 @@ var bok = function(x){
             if (comment.replies == 0) replies = "created"
             else if (comment.replies == 1) replies = "1 reply"
             else replies = comment.replies + " replies"
-            var html = "<div class='latest_comment_box'>"
+            var html = "<div class='latest_comment_box " + is_edit + "'>"
                 + "         <div class='latest_comment data' " + dataid + " " + datap +  ">"
                 + "             <div class='comment_info'>"
                 + "                 <div class='comment_user'>" + comment.username + "</div>"
@@ -843,9 +850,50 @@ var bok = function(x){
             $(".boks_latest_comments").html(templates.latest_comments(comments))
                 .off()
                 .on("click", ".latest_comment", bindings.click_latest_comment)
+            $(".show_latest_edits").on("click", function(){
+                $(".latest_comment_box.is_edit").show()
+            })
         }
 
         return views
+    }())
+
+    var events = (function(){
+        var events = {}
+
+        events.k = {
+            comments_loaded: "comments_loaded",
+            wait_and_slide: "wait_and_slide",
+        }
+
+        events.wait = {
+            comment_id: null
+        }
+
+        events.init = function(){
+            $(document)
+            // whoever wants to slide to the comment, triggers
+            // wait_and_slide, which stores the comment's id. then,
+            // once the comments are loaded, comments_loaded is
+            // triggered, which checks for the wait_and_slide id if it
+            // exists, then it slides.
+                .on(events.k.wait_and_slide, events.handler_wait_and_slide)
+                .on(events.k.comments_loaded, events.handler_comments_loaded)
+        }
+
+        events.handler_wait_and_slide = function(x){
+            events.wait.comment_id = x.comment_id
+        }
+
+        events.handler_comments_loaded = function(){
+            if (events.wait.comment_id){
+                var top = $(".boks_comment[data-id='" + events.wait.comment_id + "']").position().top
+                dom.content_right.animate({scrollTop:top}, 100)
+            }
+            events.wait.comment_id = null
+        }
+
+        return events
     }())
 
     var bindings = (function(){
@@ -865,6 +913,7 @@ var bok = function(x){
                     dom.content_right.append(templates.comments_box([], p, null))
                 }
                 $("html, body").animate({scrollTop:that.offset().top}, 100)
+                $(document).trigger(events.k.comments_loaded)
             })
         }
 
@@ -1126,7 +1175,12 @@ var bok = function(x){
         // mark
         bindings.click_latest_comment = function(){
             var p = $(this).attr("data-p")
+            var id = $(this).attr("data-id")
             bindings.go_to_p(p)
+            $(document).trigger({
+                type: events.k.wait_and_slide,
+                comment_id: id
+            })
         }
 
         return bindings
@@ -1134,6 +1188,7 @@ var bok = function(x){
 
     this.init = function(){
         views.init()
+        events.init()
     }
 
     this.next_chapter = function(){
