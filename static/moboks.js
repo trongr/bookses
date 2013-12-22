@@ -189,6 +189,21 @@ var bok = function(x){
             })
         }
 
+        // mark
+        api.get_latest_comments = function(page, done){
+            $.ajax({
+                url: "/book/" + o.bID + "/latest_comments",
+                type: "get",
+                data: {
+                    page: page,
+                },
+                success: function(re){
+                    if (re.comments) done(null, re.comments)
+                    else done(re)
+                }
+            })
+        }
+
         return api
     }())
 
@@ -217,10 +232,6 @@ var bok = function(x){
                 + "         <div class='boks_book_created'>" + Date.create(book.created).long() + "</div>"
                 // + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "         <div class='boks_book_description'>" + description + "</div>"
-                + "         <div class='boks_book_para_graph_header'>"
-                + "             <span>ParaGraph.</span> Click on the graph to skip to the good parts"
-                + "         </div>"
-                + "         <div class='boks_book_para_graph'></div><div class='clear_both'></div>"
                 + "         <div class='boks_social_share_me'>"
                 + "             <span>Like this book?</span> Spread the word!"
                 + "         </div>"
@@ -236,10 +247,17 @@ var bok = function(x){
                 + "             <a class='addthis_button_compact'></a><a class='addthis_counter addthis_bubble_style'></a>"
                 + "             </div>"
                 + "         </div>"
+                + "         <div class='boks_book_para_graph_header'>"
+                + "             <span>ParaGraph.</span> Click on the graph to skip to the good parts"
+                + "         </div>"
+                + "         <div class='boks_book_para_graph'></div><div class='clear_both'></div>"
+                + "         <div class='boks_latest_comments_header'><span>Latest Conversations</span></div>"
+                + "         <div class='boks_latest_comments'></div>"
                 + "         <div class='boks_spinner'><i class='icon-spin icon-cog'></i><br><span>working<br>real<br>hard<br>. . .</span></div>"
                 + "     </div>"
             return html
         }
+        // mark
 
         templates.para_graph = function(paragraphs){
             if (paragraphs.length == 0) return ". . . Aw this book has no comment. <a href='#click_to_reveal'>Be the first!</a>"
@@ -362,6 +380,39 @@ var bok = function(x){
                 + "         </div>"
                 + "         <div class='boks_reply_box_box'></div>"
                 + "         <div class='boks_comments_box_box'></div>"
+                + "     </div>"
+            return html
+        }
+
+        templates.latest_comments = function(comments){
+            var html = ""
+            for (var i = 0; i < comments.length; i++){
+                html += templates.latest_comment(comments[i])
+            }
+            return html
+        }
+
+        // mark
+        templates.latest_comment = function(comment){
+            var dataid = "data-id='" + comment._id + "'"
+            var datap = "data-p='" + comment.p + "'"
+            var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment))
+            var img = (comment.img ? "<div class='latest_comment_img_box'><img class='latest_comment_img' src='" + comment.img + "'></div>" : "")
+            var replies
+            if (comment.replies == 0) replies = "created"
+            else if (comment.replies == 1) replies = "1 reply"
+            else replies = comment.replies + " replies"
+            var html = "<div class='latest_comment_box'>"
+                + "         <div class='latest_comment data' " + dataid + " " + datap +  ">"
+                + "             <div class='comment_info'>"
+                + "                 <div class='comment_user'>" + comment.username + "</div>"
+                + "                 <div class='comment_modified'>" + Date.create(comment.modified).relative() + "</div>"
+                + "                 <div class='comment_replies'>" + replies + "</div>"
+                + "                 <div class='clear_both'></div>"
+                + "             </div>"
+                + "             <div class='comment_text'>" + text + "</div>"
+                +               img
+                + "         </div>"
                 + "     </div>"
             return html
         }
@@ -723,7 +774,8 @@ var bok = function(x){
                 function(done){
                     done(null)
                     edits.init()
-                }
+                    views.load_latest_comments()
+                },
             ], function(er, re){
                 done(er)
             })
@@ -768,6 +820,29 @@ var bok = function(x){
                 $(".boks_content_right .boks_comments").eq(0).prepend(elmt)
             }
             return elmt
+        }
+
+        // mark
+        views.load_latest_comments = function(){
+            async.waterfall([
+                function(done){
+                    api.get_latest_comments(0, function(er, comments){
+                        done(er, comments)
+                    })
+                },
+                function(comments, done){
+                    done(null)
+                    views.render_latest_comments(comments)
+                }
+            ], function(er){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+            })
+        }
+
+        views.render_latest_comments = function(comments){
+            $(".boks_latest_comments").html(templates.latest_comments(comments))
+                .off()
+                .on("click", ".latest_comment", bindings.click_latest_comment)
         }
 
         return views
@@ -1046,6 +1121,12 @@ var bok = function(x){
                 }
             })
 
+        }
+
+        // mark
+        bindings.click_latest_comment = function(){
+            var p = $(this).attr("data-p")
+            bindings.go_to_p(p)
         }
 
         return bindings

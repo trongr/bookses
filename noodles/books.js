@@ -491,6 +491,48 @@ var books = module.exports = (function(){
         })
     }
 
+    books.get_book_latest_comments_validate = function(req, res, next){
+        async.parallel([
+            function(done){
+                validate.id(req.params.id, function(er){
+                    done(er)
+                })
+            },
+            function(done){
+                var page = req.query.page || 0
+                validate.integer(page, function(er){
+                    done(er)
+                })
+            }
+        ], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_book_latest_comments_validate",er:er}, 0, 2))
+                res.send({error:"get book comments"})
+            } else next(null)
+        })
+    }
+
+    books.get_book_latest_comments = function(req, res){
+        var query = {
+            book: req.params.id,
+            parent: null
+        }
+        var aux = {
+            sort: [["modified","desc"]],
+            // sort: [["pop","desc"]],
+            limit: k.page_size + 1,
+            skip: req.query.page * k.page_size
+        }
+        DB.get_entries(k.tables.comments, query, aux, function(er, entries){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_book_latest_comments",er:er}, 0, 2))
+                res.send({error:"get book comments"})
+            } else {
+                res.send({comments:entries})
+            }
+        })
+    }
+
     books.get_comment_comments_validate = function(req, res, next){
         async.parallel([
             function(done){
