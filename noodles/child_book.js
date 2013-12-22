@@ -45,8 +45,8 @@ var u = (function(){
                 }
                 prev_line = l
             }).on("pipe", function(){
-                out.write("</p>\n")
                 setTimeout(function(){
+                    out.write("</p>\n")
                     out.end()
                     done(null)
                 }, 1000) // have to do this cause we don't want the stream ending before writing to out
