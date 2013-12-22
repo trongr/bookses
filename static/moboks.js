@@ -440,6 +440,7 @@ var bok = function(x){
 
             templates.draw_box = function(){
                 var html = "<div class='draw_box'>"
+                    + "         <div class='draw_box_info'>Drawing only works on desktop and laptop for now.</div>"
                     + "         <button class='draw_cancel'><i class='icon-trash'></i></button>"
                     + "         <div class='draw_menu'>"
                     + "             <button class='draw_save_quit'>save & quit</button>"

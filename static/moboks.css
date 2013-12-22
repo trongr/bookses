@@ -477,6 +477,20 @@ div.popup_cancel {
     margin: 5px;
 }
 
+.draw_box_info {
+    position: fixed;
+    bottom: 50px;
+    left: 0;
+    width: 20%;
+    background-color: #000;
+    color: #fff;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    padding: 10px;
+    font-size: 1em;
+}
+
 .draw_save_quit {
     margin: 0 40px 0 0;
 }
@@ -526,7 +540,7 @@ div.popup_cancel {
     width: 100%;
     overflow-y: scroll;
     overflow-x: hidden;
-    background-color: #ddd;
+    background: linear-gradient(#eee, #aaa);
 }
 
 .latest_comment_box {
@@ -543,13 +557,11 @@ div.popup_cancel {
 .latest_comment {
     padding: 5px;
     background-color: #fff;
-    box-shadow: 0 0 5px 5px #999;
     cursor: pointer;
 }
 
 .latest_comment:hover {
-    border: 1px solid #aaa;
-    box-shadow: 0 0 5px 5px #aaa;
+    border: 1px solid #999;
 }
 
 .comment_text {
@@ -558,7 +570,6 @@ div.popup_cancel {
 
 .latest_comment_img_box {
     width: 100%;
-    margin-bottom: 10px;
 }
 
 .latest_comment_img {
