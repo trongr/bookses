@@ -488,8 +488,8 @@ div.popup_cancel {
 }
 
 .boks_latest_comments_header {
-    margin: 10px 10px 0 10px;
-    /* border-bottom: 1px solid #bbb; */
+    margin: 30px 10px 10px 10px;
+    border-bottom: 1px solid #bbb;
 }
 
 .boks_latest_comments_header span {
