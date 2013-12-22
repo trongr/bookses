@@ -515,7 +515,8 @@ var books = module.exports = (function(){
     books.get_book_latest_comments = function(req, res){
         var query = {
             book: req.params.id,
-            parent: null
+            parent: null,
+            edit: false
         }
         var aux = {
             sort: [["modified","desc"]],
