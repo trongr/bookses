@@ -406,15 +406,15 @@ var bok = function(x){
             var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment))
             var img = (comment.img ? "<div class='latest_comment_img_box'><img class='latest_comment_img' src='" + comment.img + "'></div>" : "")
             var replies
-            if (comment.replies == 0) replies = "created"
-            else if (comment.replies == 1) replies = "1 reply"
-            else replies = comment.replies + " replies"
+            if (comment.replies == 0) replies = "<div class='comment_replies red'>new</div>"
+            else if (comment.replies == 1) replies = "<div class='comment_replies green'>1 reply</div>"
+            else replies = "<div class='comment_replies green'>" + comment.replies + " replies</div>"
             var html = "<div class='latest_comment_box " + is_edit + "'>"
                 + "         <div class='latest_comment data' " + dataid + " " + datap +  ">"
                 + "             <div class='comment_info'>"
                 + "                 <div class='comment_user'>" + comment.username + "</div>"
                 + "                 <div class='comment_modified'>" + Date.create(comment.modified).relative() + "</div>"
-                + "                 <div class='comment_replies'>" + replies + "</div>"
+                +                   replies
                 + "                 <div class='clear_both'></div>"
                 + "             </div>"
                 + "             <div class='comment_text'>" + text + "</div>"
@@ -851,7 +851,7 @@ var bok = function(x){
                 .off()
                 .on("click", ".latest_comment", bindings.click_latest_comment)
             $(".show_latest_edits").on("click", function(){
-                $(".latest_comment_box.is_edit").show()
+                $(".latest_comment_box.is_edit").css("display", "inline-block")
             })
         }
 
