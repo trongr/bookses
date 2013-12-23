@@ -830,7 +830,6 @@ var bok = function(x){
             return elmt
         }
 
-        // mark
         views.load_latest_comments = function(){
             async.waterfall([
                 function(done){
@@ -902,7 +901,7 @@ var bok = function(x){
 
         bindings.click_p = function(){
             var that = $(this)
-            var p = that.index()
+            var p = that.attr("data-p") || that.index() // all new books should have data-p paragraphs
             dom.content_right.html(templates.p_menu(p))
             $("#boks_p_menu > .boks_reply").fadeOut(200).fadeIn(200)
             api.get_book_comments(o.bID, p, false, 0, function(er, comments){

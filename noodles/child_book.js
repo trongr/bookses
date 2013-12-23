@@ -32,13 +32,13 @@ var u = (function(){
             var prev_line = ""
             var trailing = /\s*$/;
             var i = 0
-            out.write("<p class='paragraph'>\n")
+            out.write("<p class='paragraph' data-p='" + (i++) + "'>\n")
             new lazy(fs.createReadStream(src)).lines.forEach(function(line){
                 if (line) var l = line.toString()
                 else l = "\n"
                 if (l.length == 1){ // current line blank
                 } else if (prev_line.length == 1){ // new paragraph
-                    out.write("</p>\n<p class='paragraph'>\n")
+                    out.write("</p>\n<p class='paragraph' data-p='" + (i++) + "'>\n")
                     out.write(l.replace(trailing, "\n"))
                 } else { // inside paragraph
                     out.write(l.replace(trailing, "\n"))
