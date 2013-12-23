@@ -536,9 +536,7 @@ div.popup_cancel {
 }
 
 .boks_latest_comments {
-    height: 70%;
     width: 100%;
-    overflow-y: scroll;
     overflow-x: hidden;
     background: linear-gradient(#eee, #aaa);
 }
