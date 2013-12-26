@@ -69,6 +69,8 @@ jQuery(function($){
                         +   "</div>"
                 }
             }
+            var description = templates.drop_caps(book.description.slice(0, 500))
+            if (book.description.length > 1000) description += " . . . "
             var html = "<div id='" + book._id + "' class='book' data-id='" + book._id + "'>"
                 + "        <div class='book_left_box'>"
                 + "            <div class='book_pop'>" + book.pop + "<br><span>" + (book.pop > 1 ? "votes" : "vote") + "</span></div>"
@@ -80,7 +82,7 @@ jQuery(function($){
                 + "            <div class='book_title link'>" + book.title + "</div>"
                 + "            <div class='book_created'>" + Date.create(book.created).long() + "</div>"
                 // + "            <div class='book_created'>" + moment(book.created).format(k.date_format) + "</div>"
-                + "            <div class='book_description'>" + templates.drop_caps(book.description) + "</div>"
+                + "            <div class='book_description'>" + description + "</div>"
                 + "            <div class='book_imgs'>" + imgs + "</div>"
                 + "        </div>"
                 + "     </div>"
