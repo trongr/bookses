@@ -61,6 +61,14 @@ jQuery(function($){
         }
 
         templates.book = function(book){
+            var imgs = ""
+            if (book.img_comments){
+                for (var i = 0; i < book.img_comments.length; i++){
+                    imgs += "<div class='book_img_box'>"
+                        +        "<img class='book_img' src='" + book.img_comments[i].img + "'>"
+                        +   "</div>"
+                }
+            }
             var html = "<div id='" + book._id + "' class='book' data-id='" + book._id + "'>"
                 + "        <div class='book_left_box'>"
                 + "            <div class='book_pop'>" + book.pop + "<br><span>" + (book.pop > 1 ? "votes" : "vote") + "</span></div>"
@@ -73,6 +81,7 @@ jQuery(function($){
                 + "            <div class='book_created'>" + Date.create(book.created).long() + "</div>"
                 // + "            <div class='book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "            <div class='book_description'>" + templates.drop_caps(book.description) + "</div>"
+                + "            <div class='book_imgs'>" + imgs + "</div>"
                 + "        </div>"
                 + "     </div>"
             return html
@@ -100,10 +109,11 @@ jQuery(function($){
                     done(null)
                 },
             ], function(er, re){
-                if (er) alert("Oops! I can't load more books. Please let Trong know about this")
+                if (er) alert("Oops! I can't load more books")
             })
         }
 
+        // mark
         views.render_books = function(box, books){
             var html = ""
             for (var i = 0; i < books.length; i++){

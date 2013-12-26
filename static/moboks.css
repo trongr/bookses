@@ -556,6 +556,7 @@ div.popup_cancel {
     padding: 5px;
     background-color: #fff;
     cursor: pointer;
+    border-radius: 3px;
 }
 
 .latest_comment:hover {

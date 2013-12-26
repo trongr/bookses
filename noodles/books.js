@@ -280,19 +280,36 @@ var books = module.exports = (function(){
     }
 
     books.get_all_books = function(req, res){
-        var query = {}
-        var aux = {
-            sort: [["modified","desc"]],
-            // sort: [["pop","desc"]],
-            limit: k.page_size,
-            skip: req.query.page * k.page_size
-        }
-        DB.get_entries(k.tables.books, query, aux, function(er, entries){
+        async.waterfall([
+            function(done){
+                var query = {}
+                var aux = {
+                    sort: [["modified","desc"]],
+                    // sort: [["pop","desc"]],
+                    limit: k.page_size,
+                    skip: req.query.page * k.page_size
+                }
+                DB.get_entries(k.tables.books, query, aux, function(er, entries){
+                    done(er, entries)
+                })
+            },
+            function(entries, done){
+                async.each(entries, function(entry, done){
+                    books.get_book_img_comments(entry._id.toString(), function(er, comments){
+                        if (er) entry.img_comments = []
+                        else entry.img_comments = comments
+                        done(null)
+                    })
+                }, function(er){
+                    done(null, entries)
+                })
+            }
+        ], function(er, re){
             if (er){
                 console.log(JSON.stringify({error:"books.get_all_books",er:er}, 0, 2))
                 res.send({error:"get all books"})
             } else {
-                res.send({books:entries})
+                res.send({books:re})
             }
         })
     }
@@ -760,6 +777,20 @@ var books = module.exports = (function(){
                 console.log(JSON.stringify({error:"books get book edits",id:req.params.id,er:er}, 0, 2))
                 res.send({error:"get book edits"})
             } else res.send({edits:result})
+        })
+    }
+
+    books.get_book_img_comments = function(id, done){
+        var query = {
+            book: id,
+            img: {$exists:true}
+        }
+        var aux = {
+            sort: [["p","asc"]],
+            limit: 10,
+        }
+        DB.get_entries(k.tables.comments, query, aux, function(er, entries){
+            done(er, entries)
         })
     }
 
