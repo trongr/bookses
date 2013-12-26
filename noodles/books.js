@@ -230,6 +230,7 @@ var books = module.exports = (function(){
             username: req.session.username,
             title: req.body.title,
             description: req.body.description,
+            poetry: (req.body.poetry == "true"),
             url: k.static_public + "/" + id,
             created: new Date(),
             modified: new Date(),
@@ -787,7 +788,7 @@ var books = module.exports = (function(){
         }
         var aux = {
             sort: [["pop","desc"]],
-            limit: 10,
+            limit: 5,
         }
         DB.get_entries(k.tables.comments, query, aux, function(er, entries){
             done(er, entries)

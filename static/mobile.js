@@ -70,7 +70,7 @@ jQuery(function($){
                 }
             }
             var description = templates.drop_caps(book.description.slice(0, 500))
-            if (book.description.length > 1000) description += " . . . "
+            if (book.description.length > 500) description += " . . . "
             var html = "<div id='" + book._id + "' class='book' data-id='" + book._id + "'>"
                 + "        <div class='book_left_box'>"
                 + "            <div class='book_pop'>" + book.pop + "<br><span>" + (book.pop > 1 ? "votes" : "vote") + "</span></div>"

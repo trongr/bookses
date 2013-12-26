@@ -195,7 +195,7 @@ button:hover {
 
 .book_img_box {
     display: table-cell;
-    width: 10%;
+    width: 20%;
     max-height: 200px;
     overflow: hidden;
     display: inline-block;

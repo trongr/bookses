@@ -15,11 +15,12 @@ var upload = (function(){
             var html = "<div id='upload_box'>"
                 + "         <div class='popup_upload_cancel'></div>"
                 + "         <div id='upload_box_left'>"
+                + "             <div id='upload_box_header'>Publish your masterpiece</div>"
+                + "             <div id='text_files_only'>NOTE. Bookses only supports plain text files at the moment. You can format and make minor edits after uploading.</div>"
                 + "             <input id='upload_book_title' placeholder='title'><br>"
                 + "             <textarea id='upload_book_description' placeholder='description'></textarea><br>"
                 + "             <input id='local_book_upload' type='file'><br>"
-                + "             <div id='text_files_only'>NOTE. Bookses only supports plain text files at the moment.</div>"
-                + "             <div class='clear_both'></div>"
+                + "             <input id='is_poetry' type='checkbox'>Preserve line breaks, for poetry<br>"
                 + "             <button id='post_upload_button'>UPLOAD</button>"
                 + "             <button class='popup_upload_cancel'>cancel</button>"
                 + "             <div class='clear_both'></div>"
@@ -41,6 +42,7 @@ var upload = (function(){
             if (k.box) k.box.hide()
         }
 
+        // mark
         bindings.click_post_upload_button = function(){
             var post_button = $(this).attr("disabled", true)
             users.is_logged_in(function(er, loggedin){
@@ -58,12 +60,14 @@ var upload = (function(){
                     post_button.attr("disabled", false)
                     return alert("your file is too big: must be less than 10MB")
                 }
+                var is_poetry = $("#is_poetry").prop("checked")
 
                 if (!FormData) return alert("can't upload: please update your browser")
                 var data = new FormData()
                 data.append("file", file)
                 data.append("title", title)
                 data.append("description", description)
+                data.append("poetry", is_poetry)
 
                 bindings.click_popup_upload_cancel()
 

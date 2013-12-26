@@ -175,6 +175,10 @@ body {
     font-family: georgia, serif;
 }
 
+.poetry_edit {
+    white-space: pre-line;
+}
+
 p.paragraph {
     margin: 0 2px 0 2px;
     padding: 10px;

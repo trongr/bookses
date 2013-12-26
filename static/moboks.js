@@ -778,11 +778,19 @@ var bok = function(x){
                 function(done){
                     done(null)
                     edits.init()
+                    views.format_poetry(book)
                     views.load_latest_comments()
                 },
             ], function(er, re){
                 done(er)
             })
+        }
+
+        // mark
+        views.format_poetry = function(book){
+            if (book.poetry){
+                $(".boks_text p").css("white-space", "pre-wrap")
+            }
         }
 
         views.draw_para_graph = function(paragraphs){
@@ -1105,7 +1113,11 @@ var bok = function(x){
                     },
                     toolbar: 'halloToolbarFixed',
                     parentElement: $(".edit_p_toolbar")
-                }).html(text).focus().trigger("halloactivated")
+                })
+                    .html(text)
+                    .addClass("poetry_edit")
+                    .focus()
+                    .trigger("halloactivated")
                 box.find(".edit_p_original").html(edits.get_original(p) || text)
                 box.append(templates.comments_box([], p, null))
                 api.get_book_comments(o.bID, p, true, 0, function(er, comments){

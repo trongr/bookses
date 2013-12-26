@@ -23,11 +23,20 @@ div.popup_upload_cancel {
     min-width: 400px;
 }
 
+#upload_box_header {
+    font-size: 2em;
+    text-align: right;
+    margin: 10px 0 10px 0;
+    color: #666;
+}
+
 #upload_box input {
     width: 100%;
-    padding: 5px;
-    margin: 5px;
     font-size: 1em;
+    padding: 5px 10px 5px 10px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
 
 #upload_box textarea {
@@ -36,9 +45,12 @@ div.popup_upload_cancel {
     font-size: 1.2em;
     height: 7em;
     border: none;
-    padding: 5px;
-    margin: 5px;
     resize: none;
+    margin: 5px 0 5px 0;
+    padding: 10px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
 
 #upload_box #text_files_only {
@@ -52,6 +64,11 @@ div.popup_upload_cancel {
     font-size: 0.8em;
     padding: 10px;
     margin: 0 0 5px 0;
+}
+
+#is_poetry {
+    width: auto !important;
+    margin: 10px;
 }
 
 button.popup_upload_cancel {
