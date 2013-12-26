@@ -786,7 +786,7 @@ var books = module.exports = (function(){
             img: {$exists:true}
         }
         var aux = {
-            sort: [["p","asc"]],
+            sort: [["pop","desc"]],
             limit: 10,
         }
         DB.get_entries(k.tables.comments, query, aux, function(er, entries){
