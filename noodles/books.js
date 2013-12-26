@@ -718,26 +718,48 @@ var books = module.exports = (function(){
     }
 
     books.get_book_edits = function(req, res){
-        DB.aggregate(k.tables.comments, [{
-            $match: {
-                book: req.params.id,
-                parent: null,
-                edit: true
+        var result = []
+        async.waterfall([
+            function(done){
+                DB.aggregate(k.tables.comments, [{
+                    $match: {
+                        book: req.params.id,
+                        parent: null,
+                        edit: true
+                    }
+                },{
+                    $sort: {modified:-1}
+                },{
+                    $group: {
+                        _id: "$p",
+                        edit_id: {$first:"$_id"},
+                    }
+                },{
+                    $sort: {_id:1}
+                }], function(er, re){
+                    done(er, re)
+                })
+            },
+            function(entries, done){
+                async.each(entries, function(entry, done){
+                    var p = entry._id
+                    var id = entry.edit_id
+                    DB.get_entry_by_id(k.tables.comments, id.toString(), function(er, comment){
+                        if (er) done(er)
+                        else if (comment){
+                            result.push(comment)
+                            done(null)
+                        } else done({error:"no such comment",id:id})
+                    })
+                }, function(er){
+                    done(er)
+                })
             }
-        },{
-            $sort: {modified:-1}
-        },{
-            $group: {
-                _id: "$p",
-                edit: {$first:"$_id"},
-            }
-        },{
-            $sort: {_id:1}
-        }], function(er, re){
+        ], function(er){
             if (er){
                 console.log(JSON.stringify({error:"books get book edits",id:req.params.id,er:er}, 0, 2))
                 res.send({error:"get book edits"})
-            } else res.send({edits:re})
+            } else res.send({edits:result})
         })
     }
 

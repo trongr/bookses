@@ -679,17 +679,13 @@ var bok = function(x){
             })
         }
 
-        edits.render_edits = function(entries, done){
-            async.eachSeries(entries, function(entry, done){
-                var p = entry._id
-                var id = entry.edit
+        edits.render_edits = function(comments, done){
+            async.eachSeries(comments, function(comment, done){
+                var p = comment.p
                 var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(p)
                 edits.originals[p] = paragraph.html()
-                edits.get_edit(id, function(er, entry){
-                    if (er) console.log(JSON.stringify(er, 0, 2))
-                    else paragraph.html(entry.comment).addClass("has_edits")
-                    done(null)
-                })
+                paragraph.html(comment.comment).addClass("has_edits")
+                done(null)
             }, function(er){
                 done(er)
             })
