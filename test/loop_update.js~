@@ -1,0 +1,60 @@
+var request = require("request")
+var mongo = require("mongodb")
+var server = new mongo.Server('localhost', 27017, {auto_reconnect:true})
+var DB = new mongo.Db(process.env.DB || "vdgami", server)
+DB.open(function(er, db) {
+    if (er) throw er
+    console.log(module.filename + " connecting to " + (process.env.DB || "vdgami"))
+})
+var async = require("async")
+
+var loop = function(){
+    async.waterfall([
+        function(done){
+            setTimeout(function(){
+                DB.collection("videos", {safe:true}, function(er, docs){
+                    docs.find({
+                        ready:false,
+                        type:{$exists:false},
+                        parent:{$exists:true},
+                        created:{$gte:new Date("2013-12-20")}
+                    }).toArray(function(er, entries){
+                        done(er, entries)
+                    })
+                })
+            }, 2000)
+        },
+        function(entries, done){
+            async.eachSeries(entries, function(entry, done){
+                // request({
+                //     url: "http://dragons-264525495.us-east-1.elb.amazonaws.com/video/" + entry._id.toString() + "/clip",
+                //     method: "POST",
+                //     qs: {
+                //         requester: "http://vdgami-1085381642.us-east-1.elb.amazonaws.com/",
+                //         video: JSON.stringify(entry)
+                //     },
+                // }, function(er, result, body){
+                //     console.log(JSON.stringify(er, 0, 2))
+                //     console.log(JSON.stringify(body, 0, 2))
+                // })
+                DB.collection("videos", {safe:true}, function(er, docs){
+                    docs.update({
+                        _id: entry._id
+                    },{
+                        $set: {
+                            ready:true
+                        }
+                    }, function(er, num){
+                        done(null)
+                    })
+                })
+            }, function(er){
+                done(er)
+            })
+        }
+    ], function(er){
+        console.log(JSON.stringify(er, 0, 2))
+    })
+}
+
+loop()

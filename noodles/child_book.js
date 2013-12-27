@@ -67,9 +67,9 @@ var child_book = (function(){
             console.log("done processing new book: " + id)
             if (er){
                 console.log(JSON.stringify({error:"child_book.process_book",id:id,src:src,er:er}, 0, 2))
-                // u.rm(dst, function(er){if (er) console.log(JSON.stringify(er, 0, 2))})
+                u.rm(dst, function(er){if (er) console.log(JSON.stringify(er, 0, 2))})
             }
-            // u.rm(src, function(er){if (er) console.log(JSON.stringify(er, 0, 2))})
+            u.rm(src, function(er){if (er) console.log(JSON.stringify(er, 0, 2))})
         })
     }
 

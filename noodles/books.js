@@ -12,6 +12,7 @@ var server = new mongo.Server('localhost', 27017, {auto_reconnect:true})
 var db = new mongo.Db(process.env.DB || "bookses", server)
 var validate = require("./validate.js")
 var child = require("child_process")
+var imglib = require("./img.js")
 
 var k = {
     tmp: "tmp",
@@ -146,6 +147,38 @@ var DB = (function(){
     }
 
     return DB
+}())
+
+var u = (function(){
+    var u = {}
+
+    u.process_img = function(img, comment, done){
+        if (!img.headers || !img.headers["content-type"])
+            return done({error:"processing img",er:"can't read img"})
+        var ext = img.headers["content-type"].split("/")[1]
+        if (ext != "jpeg" && ext != "png" && ext != "gif")
+            return done({error:"processing img",er:"only accepts jpg, png, gif"})
+        var regular = k.static_public_dir + "/" + comment._id + "." + ext
+        var thumb = k.static_public_dir + "/" + comment._id + ".thumb." + ext
+        async.waterfall([
+            function(done){
+                imglib.resize(img.path, 200, thumb, function(er){
+                    done(er)
+                })
+            },
+            function(done){
+                child.exec("mv " + img.path + " " + regular, function(er, stdout, stder){
+                    done(er)
+                })
+            },
+        ], function(er){
+            if (er) done({error:"processing img",er:er})
+            else done(null)
+            child.exec("rm " + img.path, function(er, stdout, stder){})
+        })
+    }
+
+    return u
 }())
 
 var press = (function(){
@@ -423,7 +456,15 @@ var books = module.exports = (function(){
                         replies: 0,
                         pop: 1
                     }
-                    if (req.files.img) comment.img = k.static_public + "/" + id
+                    if (req.files.img && req.files.img.headers && req.files.img.headers["content-type"]){
+                        var ext = req.files.img.headers["content-type"].split("/")[1]
+                        if (ext != "jpeg" && ext != "png" && ext != "gif")
+                            return done({error:"processing img",er:"only accepts jpg, png, gif"})
+                        comment.img = k.static_public + "/" + id + "." + ext
+                        comment.thumb = k.static_public + "/" + id + ".thumb." + ext
+                    } else if (req.files.img){
+                        return done({error:"processing img",er:"can't read img headers"})
+                    }
                     DB.create(k.tables.comments, comment, function(er, comment){
                         done(er, comment)
                     })
@@ -433,9 +474,11 @@ var books = module.exports = (function(){
             },
             function(comment, done){
                 done(null, comment)
-                if (req.files.img) child.exec("mv " + req.files.img.path + " " + k.static_public_dir + "/" + comment._id, function(er, stdout, stder){
-                    if (er) console.log(JSON.stringify({error:"books.create_comment: mv img",src:req.files.img.path,id:comment._id}, 0, 2))
-                })
+                if (req.files.img){
+                    u.process_img(req.files.img, comment, function(er){
+                        if (er) console.log(JSON.stringify(er, 0, 2))
+                    })
+                }
                 if (req.body.book) DB.update_entry_by_id(k.tables.books, req.body.book, {
                     $inc: {replies:1, pop:1},
                     $set: {modified:new Date()}

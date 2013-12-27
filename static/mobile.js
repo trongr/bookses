@@ -65,7 +65,7 @@ jQuery(function($){
             if (book.img_comments){
                 for (var i = 0; i < book.img_comments.length; i++){
                     imgs += "<div class='book_img_box'>"
-                        +        "<img class='book_img' src='" + book.img_comments[i].img + "'>"
+                        +        "<img class='book_img' src='" + book.img_comments[i].thumb + "'>"
                         +   "</div>"
                 }
             }

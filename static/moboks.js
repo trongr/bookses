@@ -10,6 +10,7 @@ var bok = function(x){
     }
 
     var k = {
+        book: null,
         static_public: "/static/public",
         date_format: "D MMMM YYYY",
         date_format_alt: "h:mm A D MMM YYYY",
@@ -189,7 +190,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         api.get_latest_comments = function(page, done){
             $.ajax({
                 url: "/book/" + o.bID + "/latest_comments",
@@ -398,13 +398,12 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.latest_comment = function(comment){
             var is_edit = (comment.edit ? "is_edit" : "")
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
             var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment))
-            var img = (comment.img ? "<div class='latest_comment_img_box'><img class='latest_comment_img' src='" + comment.img + "'></div>" : "")
+            var img = (comment.img ? "<div class='latest_comment_img_box'><img class='latest_comment_img' src='" + comment.thumb + "'></div>" : "")
             var replies
             if (comment.replies == 0) replies = "<div class='comment_replies red'>new</div>"
             else if (comment.replies == 1) replies = "<div class='comment_replies green'>1 reply</div>"
@@ -413,9 +412,8 @@ var bok = function(x){
                 + "         <div class='latest_comment data' " + dataid + " " + datap +  ">"
                 + "             <div class='comment_info'>"
                 + "                 <div class='comment_user'>" + comment.username + "</div>"
-                + "                 <div class='comment_modified'>" + Date.create(comment.modified).relative() + "</div>"
                 +                   replies
-                + "                 <div class='clear_both'></div>"
+                + "                 <div class='comment_modified'>" + Date.create(comment.modified).relative() + "</div>"
                 + "             </div>"
                 + "             <div class='comment_text'>" + text + "</div>"
                 +               img
@@ -721,17 +719,17 @@ var bok = function(x){
         }
 
         views.load_book = function(done){
-            var book, paragraphs
+            var paragraphs
             async.waterfall([
                 function(done){
                     api.get_book(o.bID, function(er, _book){
-                        book = _book
+                        k.book = _book
                         done(er)
                     })
                 },
                 function(done){
                     done(null)
-                    dom.box.html(templates.book_info(book))
+                    dom.box.html(templates.book_info(k.book))
                     css.fit($(".boks_book_info"), $(".boks_book_title"))
                 },
                 function(done){
@@ -743,7 +741,7 @@ var bok = function(x){
                 },
                 function(done){
                     setTimeout(function(){
-                        api.get_text(book, function(er, text){
+                        api.get_text(k.book, function(er, text){
                             done(er, text)
                         })
                     }, 0)
@@ -778,7 +776,7 @@ var bok = function(x){
                 function(done){
                     done(null)
                     edits.init()
-                    views.format_poetry(book)
+                    views.format_poetry(k.book)
                     views.load_latest_comments()
                 },
             ], function(er, re){
@@ -786,7 +784,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         views.format_poetry = function(book){
             if (book.poetry){
                 $(".boks_text p").css("white-space", "pre-wrap")
@@ -1099,7 +1096,7 @@ var bok = function(x){
                 var text = $("#" + o.bID + " .boks_text p.paragraph").eq(p).html()
                 var box = dom.content_right.html(templates.p_menu(p))
                 box.append(templates.edit_p_box(p))
-                box.find(".edit_p_text").hallo({
+                var editor = box.find(".edit_p_text").hallo({
                     plugins: {
                         halloformat: {
                             formattings: {
@@ -1115,9 +1112,9 @@ var bok = function(x){
                     parentElement: $(".edit_p_toolbar")
                 })
                     .html(text)
-                    .addClass("poetry_edit")
                     .focus()
                     .trigger("halloactivated")
+                if (k.book.poetry) editor.addClass("poetry_edit")
                 box.find(".edit_p_original").html(edits.get_original(p) || text)
                 box.append(templates.comments_box([], p, null))
                 api.get_book_comments(o.bID, p, true, 0, function(er, comments){

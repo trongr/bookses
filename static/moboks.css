@@ -532,6 +532,7 @@ div.popup_cancel {
 .show_latest_edits,
 .watch_this_book {
     font-size: 1em;
+    font-weight: bolder;
 }
 
 .show_latest_edits {
@@ -550,7 +551,7 @@ div.popup_cancel {
     display: inline-block;
     font-size: 0.8em;
     padding: 5px;
-    width: 50%;
+    width: 33%;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -586,20 +587,22 @@ div.popup_cancel {
 }
 
 .comment_user {
-    float: left;
+    width: 100%;
+    text-align: right;
     color: #666;
 }
 
 .comment_modified {
     font-size: 0.9em;
-    float: right;
     color: #666;
+    width: 100%;
+    text-align: right;
 }
 
 .comment_replies {
     font-size: 0.9em;
-    float: right;
-    padding: 0 5px 0 0;
+    width: 100%;
+    text-align: right;
 }
 
 .is_edit {
