@@ -198,7 +198,6 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.reader = function(text){
             var html = "<div id='" + o.bID + "' class='boks_reader'>"
                 // + "         <div class='boks_menu'>"
@@ -305,7 +304,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         views.load_book = function(done){
             async.waterfall([
                 function(done){
@@ -479,6 +477,7 @@ var bok = function(x){
                 var parentid = comments_box.attr("data-parent")
                 var comment = comments_box.find(".boks_new_comment_textarea").val().trim()
                 if (!comment) return alert("comment can't be empty")
+                // mark
                 var img = that.parent().children(".boks_new_comment_picture_input")[0].files[0]
                 if (img && img.size > k.max_img_size) return alert("your img is too big: must be less than 5MB")
 
@@ -599,6 +598,7 @@ var bok = function(x){
             }, 100)
         }
 
+        // mark
         bindings.change_new_comment_picture_input = function(e){
             var file = e.target.files[0]
             var box = $(this).closest(".boks_new_comment_box")

@@ -329,7 +329,8 @@ var bok = function(x){
                 + "         <div class='boks_reply_img'><img></div>"
                 + "         <button class='boks_reply_post'>POST</button>"
                 + "         <button class='boks_reply_cancel'>cancel</button>"
-                + "         <button class='boks_reply_img_button'><i class='icon-picture'></i></button>"
+                + "         <button class='boks_reply_img_input_button'><i class='icon-picture'></i></button>"
+                + "         <button class='boks_reply_img_button'><i class='fontello-brush'></i></button>"
                 + "         <div class='clear_both'></div>"
                 + "     </div>"
             return html
@@ -522,11 +523,28 @@ var bok = function(x){
                 .on("click", ".draw_undo_button", draw.bindings.click_draw_undo_button)
                 .on("click", ".draw_picture_button", draw.bindings.click_choose_img)
                 .on("change", ".draw_picture_input", draw.bindings.change_img_input)
+                .on("change", ".direct_picture_input", draw.bindings.change_direct_img_input)
             draw.clear()
             draw.k.preview = img
             if (img.attr("src")) draw.bindings.load_img(img.attr("src"))
             else draw.draw()
         }
+
+        draw.init_input = function(img){
+            draw.clear()
+            draw.k.preview = img
+            $("<input class='direct_picture_input' accept='image/*' type='file'>")
+                .on("change", function(e){
+                    draw.k.direct_input_file = e.target.files[0]
+                    var reader = new FileReader()
+                    reader.onload = function(e){
+                        draw.k.preview.attr("src", e.target.result).show()
+                    }
+                    reader.readAsDataURL(draw.k.direct_input_file)
+                }).click()
+        }
+
+
 
         draw.draw = function(){
             draw.bindings.click_draw_button()
@@ -534,6 +552,7 @@ var bok = function(x){
 
         draw.clear = function(){
             draw.k = {
+                direct_input_file: null,
                 preview: null,
                 canvas: null,
                 cntxt: null,
@@ -619,7 +638,8 @@ var bok = function(x){
         }
 
         draw.get_file = function(){
-            if (draw.k.canvas) return draw.dataURL_to_blob(draw.k.canvas.toDataURL())
+            if (draw.k.direct_input_file) return draw.k.direct_input_file
+            else if (draw.k.canvas) return draw.dataURL_to_blob(draw.k.canvas.toDataURL())
             else return null
         }
 
@@ -766,6 +786,7 @@ var bok = function(x){
                         .on("click", ".boks_reply_post", bindings.click_reply_post)
                         .on("click", ".boks_reply_cancel", bindings.click_reply_cancel)
                         .on("click", ".boks_reply_img_button", bindings.click_reply_img)
+                        .on("click", ".boks_reply_img_input_button", bindings.click_reply_img_input)
                 },
                 function(done){
                     done(null)
@@ -1069,6 +1090,10 @@ var bok = function(x){
             draw.init($(this).closest(".data").find("img"))
         }
 
+        bindings.click_reply_img_input = function(){
+            draw.init_input($(this).closest(".data").find("img"))
+        }
+
         bindings.click_para_box = function(){
             $(this).fadeOut(50).fadeIn(100)
             var p = $(this).attr("data-p")
@@ -1177,7 +1202,6 @@ var bok = function(x){
 
         }
 
-        // mark
         bindings.click_latest_comment = function(){
             var p = $(this).attr("data-p")
             var id = $(this).attr("data-id")
