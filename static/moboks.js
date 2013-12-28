@@ -260,7 +260,7 @@ var bok = function(x){
                 + "         </div>"
                 + "         <div class='clear_both'></div>"
                 + "         <div class='boks_latest_comments'></div>"
-                + "         <button class='boks_latest_comments_more' data-page='0'>more<br><i class='icon-chevron-down'></i></button>"
+                + "         <button class='boks_latest_comments_more' data-page='0'><i class='icon-chevron-down'></i></button>"
                 + "         <div class='boks_spinner'><i class='icon-spin icon-cog'></i><br><span>working<br>real<br>hard<br>. . .</span></div>"
                 + "     </div>"
             return html
