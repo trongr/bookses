@@ -15,7 +15,7 @@ var upload = (function(){
             var html = "<div id='upload_box'>"
                 + "         <div class='popup_upload_cancel'></div>"
                 + "         <div id='upload_box_left'>"
-                + "             <div id='upload_box_header'>Publish your masterpiece</div>"
+                + "             <div id='upload_box_header'>Publish</div>"
                 + "             <div id='text_files_only'>NOTE. Bookses only supports plain text files at the moment. You can format and make minor edits after uploading.</div>"
                 + "             <input id='upload_book_title' placeholder='title'><br>"
                 + "             <textarea id='upload_book_description' placeholder='description'></textarea><br>"

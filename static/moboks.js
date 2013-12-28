@@ -852,7 +852,7 @@ var bok = function(x){
                 },
                 function(comment, done){
                     var elmt = $(templates.comment(comment))
-                    $(".boks_content_right .boks_comments").eq(0).prepend(elmt)
+                    $(".boks_content_right .boks_comments").eq(0).html(elmt)
                     done(null, elmt)
                 }
             ], function(er, elmt){
@@ -915,32 +915,32 @@ var bok = function(x){
         }
 
         events.init = function(){
-            $(document)
+            // $(document)
             // whoever wants to slide to the comment, triggers
             // wait_and_slide, which stores the comment's id. then,
             // once the comments are loaded, comments_loaded is
             // triggered, which checks for the wait_and_slide id if it
             // exists, then it slides.
-                .on(events.k.wait_and_slide, events.handler_wait_and_slide)
-                .on(events.k.comments_loaded, events.handler_comments_loaded)
+                // .on(events.k.wait_and_slide, events.handler_wait_and_slide)
+                // .on(events.k.comments_loaded, events.handler_comments_loaded)
         }
 
-        events.handler_wait_and_slide = function(x){
-            events.wait.comment_id = x.comment_id
-        }
+        // events.handler_wait_and_slide = function(x){
+        //     events.wait.comment_id = x.comment_id
+        // }
 
-        events.handler_comments_loaded = function(){
-            if (events.wait.comment_id){
-                var comment = $(".boks_comment[data-id='" + events.wait.comment_id + "']")
-                if (comment.length){
-                    var top = comment.position().top
-                    dom.content_right.animate({scrollTop:top}, 100)
-                } else {
-                    views.load_comment(events.wait.comment_id)
-                }
-            }
-            events.wait.comment_id = null
-        }
+        // events.handler_comments_loaded = function(){
+        //     if (events.wait.comment_id){
+        //         var comment = $(".boks_comment[data-id='" + events.wait.comment_id + "']")
+        //         if (comment.length){
+        //             var top = comment.position().top
+        //             dom.content_right.animate({scrollTop:top}, 100)
+        //         } else {
+        //             views.load_comment(events.wait.comment_id)
+        //         }
+        //     }
+        //     events.wait.comment_id = null
+        // }
 
         return events
     }())
@@ -962,7 +962,7 @@ var bok = function(x){
                     dom.content_right.append(templates.comments_box([], p, null))
                 }
                 $("html, body").animate({scrollTop:that.offset().top}, 100)
-                $(document).trigger(events.k.comments_loaded)
+                // $(document).trigger(events.k.comments_loaded)
             })
         }
 
@@ -1229,13 +1229,23 @@ var bok = function(x){
 
         }
 
+        // mark
         bindings.click_latest_comment = function(){
-            var p = $(this).attr("data-p")
-            var id = $(this).attr("data-id")
-            bindings.go_to_p(p)
-            $(document).trigger({
-                type: events.k.wait_and_slide,
-                comment_id: id
+            var that = $(this)
+            var p = that.attr("data-p")
+            var id = that.attr("data-id")
+            var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(p)
+            $("html, body").animate({scrollTop:paragraph.offset().top}, 100)
+            dom.content_right.html(templates.p_menu(p))
+            $("#boks_p_menu > .boks_reply").fadeOut(200).fadeIn(200)
+            api.get_comment(id, function(er, comment){
+                if (er){
+                    console.log(JSON.stringify(er, 0, 2))
+                } else if (comment){
+                    dom.content_right.append(templates.comments_box([comment], p, comment.parent))
+                } else {
+                    console.log(JSON.stringify({error:"click latest comment: can't find comment"}, 0, 2))
+                }
             })
         }
 
