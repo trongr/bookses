@@ -582,7 +582,7 @@ var books = module.exports = (function(){
         var aux = {
             sort: [["modified","desc"]],
             // sort: [["pop","desc"]],
-            limit: k.page_size + 1,
+            limit: k.page_size, // + 1 if you want client to know whether there're more results
             skip: req.query.page * k.page_size
         }
         DB.get_entries(k.tables.comments, query, aux, function(er, entries){

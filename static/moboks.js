@@ -255,11 +255,12 @@ var bok = function(x){
                 + "             <span>Latest Activity</span>"
                 + "         </div>"
                 + "         <div class='latest_comments_menu'>"
-                + "             <button class='show_latest_edits'>Show book edits</button>"
+                + "             <button class='hide_latest_edits'>Hide book edits</button>"
                 // + "             <button class='watch_this_book'><i class='icon-eye-open'></i></button>"
                 + "         </div>"
                 + "         <div class='clear_both'></div>"
                 + "         <div class='boks_latest_comments'></div>"
+                + "         <button class='boks_latest_comments_more' data-page='0'>more<br><i class='icon-chevron-down'></i></button>"
                 + "         <div class='boks_spinner'><i class='icon-spin icon-cog'></i><br><span>working<br>real<br>hard<br>. . .</span></div>"
                 + "     </div>"
             return html
@@ -439,7 +440,7 @@ var bok = function(x){
 
             templates.draw_box = function(){
                 var html = "<div class='draw_box'>"
-                    + "         <div class='draw_box_info'>Drawing only works on desktop and laptop for now.</div>"
+                    + "         <div class='draw_box_info'>Drawing only works on desktop and laptop running the latest browser for now.</div>"
                     + "         <button class='draw_cancel'><i class='icon-trash'></i></button>"
                     + "         <div class='draw_menu'>"
                     + "             <button class='draw_save_quit'>save & quit</button>"
@@ -798,7 +799,7 @@ var bok = function(x){
                     done(null)
                     edits.init()
                     views.format_poetry(k.book)
-                    views.load_latest_comments()
+                    views.load_latest_comments(0)
                 },
             ], function(er, re){
                 done(er)
@@ -842,6 +843,26 @@ var bok = function(x){
             })
         }
 
+        views.load_comment = function(id){
+            async.waterfall([
+                function(done){
+                    api.get_comment(id, function(er, comment){
+                        done(er, comment)
+                    })
+                },
+                function(comment, done){
+                    var elmt = $(templates.comment(comment))
+                    $(".boks_content_right .boks_comments").eq(0).prepend(elmt)
+                    done(null, elmt)
+                }
+            ], function(er, elmt){
+                if (er){
+                    console.log(JSON.stringify(er, 0, 2))
+                    return null
+                } else return elmt
+            })
+        }
+
         views.load_new_comment = function(comment){
             var elmt = $(templates.comment(comment))
             if (comment.parent){
@@ -852,10 +873,10 @@ var bok = function(x){
             return elmt
         }
 
-        views.load_latest_comments = function(){
+        views.load_latest_comments = function(page){
             async.waterfall([
                 function(done){
-                    api.get_latest_comments(0, function(er, comments){
+                    api.get_latest_comments(page, function(er, comments){
                         done(er, comments)
                     })
                 },
@@ -869,12 +890,13 @@ var bok = function(x){
         }
 
         views.render_latest_comments = function(comments){
-            $(".boks_latest_comments").html(templates.latest_comments(comments))
+            $(".boks_latest_comments").append(templates.latest_comments(comments))
                 .off()
                 .on("click", ".latest_comment", bindings.click_latest_comment)
-            $(".show_latest_edits").on("click", function(){
-                $(".latest_comment_box.is_edit").css("display", "inline-block")
+            $(".hide_latest_edits").off().on("click", function(){
+                $(".latest_comment_box.is_edit").css("display", "none")
             })
+            $(".boks_latest_comments_more").off().on("click", bindings.click_more_latest_comments)
         }
 
         return views
@@ -909,8 +931,13 @@ var bok = function(x){
 
         events.handler_comments_loaded = function(){
             if (events.wait.comment_id){
-                var top = $(".boks_comment[data-id='" + events.wait.comment_id + "']").position().top
-                dom.content_right.animate({scrollTop:top}, 100)
+                var comment = $(".boks_comment[data-id='" + events.wait.comment_id + "']")
+                if (comment.length){
+                    var top = comment.position().top
+                    dom.content_right.animate({scrollTop:top}, 100)
+                } else {
+                    views.load_comment(events.wait.comment_id)
+                }
             }
             events.wait.comment_id = null
         }
@@ -1210,6 +1237,13 @@ var bok = function(x){
                 type: events.k.wait_and_slide,
                 comment_id: id
             })
+        }
+
+        bindings.click_more_latest_comments = function(){
+            var that = $(this)
+            var page = parseInt(that.attr("data-page")) + 1
+            that.attr("data-page", page)
+            views.load_latest_comments(page)
         }
 
         return bindings

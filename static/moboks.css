@@ -257,7 +257,7 @@ p.paragraph:hover {
     padding: 10px;
     color: #fff;
     background-color: #000;
-    font-size: 0.8em;
+    font-size: 1.3em;
     text-align: right;
 }
 
@@ -391,7 +391,7 @@ p.paragraph:hover {
     padding: 10px;
     color: #fff;
     background-color: #000;
-    font-size: 0.8em;
+    font-size: 1.3em;
     text-align: right;
 }
 
@@ -499,7 +499,7 @@ div.popup_cancel {
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
     padding: 10px;
-    font-size: 1em;
+    font-size: 1.3em;
 }
 
 .draw_save_quit {
@@ -540,13 +540,13 @@ div.popup_cancel {
     margin: 0 10px 5px 0;
 }
 
-.show_latest_edits,
+.hide_latest_edits,
 .watch_this_book {
     font-size: 1em;
     font-weight: bolder;
 }
 
-.show_latest_edits {
+.hide_latest_edits {
     border-bottom: 2px solid #70ACFF;
     padding: 0;
 }
@@ -561,7 +561,7 @@ div.popup_cancel {
     vertical-align: top;
     display: inline-block;
     font-size: 0.8em;
-    padding: 5px;
+    padding: 5px 0 5px 5px;
     width: 33%;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
@@ -617,9 +617,17 @@ div.popup_cancel {
 }
 
 .is_edit {
-    display: none;
+    display: inline-block;
 }
 
 .is_edit .latest_comment {
     background-color: #C4DDFF;
+}
+
+.boks_latest_comments_more {
+    width: 100%;
+    font-size: 2em;
+    padding: 40px;
+    color: #fff;
+    background-color: #aaa;
 }
