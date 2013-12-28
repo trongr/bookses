@@ -631,3 +631,7 @@ div.popup_cancel {
     color: #fff;
     background-color: #aaa;
 }
+
+.boks_latest_comments_more:hover {
+    color: #0f0;
+}
