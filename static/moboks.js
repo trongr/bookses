@@ -255,7 +255,7 @@ var bok = function(x){
                 + "             <span>Latest Activity</span>"
                 + "         </div>"
                 + "         <div class='latest_comments_menu'>"
-                + "             <button class='hide_latest_edits'>Hide book edits</button>"
+                // + "             <button class='hide_latest_edits'>Hide book edits</button>"
                 // + "             <button class='watch_this_book'><i class='icon-eye-open'></i></button>"
                 + "         </div>"
                 + "         <div class='clear_both'></div>"
@@ -893,9 +893,9 @@ var bok = function(x){
             $(".boks_latest_comments").append(templates.latest_comments(comments))
                 .off()
                 .on("click", ".latest_comment", bindings.click_latest_comment)
-            $(".hide_latest_edits").off().on("click", function(){
-                $(".latest_comment_box.is_edit").css("display", "none")
-            })
+            // $(".hide_latest_edits").off().on("click", function(){
+            //     $(".latest_comment_box.is_edit").css("display", "none")
+            // })
             $(".boks_latest_comments_more").off().on("click", bindings.click_more_latest_comments)
         }
 
