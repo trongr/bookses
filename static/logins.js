@@ -60,6 +60,7 @@ var users = (function(){
                 $("#login_box").show()
                 $("#logout_box").hide()
                 users.init()
+                notis.clear()
             }
         })
     }
@@ -79,6 +80,7 @@ var users = (function(){
                 $("#login_box").hide()
                 $("#logout_box").show()
                 users.init()
+                notis.init($("#notifications"))
             }
         })
     }

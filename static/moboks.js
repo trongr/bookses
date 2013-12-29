@@ -738,6 +738,7 @@ var bok = function(x){
                 if (er) o.error(er)
             })
             users.init()
+            notis.init($("#notifications"))
         }
 
         views.load_book = function(done){

@@ -48,6 +48,12 @@ db.open(function(er, db) {
             if (er) throw er
         })
     })
+    db.collection(k.tables.likes, {safe:true}, function(er, docs){
+        if (er) throw er
+        else docs.ensureIndex({like:1}, function(er, re){
+            if (er) throw er
+        })
+    })
 })
 
 var DB = (function(){
@@ -101,6 +107,16 @@ var DB = (function(){
         })
     }
 
+    DB.count_entries = function(table, query, aux, done){
+        db.collection(table, {safe:true}, function(er, docs){
+            if (er) done({error:"db.count_entries",table:table,query:query,aux:aux,er:er})
+            else docs.count(query, aux, function(er, count){
+                if (er) done({error:"db.count_entries",table:table,query:query,aux:aux,er:er})
+                else done(null, count)
+            })
+        })
+    }
+
     DB.find_books = function(text, aux, done){
         db.command({
             text: k.tables.books,
@@ -129,15 +145,17 @@ var DB = (function(){
         if (recursion < 0) return
         async.waterfall([
             function(done){
-                DB.update_entry_by_id(k.tables.comments, id, update, function(er, num){
-                    done(er)
-                })
-            },
-            function(done){
                 DB.get_entry_by_id(k.tables.comments, id, function(er, comment){
                     if (er) done(er)
                     else if (comment) done(null, comment)
                     else done({error:"no such comment"})
+                })
+            },
+            function(comment, done){
+                // only update notis if someone else, not you, responds to your comment
+                if (comment.username != update.$set.notee) update.$set.notis = true
+                DB.update_entry_by_id(k.tables.comments, id, update, function(er, num){
+                    done(er, comment)
                 })
             },
         ], function(er, comment){
@@ -437,6 +455,7 @@ var books = module.exports = (function(){
         })
     }
 
+    // mark
     books.create_comment = function(req, res){
         async.waterfall([
             function(done){
@@ -487,7 +506,10 @@ var books = module.exports = (function(){
                 })
                 if (req.body.parent) DB.update_comment_recursive(req.body.parent, {
                     $inc: {replies:1, pop:1},
-                    $set: {modified:new Date()}
+                    $set: {
+                        modified: new Date(),
+                        notee: req.session.username
+                    }
                 }, k.recursion_limit)
             }
         ], function(er, comment){
@@ -645,6 +667,7 @@ var books = module.exports = (function(){
         })
     }
 
+    // mark
     books.upvote_comment = function(req, res){
         async.waterfall([
             function(done){
@@ -669,7 +692,10 @@ var books = module.exports = (function(){
                 done(null, 1)
                 DB.update_comment_recursive(req.params.id, {
                     $inc: {votes:1, pop:1},
-                    $set: {modified:new Date()}
+                    $set: {
+                        modified: new Date(),
+                        notee: req.session.username
+                    }
                 }, k.recursion_limit)
             }
         ], function(er, num){
@@ -860,6 +886,31 @@ var books = module.exports = (function(){
         })
     }
 
+    books.notis_count_validate = function(req, res, next){
+        next(null) // nothing to validate
+    }
+
+    books.notis_count = function(req, res){
+        async.waterfall([
+            function(done){
+                var query = {
+                    username: req.session.username,
+                    notis: true
+                }
+                var aux = {}
+                DB.count_entries(k.tables.comments, query, aux, function(er, count){
+                    if (er) done({info:"can't count notis"})
+                    else done(null, count)
+                })
+            },
+        ], function(er, count){
+            if (er){
+                console.log(JSON.stringify({error:"notis count",er:er}, 0, 2))
+                res.send({error:"notis count",info:er.info})
+            } else res.send({count:count})
+        })
+    }
+
     return books
 }())
 
@@ -962,12 +1013,25 @@ var test = (function(){
         }, 2000)
     }
 
+    test.count_entries = function(){
+        setTimeout(function(){
+            var query = {
+                pop: 315
+            }
+            var aux = {}
+            DB.count_entries(k.tables.books, query, aux, function(er, count){
+                console.log(JSON.stringify(er, 0, 2))
+                console.log(JSON.stringify(count, 0, 2))
+            })
+        }, 2000)
+    }
+
     return test
 }())
 
 console.log("requiring " + module.filename + " from " + require.main.filename)
 if (require.main == module){
-    test.get_paragraphs()
+    test.count_entries()
 } else {
     press.process_books()
 }

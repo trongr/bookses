@@ -1,10 +1,6 @@
 var mongo = require("mongodb")
 var server = new mongo.Server('localhost', 27017, {auto_reconnect:true})
 var db = new mongo.Db(process.env.DB || "bookses", server)
-db.open(function(er, db) {
-    if (er) throw er
-    console.log(module.filename + " connecting to " + (process.env.DB || "bookses"))
-})
 var async = require("async")
 var request = require("request")
 var validate = require("./validate.js")
@@ -14,6 +10,17 @@ var k = {
         users: "users",
     }
 }
+
+db.open(function(er, db) {
+    if (er) throw er
+    console.log(module.filename + " connecting to " + (process.env.DB || "bookses"))
+    db.collection(k.tables.users, {safe:true}, function(er, docs){
+        if (er) throw er
+        else docs.ensureIndex({username:1}, function(er, re){
+            if (er) throw er
+        })
+    })
+})
 
 var DB = (function(){
     var DB = {}

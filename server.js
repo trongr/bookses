@@ -103,6 +103,8 @@ server.post("/user/:username/login", users.login_validate, users.login)
 server.post("/user/logout", users.logout) // clears session
 server.get("/user/login", users.is_logged_in) // tries to see if session is still open, without requiring user entering credentials
 
+server.get("/user/notis", users.authenticate, books.notis_count_validate, books.notis_count)
+
 var port = process.env.PORT || 8080
 app.listen(port, "127.0.0.1", function(){
     console.log("open for business on port " + port)

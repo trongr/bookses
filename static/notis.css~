@@ -1,0 +1,4 @@
+
+#notis_box {
+    display: inline-block;
+}

@@ -1,0 +1,15 @@
+
+#notis_box {
+    display: inline-block;
+}
+
+button#notis_comments,
+button#notis_mails {
+    padding: 0;
+    color: #aaa;
+    cursor: pointer;
+}
+
+.new_notis {
+    color: #f00 !important;
+}

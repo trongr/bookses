@@ -58,19 +58,14 @@ button:hover {
     position: fixed;
     top: 0;
     left: 0;
-    padding: 5px;
+    width: 60%;
     background-color: rgba(239, 239, 239, 0.9);
     border-bottom: 1px solid #ddd;
     display: table;
-    width: 60%;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
 }
 
 #banner button {
     font-size: 1em;
-    padding: 0;
     background: none;
 }
 
@@ -85,6 +80,7 @@ button:hover {
 
 #banner_left {
     display: table-cell;
+    padding: 5px;
 }
 
 #banner_left #search_bar {

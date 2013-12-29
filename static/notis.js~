@@ -1,0 +1,21 @@
+var notis = (function(){
+    var notis = {}
+
+    var templates = (function(){
+        var templates = {}
+
+        templates.notis = function(){
+            var html = "<div id='notis_box'>"
+                + "     </div>"
+            return html
+        }
+
+        return templates
+    }())
+
+    notis.init = function(box){
+        box.html(templates.notis())
+    }
+
+    return notis
+}())
