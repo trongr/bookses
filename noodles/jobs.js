@@ -6,7 +6,8 @@ var cleanup = (function(){
 
     cleanup.tmp = function(){
         new cron("13 29 * * * *", function(){
-            child.exec("find tmp/* -mtime +1h -exec rm {} \\;", function(er, stdout, stder){
+            child.exec("find tmp/* -mtime +1 -exec rm {} \\;", function(er, stdout, stder){
+                if (er) console.log(JSON.stringify(er, 0, 2))
                 console.log(new Date() + " cleaning up tmp")
             })
         }, null, true)
