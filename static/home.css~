@@ -1,7 +1,0 @@
-body {
-
-}
-
-#book {
-    white-space: pre;
-}

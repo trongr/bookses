@@ -737,6 +737,7 @@ var bok = function(x){
             views.load_book(function(er){
                 if (er) o.error(er)
             })
+            users.init()
         }
 
         views.load_book = function(done){
@@ -792,7 +793,6 @@ var bok = function(x){
                 function(done){
                     done(null)
                     views.highlight_paragraphs(paragraphs)
-                    $(".boks_spinner").html("").hide()
                     addthis.toolbox(".addthis_toolbox")
                 },
                 function(done){
@@ -800,6 +800,7 @@ var bok = function(x){
                     edits.init()
                     views.format_poetry(k.book)
                     views.load_latest_comments(0)
+                    $(".boks_spinner").html("").hide()
                 },
             ], function(er, re){
                 done(er)
@@ -961,7 +962,7 @@ var bok = function(x){
                 } else {
                     dom.content_right.append(templates.comments_box([], p, null))
                 }
-                $("html, body").animate({scrollTop:that.offset().top}, 100)
+                $("html, body").animate({scrollTop:that.offset().top - 40}, 100)
                 // $(document).trigger(events.k.comments_loaded)
             })
         }
@@ -1005,8 +1006,8 @@ var bok = function(x){
 
         bindings.click_comment_like = function(){
             var that = $(this)
-            users.is_logged_in(function(er, loggedin){
-                if (!loggedin) return users.show_login_box($("#popup"))
+            users.is_logged_in(function(er, user){
+                if (!user || !user.loggedin) return users.show_login_box($("#popup"))
                 try {
                     var id = that.closest(".data").attr("data-id")
                     var boks_comment_votes = that.find(".boks_comment_votes")
@@ -1028,8 +1029,8 @@ var bok = function(x){
         bindings.click_reply = function(){
             draw.clear()
             var that = $(this)
-            users.is_logged_in(function(er, loggedin){
-                if (!loggedin) return users.show_login_box($("#popup"))
+            users.is_logged_in(function(er, user){
+                if (!user || !user.loggedin) return users.show_login_box($("#popup"))
                 $(".edit_p_box").remove()
                 var data_box = that.closest(".data")
                 var id = data_box.attr("data-id")
@@ -1136,14 +1137,14 @@ var bok = function(x){
 
         bindings.go_to_p = function(p){
             var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(p)
-            $("html, body").animate({scrollTop:paragraph.offset().top}, 100)
+            $("html, body").animate({scrollTop:paragraph.offset().top - 40}, 100)
             paragraph.click()
         }
 
         bindings.click_edit_p = function(){
             var that = $(this)
-            users.is_logged_in(function(er, loggedin){
-                if (!loggedin) return users.show_login_box($("#popup"))
+            users.is_logged_in(function(er, user){
+                if (!user || !user.loggedin) return users.show_login_box($("#popup"))
                 var p = that.closest(".data").attr("data-p")
                 var text = $("#" + o.bID + " .boks_text p.paragraph").eq(p).html()
                 var box = dom.content_right.html(templates.p_menu(p))
@@ -1235,7 +1236,7 @@ var bok = function(x){
             var p = that.attr("data-p")
             var id = that.attr("data-id")
             var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(p)
-            $("html, body").animate({scrollTop:paragraph.offset().top}, 100)
+            $("html, body").animate({scrollTop:paragraph.offset().top - 40}, 100)
             dom.content_right.html(templates.p_menu(p))
             $("#boks_p_menu > .boks_reply").fadeOut(200).fadeIn(200)
             api.get_comment(id, function(er, comment){

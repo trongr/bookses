@@ -11,13 +11,13 @@ var users = (function(){
         templates.logins = function(){
             var html = "<div id='login_box'>"
                 + "         <div class='popup_login_cancel'></div>"
-                + "         <div id='please_log_in'>Please log in or register</div>"
+                + "         <div id='please_log_in'>Please log in or sign up</div>"
                 + "         <span class='input_enter_submit'>"
                 + "             <input id='username' placeholder='username'><br>"
                 + "             <input id='password' type='password' placeholder='password'><br>"
                 + "             <button id='login'>LOGIN</button><br>"
                 + "         </span>"
-                + "         <button id='register'>REGISTER</button><br>"
+                + "         <button id='register'>SIGN UP</button><br>"
                 + "         <button class='popup_login_cancel'>cancel</button>"
                 + "     </div>"
                 + "     <div id='logout_box'>"
@@ -59,6 +59,7 @@ var users = (function(){
             else {
                 $("#login_box").show()
                 $("#logout_box").hide()
+                users.init()
             }
         })
     }
@@ -77,6 +78,7 @@ var users = (function(){
             } else {
                 $("#login_box").hide()
                 $("#logout_box").show()
+                users.init()
             }
         })
     }
@@ -96,6 +98,7 @@ var users = (function(){
                 $("#login_box").hide()
                 $("#logout_box").show()
                 alert("Registration complete. Your new identity: " + JSON.stringify(user, 0, 2))
+                users.init()
             }
         })
     }
@@ -135,9 +138,19 @@ var users = (function(){
         })
     }
 
+    users.init = function(){
+        users.is_logged_in(function(er, user){
+            if (user && user.loggedin){
+                $("#logins").html(user.username)
+            } else {
+                $("#logins").html("login")
+            }
+        })
+    }
+
     users.init_login_boxes = function(){
-        users.is_logged_in(function(er, loggedin){
-            if (loggedin){
+        users.is_logged_in(function(er, user){
+            if (user && user.loggedin){
                 $("#login_box").hide()
                 $("#logout_box").show()
             }
@@ -149,7 +162,7 @@ var users = (function(){
             url: "/user/login",
             type: "get",
             success: function(re){
-                if (re.loggedin) done(null, re.loggedin)
+                if (re.user) done(null, re.user)
                 else done({error:"may not be logged in",re:re})
             }
         })

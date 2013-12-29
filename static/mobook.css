@@ -55,13 +55,27 @@ button:hover {
 }
 
 #banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 5px;
+    background-color: rgba(239, 239, 239, 0.9);
+    border-bottom: 1px solid #ddd;
     display: table;
     width: 60%;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
 }
 
 #banner button {
     font-size: 1em;
     padding: 0;
+    background: none;
+}
+
+#banner button:hover {
+    color: #70ACFF;
 }
 
 #banner input {
@@ -88,8 +102,8 @@ button:hover {
 
 #logo {
     font-size: 1.5em;
-    padding: 5px;
-    color: #333;
+    padding: 0 5px 0 5px;
+    color: #000;
     font-weight: bolder;
 }
 
@@ -99,6 +113,7 @@ button:hover {
 
 #tagline_box {
     text-align: center;
+    margin: 40px 0 0 0;
     padding: 20px 0 20px 0;
     width: 60%;
     border-bottom: 1px solid #999;

@@ -153,9 +153,19 @@ var users = module.exports = (function(){
 
     users.is_logged_in = function(req, res){
         if (req.session.username && req.session.password){
-            res.send({loggedin:true})
+            res.send({
+                user: {
+                    username: req.session.username,
+                    loggedin: true
+                }
+            })
         } else {
-            res.send({loggedin:false})
+            res.send({
+                user: {
+                    username: req.session.username,
+                    loggedin: false
+                }
+            })
         }
     }
 

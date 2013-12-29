@@ -97,6 +97,7 @@ jQuery(function($){
 
         views.init = function(){
             views.load_books(k.page++)
+            users.init()
         }
 
         views.load_books = function(page){
