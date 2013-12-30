@@ -154,6 +154,7 @@ var DB = (function(){
             function(comment, done){
                 // only update notis if someone else, not you, responds to your comment
                 if (comment.username != update.$set.notee) update.$set.notis = true
+                else delete update.$set.notis
                 DB.update_entry_by_id(k.tables.comments, id, update, function(er, num){
                     done(er, comment)
                 })
