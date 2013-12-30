@@ -98,7 +98,7 @@ jQuery(function($){
         views.init = function(){
             views.load_books(k.page++)
             users.init()
-            notis.init($("#notifications"))
+            notis.init($("#notification_menu"), $("#notification_tray"))
         }
 
         views.load_books = function(page){

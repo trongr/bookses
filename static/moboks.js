@@ -297,8 +297,10 @@ var bok = function(x){
         templates.p_menu = function(p){
             var html = "<div id='boks_p_menu' class='data' data-p='" + p + "'>"
                 + "         <span class='boks_p_link' data-p-link='" + p + "'>p" + p + "</span>"
-                + "         <button class='boks_edit_p'><i class='icon-font'></i></button>"
-                + "         <button class='boks_reply'><i class='icon-pencil'></i></button>"
+                + "         <button class='boks_edit_p'>edit</button>"
+                + "         <button class='boks_reply'>reply</button>"
+                // + "         <button class='boks_edit_p'><i class='icon-font'></i></button>"
+                // + "         <button class='boks_reply'><i class='icon-pencil'></i></button>"
                 + "         <button class='boks_go_home'><i class='icon-home'></i></button>"
                 + "         <div class='boks_reply_box_box'></div>"
                 + "     </div>"
@@ -379,7 +381,8 @@ var bok = function(x){
                 + "             <div class='boks_comment_created'>" + Date.create(comment.created).long() + "</div>"
                 // + "             <div class='boks_comment_created'>" + moment(comment.created).format(k.date_format_alt) + "</div>"
                 + "             <div class='boks_comment_menu'>"
-                + "                 <button class='boks_reply boks_green_underline'><i class='icon-pencil'></i></button>"
+                + "                 <button class='boks_reply boks_green_underline'>reply</button>"
+                // + "                 <button class='boks_reply boks_green_underline'><i class='icon-pencil'></i></button>"
                 + "                 <button class='boks_comment_reply " + has_replies + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
                 + "                 <button class='boks_comment_thumbs_up " + has_votes + "'><i class='icon-thumbs-up-alt'></i><span class='boks_comment_votes'>" + comment.votes + "</span></button>"
                 + "                 <button class='boks_comment_flag'><i class='icon-flag'></i></button>"
@@ -710,7 +713,7 @@ var bok = function(x){
             })
         }
 
-        edits.init = function(){
+        edits.init = function(done){
             async.waterfall([
                 function(done){
                     edits.get_edits(function(er, entries){
@@ -723,7 +726,7 @@ var bok = function(x){
                     })
                 },
             ], function(er, re){
-                if (er) console.log(JSON.stringify(er, 0, 2))
+                done(er)
             })
         }
 
@@ -738,7 +741,6 @@ var bok = function(x){
                 if (er) o.error(er)
             })
             users.init()
-            notis.init($("#notifications"))
         }
 
         views.load_book = function(done){
@@ -751,9 +753,9 @@ var bok = function(x){
                     })
                 },
                 function(done){
-                    done(null)
                     dom.box.html(templates.book_info(k.book))
                     css.fit($(".boks_book_info"), $(".boks_book_title"))
+                    done(null)
                 },
                 function(done){
                     api.get_paragraphs(function(er, _paragraphs){
@@ -770,7 +772,6 @@ var bok = function(x){
                     }, 0)
                 },
                 function(text, done){
-                    done(null)
                     dom.box.append(templates.reader(text))
                         .off()
                         .on("click", ".boks_text p.paragraph", bindings.click_p)
@@ -790,19 +791,34 @@ var bok = function(x){
                         .on("click", ".boks_reply_cancel", bindings.click_reply_cancel)
                         .on("click", ".boks_reply_img_button", bindings.click_reply_img)
                         .on("click", ".boks_reply_img_input_button", bindings.click_reply_img_input)
+                    done(null)
                 },
                 function(done){
-                    done(null)
-                    views.highlight_paragraphs(paragraphs)
                     addthis.toolbox(".addthis_toolbox")
+                    views.highlight_paragraphs(paragraphs)
+                    edits.init(function(er){
+                        done(null)
+                    })
                 },
                 function(done){
-                    done(null)
-                    edits.init()
                     views.format_poetry(k.book)
-                    views.load_latest_comments(0)
-                    $(".boks_spinner").html("").hide()
+                    views.load_latest_comments(0, function(er){
+                        done(null)
+                    })
                 },
+                function(done){
+                    $(".boks_spinner").html("").hide()
+                    var comment_id = $.url(window.location).param("c")
+                    if (comment_id){
+                        views.load_comment(comment_id, function(er){
+                            done(er)
+                        })
+                    } else done(null)
+                },
+                function(done){
+                    notis.init($("#notification_menu"), $("#notification_tray"))
+                    done(null)
+                }
             ], function(er, re){
                 done(er)
             })
@@ -845,7 +861,7 @@ var bok = function(x){
             })
         }
 
-        views.load_comment = function(id){
+        views.load_comment = function(id, done){
             async.waterfall([
                 function(done){
                     api.get_comment(id, function(er, comment){
@@ -853,15 +869,15 @@ var bok = function(x){
                     })
                 },
                 function(comment, done){
-                    var elmt = $(templates.comment(comment))
-                    $(".boks_content_right .boks_comments").eq(0).html(elmt)
-                    done(null, elmt)
+                    var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(comment.p)
+                    $("html, body").animate({scrollTop:paragraph.offset().top - 40}, 100)
+                    dom.content_right.html(templates.p_menu(comment.p))
+                    $("#boks_p_menu > .boks_reply").fadeOut(200).fadeIn(200)
+                    dom.content_right.append(templates.comments_box([comment], comment.p, comment.parent))
+                    done(null)
                 }
-            ], function(er, elmt){
-                if (er){
-                    console.log(JSON.stringify(er, 0, 2))
-                    return null
-                } else return elmt
+            ], function(er){
+                done(er)
             })
         }
 
@@ -875,7 +891,7 @@ var bok = function(x){
             return elmt
         }
 
-        views.load_latest_comments = function(page){
+        views.load_latest_comments = function(page, done){
             async.waterfall([
                 function(done){
                     api.get_latest_comments(page, function(er, comments){
@@ -883,11 +899,11 @@ var bok = function(x){
                     })
                 },
                 function(comments, done){
-                    done(null)
                     views.render_latest_comments(comments)
+                    done(null)
                 }
             ], function(er){
-                if (er) console.log(JSON.stringify(er, 0, 2))
+                done(er)
             })
         }
 
@@ -938,7 +954,7 @@ var bok = function(x){
         //             var top = comment.position().top
         //             dom.content_right.animate({scrollTop:top}, 100)
         //         } else {
-        //             views.load_comment(events.wait.comment_id)
+        //             views.load_comment(events.wait.comment_id, function(er){})
         //         }
         //     }
         //     events.wait.comment_id = null
@@ -1231,7 +1247,6 @@ var bok = function(x){
 
         }
 
-        // mark
         bindings.click_latest_comment = function(){
             var that = $(this)
             var p = that.attr("data-p")
@@ -1255,7 +1270,7 @@ var bok = function(x){
             var that = $(this)
             var page = parseInt(that.attr("data-page")) + 1
             that.attr("data-page", page)
-            views.load_latest_comments(page)
+            views.load_latest_comments(page, function(er){})
         }
 
         return bindings

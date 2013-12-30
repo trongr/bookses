@@ -80,7 +80,7 @@ var users = (function(){
                 $("#login_box").hide()
                 $("#logout_box").show()
                 users.init()
-                notis.init($("#notifications"))
+                notis.init($("#notification_menu"), $("#notification_tray"))
             }
         })
     }

@@ -874,14 +874,33 @@ var books = module.exports = (function(){
     }
 
     books.get_comment = function(req, res){
-        DB.get_entry_by_id(k.tables.comments, req.params.id, function(er, comment){
+        async.waterfall([
+            function(done){
+                DB.get_entry_by_id(k.tables.comments, req.params.id, function(er, comment){
+                    if (er) done({info:"unknown problem"})
+                    else if (comment) done(null, comment)
+                    else done({info:"no such comment"})
+                })
+            },
+            function(comment, done){
+                done(null, comment)
+                if (req.session.username == comment.username){
+                    DB.update_entry_by_id(k.tables.comments, comment._id.toString(), {
+                        $set: {
+                            modified: new Date(),
+                            notis: false
+                        }
+                    }, function(er, num){
+                        if (er) console.log(JSON.stringify(er, 0, 2))
+                    })
+                }
+            }
+        ], function(er, comment){
             if (er){
                 console.log(JSON.stringify({error:"books.get_comment",id:req.params.id,er:er}, 0, 2))
-                res.send({error:"get comment by id"})
-            } else if (comment){
-                res.send({comment:comment})
+                res.send({error:"get comment by id",info:er.info})
             } else {
-                res.send({error:"get comment by id",info:"no such comment"})
+                res.send({comment:comment})
             }
         })
     }
@@ -908,6 +927,34 @@ var books = module.exports = (function(){
                 console.log(JSON.stringify({error:"notis count",er:er}, 0, 2))
                 res.send({error:"notis count",info:er.info})
             } else res.send({count:count})
+        })
+    }
+
+    books.get_notis_validate = function(req, res, next){
+        next(null) // nothing to validate
+    }
+
+    books.get_notis = function(req, res){
+        async.waterfall([
+            function(done){
+                var query = {
+                    username: req.session.username,
+                    notis: true
+                }
+                var aux = {
+                    sort: [["modified","desc"]],
+                    limit: 10, // todo pagination
+                }
+                DB.get_entries(k.tables.comments, query, aux, function(er, entries){
+                    if (er) done({info:"can't get notis"})
+                    else done(null, entries)
+                })
+            },
+        ], function(er, entries){
+            if (er){
+                console.log(JSON.stringify({error:"get notis",er:er}, 0, 2))
+                res.send({error:"get notis",info:er.info})
+            } else res.send({notis:entries})
         })
     }
 
