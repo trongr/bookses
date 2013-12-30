@@ -888,7 +888,6 @@ var books = module.exports = (function(){
                 if (req.session.username == comment.username){
                     DB.update_entry_by_id(k.tables.comments, comment._id.toString(), {
                         $set: {
-                            modified: new Date(),
                             notis: false
                         }
                     }, function(er, num){
