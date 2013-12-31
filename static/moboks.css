@@ -231,10 +231,6 @@ p.paragraph:hover {
     padding: 5px 0 0 0;
 }
 
-.boks_go_home {
-    float: right;
-}
-
 .boks_content_right > .boks_comments_box {
     background-color: #eee;
     font-size: 1em;

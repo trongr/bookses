@@ -301,7 +301,6 @@ var bok = function(x){
                 + "         <button class='boks_reply'>reply</button>"
                 // + "         <button class='boks_edit_p'><i class='icon-font'></i></button>"
                 // + "         <button class='boks_reply'><i class='icon-pencil'></i></button>"
-                + "         <button class='boks_go_home'><i class='icon-home'></i></button>"
                 + "         <div class='boks_reply_box_box'></div>"
                 + "     </div>"
             return html
@@ -407,7 +406,7 @@ var bok = function(x){
             var is_edit = (comment.edit ? "is_edit" : "")
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
-            var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment))
+            var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment.slice(0, 200))) + (comment.comment.length > 200 ? " . . ." : "")
             var img = (comment.img ? "<div class='latest_comment_img_box'><img class='latest_comment_img' src='" + comment.thumb + "'></div>" : "")
             var replies
             if (comment.replies == 0) replies = "<div class='comment_replies red'>new</div>"
@@ -785,7 +784,6 @@ var bok = function(x){
                         .on("click", ".edit_p_cancel", bindings.click_edit_p_cancel)
                         .on("click", ".edit_p_post", bindings.click_edit_p_post)
                         .on("click", ".boks_reply", bindings.click_reply)
-                        .on("click", ".boks_go_home", bindings.click_go_home)
                         .on("click", ".boks_p_link", bindings.click_p_link)
                         .on("click", ".boks_reply_post", bindings.click_reply_post)
                         .on("click", ".boks_reply_cancel", bindings.click_reply_cancel)
@@ -966,6 +964,10 @@ var bok = function(x){
     var bindings = (function(){
         var bindings = {}
 
+        bindings.init = function(){
+            $("#go_top_page").on("click", bindings.click_go_top_page)
+        }
+
         bindings.click_p = function(){
             var that = $(this)
             var p = that.attr("data-p") || that.index() // all new books should have data-p paragraphs
@@ -1039,7 +1041,7 @@ var bok = function(x){
             })
         }
 
-        bindings.click_go_home = function(){
+        bindings.click_go_top_page = function(){
             $("html, body").animate({scrollTop:0}, 100)
         }
 
@@ -1278,6 +1280,7 @@ var bok = function(x){
 
     this.init = function(){
         views.init()
+        bindings.init()
         events.init()
     }
 
