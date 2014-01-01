@@ -24,10 +24,18 @@ var k = {
         comments: "comments",
         likes: "likes",
         jobs: "jobs",
+        users: "users",
     },
     page_size: 10,
     milliseconds_in_a_day: 24 * 60 * 60 * 1000,
     recursion_limit: 10,
+    class: {
+        all: "all",
+        classic: "classic",
+        published: "published",
+        indie: "indie",
+        amateur: "amateur"
+    }
 }
 
 db.open(function(er, db) {
@@ -117,10 +125,11 @@ var DB = (function(){
         })
     }
 
-    DB.find_books = function(text, aux, done){
+    DB.find_books = function(text, query, aux, done){
         db.command({
             text: k.tables.books,
-            search: text
+            search: text,
+            filter: query
         }, function(er, re){
             if (er) done({error:"find books",text:text,er:er})
             else if (re && re.results){
@@ -276,22 +285,32 @@ var books = module.exports = (function(){
     }
 
     books.create_book = function(req, res){
-        var id = new mongo.ObjectID()
-        var book = {
-            _id: id,
-            username: req.session.username,
-            title: req.body.title,
-            description: req.body.description,
-            poetry: (req.body.poetry == "true"),
-            url: k.static_public + "/" + id,
-            created: new Date(),
-            modified: new Date(),
-            votes: 1,
-            replies: 0,
-            pop: 1,
-        }
         async.waterfall([
             function(done){
+                DB.get_entries(k.tables.users, {
+                    username: req.session.username
+                }, {}, function(er, entries){
+                    if (er) done(er)
+                    else if (entries && entries.length) done(null, entries[0])
+                    else done({error:"no such user"})
+                })
+            },
+            function(user, done){
+                var id = new mongo.ObjectID()
+                var book = {
+                    _id: id,
+                    username: req.session.username,
+                    class: user.class,
+                    title: req.body.title,
+                    description: req.body.description,
+                    poetry: (req.body.poetry == "true"),
+                    url: k.static_public + "/" + id,
+                    created: new Date(),
+                    modified: new Date(),
+                    votes: 1,
+                    replies: 0,
+                    pop: 1,
+                }
                 DB.create(k.tables.books, book, function(er, book){
                     done(er, book)
                 })
@@ -318,6 +337,7 @@ var books = module.exports = (function(){
         })
     }
 
+    // mark
     books.get_all_books_validate = function(req, res, next){
         async.waterfall([
             function(done){
@@ -326,6 +346,17 @@ var books = module.exports = (function(){
                     done(er)
                 })
             },
+            function(done){
+                if (req.query.class && !(
+                    req.query.class == k.class.all ||
+                    req.query.class == k.class.classic ||
+                    req.query.class == k.class.published ||
+                    req.query.class == k.class.indie ||
+                    req.query.class == k.class.amateur
+                )){
+                    done(er)
+                } else done(null)
+            }
         ], function(er, re){
             if (er) res.send({error:"get all books",er:er})
             else next(null)
@@ -336,6 +367,8 @@ var books = module.exports = (function(){
         async.waterfall([
             function(done){
                 var query = {}
+                if (req.query.class && req.query.class != k.class.all)
+                    query.class = req.query.class
                 var aux = {
                     sort: [["modified","desc"]],
                     // sort: [["pop","desc"]],
@@ -367,6 +400,7 @@ var books = module.exports = (function(){
         })
     }
 
+    // mark
     books.search_validate = function(req, res, next){
         async.waterfall([
             function(done){
@@ -379,6 +413,17 @@ var books = module.exports = (function(){
                 validate.search_string(req.query.search, function(er){
                     done(er)
                 })
+            },
+            function(done){
+                if (req.query.class && !(
+                    req.query.class == k.class.all ||
+                    req.query.class == k.class.classic ||
+                    req.query.class == k.class.published ||
+                    req.query.class == k.class.indie ||
+                    req.query.class == k.class.amateur
+                )){
+                    done(er)
+                } else done(null)
             }
         ], function(er, re){
             if (er) res.send({error:"search books",er:er})
@@ -387,10 +432,14 @@ var books = module.exports = (function(){
     }
 
     books.search = function(req, res){
-        DB.find_books(req.query.search, {
+        var query = {}
+        if (req.query.class && req.query.class != k.class.all)
+            query.class = req.query.class
+        var aux = {
             limit: k.page_size,
             skip: req.query.page * k.page_size
-        }, function(er, entries){
+        }
+        DB.find_books(req.query.search, query, aux, function(er, entries){
             if (er){
                 console.log(JSON.stringify({error:"books.search",er:er}, 0, 2))
                 res.send({error:"search"})
@@ -456,7 +505,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.create_comment = function(req, res){
         async.waterfall([
             function(done){
@@ -668,7 +716,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.upvote_comment = function(req, res){
         async.waterfall([
             function(done){

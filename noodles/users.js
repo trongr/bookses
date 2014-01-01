@@ -8,6 +8,12 @@ var validate = require("./validate.js")
 var k = {
     tables: {
         users: "users",
+    },
+    class: {
+        classic: "classic",
+        published: "published",
+        indie: "indie",
+        amateur: "amateur",
     }
 }
 
@@ -103,6 +109,7 @@ var users = module.exports = (function(){
             username: req.params.username,
             password: req.body.password,
             created: new Date(),
+            class: k.amateur
         }
         DB.create(k.tables.users, user, function(er, user){
             if (er){

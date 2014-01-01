@@ -233,7 +233,7 @@ img.book_img {
     margin: 10px 0 10px 30px;
 }
 
-#more_books_button, #more_results_button {
+#more_books_button, #more_search_results_button {
     font-size: 3em;
     padding: 30px;
     width: 100%;
@@ -271,4 +271,26 @@ div.popup_cancel {
     width: 100%;
     height: 100%;
     z-index: 10;
+}
+
+#class_menu {
+    display: table;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.class_button_box {
+    display: table-cell;
+    width: 20%;
+    background-color: #eee;
+}
+
+#class_menu button {
+    width: 100%;
+    font-size: 2em;
+    padding: 10px 0 10px 0;
+}
+
+.class_selected {
+    border-bottom: 10px solid #f00;
 }

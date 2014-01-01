@@ -4,7 +4,9 @@ jQuery(function($){
         static_public: "/static/public",
         date_format: "D MMMM YYYY",
         page: 0,
-        results_page: 0,
+        search_page: 0,
+        searching: true,
+        class: "all",
     }
 
     var dom = {
@@ -14,12 +16,13 @@ jQuery(function($){
     var api = (function(){
         var api = {}
 
-        api.get_all_books = function(page, done){
+        api.get_all_books = function(page, klass, done){
             $.ajax({
                 url: "/books",
                 type: "get",
                 data: {
-                    page: page
+                    page: page,
+                    class: klass
                 },
                 success: function(re){
                     if (re.books) done(null, re.books)
@@ -96,15 +99,16 @@ jQuery(function($){
         var views = {}
 
         views.init = function(){
-            views.load_books(k.page++)
+            views.load_books(k.page++, k.class)
             users.init()
             notis.init($("#notification_menu"), $("#notification_tray"))
         }
 
-        views.load_books = function(page){
+        views.load_books = function(page, klass){
+            k.searching = false
             async.waterfall([
                 function(done){
-                    api.get_all_books(page, function(er, books){
+                    api.get_all_books(page, klass, function(er, books){
                         done(er, books)
                     })
                 },
@@ -117,7 +121,6 @@ jQuery(function($){
             })
         }
 
-        // mark
         views.render_books = function(box, books){
             var html = ""
             for (var i = 0; i < books.length; i++){
@@ -128,7 +131,8 @@ jQuery(function($){
                 .on("click", ".book_title", bindings.click_book_title)
         }
 
-        views.load_more_results = function(page){
+        views.load_more_search_results = function(page, klass){
+            k.searching = true
             var query = $("#search_bar").val().trim()
             if (!query) return alert("Please enter a title or author")
             async.waterfall([
@@ -138,7 +142,8 @@ jQuery(function($){
                         type: "get",
                         data: {
                             search: query,
-                            page: page
+                            page: page,
+                            class: klass
                         },
                         success: function(re){
                             if (re.books) done(null, re.books)
@@ -184,7 +189,25 @@ jQuery(function($){
             $("#upload_button").on("click", bindings.click_upload_button)
             $("#logins").on("click", bindings.click_logins)
             $("#more_books_button").on("click", bindings.click_more_books)
-            $("#more_results_button").on("click", bindings.click_more_results)
+            $("#more_search_results_button").on("click", bindings.click_more_search_results)
+            $("#class_menu button").on("click", bindings.click_class_button)
+        }
+
+        // mark
+        bindings.click_class_button = function(){
+            $(".class_button_box").removeClass("class_selected")
+            $(this).parent().addClass("class_selected")
+            var c = $(this).attr("data-class")
+            k.class = c
+            if (k.searching){
+                k.search_page = 0
+                $("#results").html("")
+                views.load_more_search_results(k.search_page++, k.class)
+            } else {
+                k.page = 0
+                $("#books").html("")
+                views.load_books(k.page++, k.class)
+            }
         }
 
         bindings.click_upload_button = function(){
@@ -216,17 +239,18 @@ jQuery(function($){
             }
         }
 
+        // mark
         bindings.click_search_button = function(){
-            k.results_page = 0
-            views.load_more_results(k.results_page++)
+            k.search_page = 0
+            views.load_more_search_results(k.search_page++, k.class)
         }
 
-        bindings.click_more_results = function(){
-            views.load_more_results(k.results_page++)
+        bindings.click_more_search_results = function(){
+            views.load_more_search_results(k.search_page++, k.class)
         }
 
         bindings.click_more_books = function(){
-            views.load_books(k.page++)
+            views.load_books(k.page++, k.class)
         }
 
         bindings.click_book_title = function(){
