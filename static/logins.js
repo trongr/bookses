@@ -145,7 +145,7 @@ var users = (function(){
             if (user && user.loggedin){
                 $("#logins").html(user.username)
             } else {
-                $("#logins").html("login")
+                $("#logins").html("LOGIN")
             }
         })
     }

@@ -287,10 +287,25 @@ div.popup_cancel {
 
 #class_menu button {
     width: 100%;
-    font-size: 2em;
+    font-size: 1.2em;
+    font-weight: bolder;
+    color: #333;
     padding: 10px 0 10px 0;
+}
+
+#class_menu button:hover {
+    color: #E04343;
+}
+
+#class_menu button span {
+    font-size: 3em;
+    font-family: serif, times, georgia;
 }
 
 .class_selected {
     border-bottom: 10px solid #f00;
+}
+
+.class_selected button {
+    color: #000 !important;
 }
