@@ -281,8 +281,8 @@ div.popup_cancel {
 
 .class_button_box {
     display: table-cell;
-    width: 20%;
     background-color: #eee;
+    padding: 0 10px 0 10px;
 }
 
 #class_menu button {
