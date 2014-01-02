@@ -211,7 +211,7 @@ var bok = function(x){
         var templates = {}
 
         templates.replace_text_with_p_link = function(text){
-            var exp = /(p([0-9]+))/ig;
+            var exp = /(#([0-9]+))/ig;
             return text.replace(exp, "<span data-p-link='$2' class='boks_p_link'>$1</span>");
         }
 
@@ -296,7 +296,7 @@ var bok = function(x){
 
         templates.p_menu = function(p){
             var html = "<div id='boks_p_menu' class='data' data-p='" + p + "'>"
-                + "         <span class='boks_p_link' data-p-link='" + p + "'>p" + p + "</span>"
+                + "         <span class='boks_p_link' data-p-link='" + p + "'>#" + p + "</span>"
                 + "         <button class='boks_edit_p'>EDIT</button>"
                 + "         <button class='boks_reply'>REPLY</button>"
                 // + "         <button class='boks_edit_p'><i class='icon-font'></i></button>"
@@ -325,7 +325,7 @@ var bok = function(x){
             var datap = (p ? "data-p='" + p + "'" : "")
             var dataparent = (parentid ? "data-parent='" + parentid + "'" : "")
             var html = "<div class='boks_reply_box data' " + datap + " " + dataparent + ">"
-                + "         <div class='boks_reply_info'>Comment or add a picture. Type p394 to create a link to paragraph 394.</div>"
+                + "         <div class='boks_reply_info'>Comment or add a picture. Type #394 to create a link to paragraph 394.</div>"
                 + "         <div class='boks_reply_toolbar'></div>"
                 + "         <div class='boks_reply_text'></div>"
                 + "         <div class='boks_reply_img'><img></div>"
