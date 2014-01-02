@@ -329,6 +329,15 @@ var bok = function(x){
                 + "         <div class='boks_reply_toolbar'></div>"
                 + "         <div class='boks_reply_text'></div>"
                 + "         <div class='boks_reply_img'><img></div>"
+                + "         <div class='boks_youtube_embed_box'>"
+            // mark
+                + "             <div class='boks_youtube_embed_video'></div>"
+                + "             <div class='boks_youtube_embed_menu'>"
+                + "                 <input class='boks_youtube_embed_link' type='text' placeholder='Paste your Youtube link here'>"
+                + "                 <button class='boks_youtube_embed_button'>Preview embed</button>"
+                + "                 <div class='clear_both'></div>"
+                + "             </div>"
+                + "         </div>"
                 + "         <button class='boks_reply_post'>POST</button>"
                 + "         <button class='boks_reply_cancel'>cancel</button>"
                 + "         <button class='boks_reply_img_input_button'><i class='icon-picture'></i></button>"
@@ -366,6 +375,7 @@ var bok = function(x){
         templates.comment = function(comment){
             var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment))
             var img = (comment.img ? "<div class='boks_comment_img_box'><img class='boks_comment_img' src='" + comment.img + "'></div>" : "")
+            var youtube = (comment.youtube ? yt.embed(comment.youtube) : "")
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
             var has_replies = (comment.replies > 0 ? "has_comments" : "")
@@ -375,6 +385,7 @@ var bok = function(x){
                 + "             <div class='boks_comment_content'>"
                 + "                 <div class='boks_comment_text'>" + text + "</div>"
                 +                   img
+                +                   youtube
                 + "             </div>"
                 + "             <div class='boks_comment_username'>" + comment.username + "</div>"
                 + "             <div class='boks_comment_created'>" + Date.create(comment.created).long() + "</div>"
@@ -402,12 +413,14 @@ var bok = function(x){
             return html
         }
 
+        // mark
         templates.latest_comment = function(comment){
             var is_edit = (comment.edit ? "is_edit" : "")
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
             var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment.slice(0, 200))) + (comment.comment.length > 200 ? " . . ." : "")
             var img = (comment.img ? "<div class='latest_comment_img_box'><img class='latest_comment_img' src='" + comment.thumb + "'></div>" : "")
+            var youtube = (comment.youtube ? yt.thumbnail(comment.youtube) : "")
             var replies
             if (comment.replies == 0) replies = "<div class='comment_replies red'>new</div>"
             else if (comment.replies == 1) replies = "<div class='comment_replies green'>1 reply</div>"
@@ -421,12 +434,40 @@ var bok = function(x){
                 + "             </div>"
                 + "             <div class='comment_text'>" + text + "</div>"
                 +               img
+                +               youtube
                 + "         </div>"
                 + "     </div>"
             return html
         }
 
         return templates
+    }())
+
+    var yt = (function(){
+        var yt = {}
+
+        // mark
+        yt.embed = function(link){
+            var html = "<iframe type='text/html' width='100%' height='390' src='http://www.youtube.com/embed/"
+                + yt.extract_id(link)
+                + "?autoplay=0' frameborder='0'/>"
+            return html
+        }
+
+        yt.thumbnail = function(link){
+            var html = "<div class='youtube_thumb_box'>"
+                + "         <img class='youtube_thumb' src='http://img.youtube.com/vi/"
+                +               yt.extract_id(link) + "/default.jpg' alt='youtube video'>"
+                + "         <div class='youtube_thumb_caption'><i class='icon-play-circle'></i></div>"
+                + "     </div>"
+            return html
+        }
+
+        yt.extract_id = function(link){
+            return $.url(link).param("v")
+        }
+
+        return yt
     }())
 
     var draw = (function(){
@@ -789,6 +830,7 @@ var bok = function(x){
                         .on("click", ".boks_reply_cancel", bindings.click_reply_cancel)
                         .on("click", ".boks_reply_img_button", bindings.click_reply_img)
                         .on("click", ".boks_reply_img_input_button", bindings.click_reply_img_input)
+                        .on("click", ".boks_youtube_embed_button", bindings.click_youtube_embed_button)
                     done(null)
                 },
                 function(done){
@@ -1096,6 +1138,10 @@ var bok = function(x){
                 img_src = URL.createObjectURL(img)
             }
 
+            // mark
+            var link = data_box.find(".boks_youtube_embed_link").val().trim()
+            if (link) data.append("youtube", link)
+
             data_box.remove()
 
             var fake_comment = {
@@ -1105,6 +1151,7 @@ var bok = function(x){
                 username: "you",
                 comment: comment,
                 img: img_src,
+                youtube: link,
                 created: new Date(),
                 votes: 1,
                 replies: 0,
@@ -1273,6 +1320,13 @@ var bok = function(x){
             var page = parseInt(that.attr("data-page")) + 1
             that.attr("data-page", page)
             views.load_latest_comments(page, function(er){})
+        }
+
+        // mark
+        bindings.click_youtube_embed_button = function(){
+            var link = $(".boks_youtube_embed_link").val().trim()
+            if (!link) return alert("Please paste a link")
+            $(".boks_youtube_embed_video").html(yt.embed(link))
         }
 
         return bindings

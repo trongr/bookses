@@ -496,6 +496,11 @@ var books = module.exports = (function(){
                 validate.text_length(req.body.comment, function(er){
                     done(er)
                 })
+            },
+            function(done){
+                if (req.body.youtube && req.body.youtube > 500){
+                    done({error:"youtube link too long"})
+                } else done(null)
             }
         ], function(er, re){
             if (er){
@@ -533,6 +538,7 @@ var books = module.exports = (function(){
                     } else if (req.files.img){
                         return done({error:"processing img",er:"can't read img headers"})
                     }
+                    if (req.body.youtube) comment.youtube = req.body.youtube
                     DB.create(k.tables.comments, comment, function(er, comment){
                         done(er, comment)
                     })

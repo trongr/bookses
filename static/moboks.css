@@ -399,6 +399,41 @@ p.paragraph:hover {
     text-align: right;
 }
 
+.boks_youtube_embed_menu {
+    margin: 10px 10px 10px 10px;
+}
+
+.boks_youtube_embed_menu .boks_youtube_embed_link {
+    float: right;
+    font-size: 1em;
+    width: 100%;
+    padding: 5px;
+}
+
+.boks_youtube_embed_menu .boks_youtube_embed_button {
+    float: right;
+    font-size: 1em;
+    padding: 5px;
+}
+
+.youtube_thumb_box {
+    width: 100%;
+    position: relative;
+}
+
+.youtube_thumb {
+    width: 100%;
+}
+
+.youtube_thumb_caption {
+    position: absolute;
+    color: #f00;
+    font-size: 2em;
+    left: 0;
+    bottom: 0;
+    margin: 5px;
+}
+
 .boks_reply_cancel {
     float: right;
     padding: 15px;
