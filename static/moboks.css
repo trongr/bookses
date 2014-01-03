@@ -1,4 +1,3 @@
-/*  */
 body {
 
 }
@@ -173,7 +172,7 @@ body {
 }
 
 .boks_text {
-    font-size: 1.2em;
+    font-size: 1em;
     width: 100%;
     background-color: #ddd;
     font-family: georgia, serif;
@@ -236,7 +235,7 @@ p.paragraph:hover {
 
 .boks_content_right > .boks_comments_box {
     background-color: #eee;
-    font-size: 1em;
+    font-size: 0.8em;
 }
 
 .edit_p_toolbar {

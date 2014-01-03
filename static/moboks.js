@@ -1208,36 +1208,34 @@ var bok = function(x){
                 if (!user || !user.loggedin) return users.show_login_box($("#popup"))
                 var p = that.closest(".data").attr("data-p")
                 var text = $("#" + o.bID + " .boks_text p.paragraph").eq(p).html()
-                var box = dom.content_right.prepend(templates.edit_p_box(p)).animate({scrollTop:0}, 100)
-                box.prepend(templates.p_menu(p))
-                var editor = box.find(".edit_p_text").hallo({
-                    plugins: {
-                        halloformat: {
-                            formattings: {
-                                underline: true,
-                                strikethrough: true
-                            }
-                        },
-                        halloheadings: {},
-                        hallojustify: {},
-                        hallolists: {},
-                    },
-                    toolbar: 'halloToolbarFixed',
-                    parentElement: $(".edit_p_toolbar")
-                })
-                    .html(text)
-                    .focus()
-                    .trigger("halloactivated")
-                if (k.book.poetry) editor.addClass("poetry_edit")
-                box.find(".edit_p_original").html(edits.get_original(p) || text)
-                box.append(templates.comments_box([], p, null))
                 api.get_book_comments(o.bID, p, true, 0, function(er, comments){
                     if (comments && comments.length){
-                        box.append(templates.comments_box(comments, p, comments[0].parent))
-                            // .animate({scrollTop:0}, 100)
+                        dom.content_right.prepend(templates.comments_box(comments, p, comments[0].parent))
                     } else {
-                        box.append(templates.comments_box([], p, null))
+                        dom.content_right.prepend(templates.comments_box([], p, null))
                     }
+                    dom.content_right.prepend(templates.edit_p_box(p))
+                    dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
+                    var editor = dom.content_right.find(".edit_p_text").eq(0).hallo({
+                        plugins: {
+                            halloformat: {
+                                formattings: {
+                                    underline: true,
+                                    strikethrough: true
+                                }
+                            },
+                            halloheadings: {},
+                            hallojustify: {},
+                            hallolists: {},
+                        },
+                        toolbar: 'halloToolbarFixed',
+                        parentElement: $(".edit_p_toolbar").eq(0)
+                    })
+                        .html(text)
+                        .focus()
+                        .trigger("halloactivated")
+                    if (k.book.poetry) editor.addClass("poetry_edit")
+                    dom.content_right.find(".edit_p_original").eq(0).html(edits.get_original(p) || text)
                 })
             })
         }
