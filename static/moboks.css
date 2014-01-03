@@ -198,35 +198,38 @@ p.paragraph:hover {
     background-color: #eaeaea;
 }
 
-#boks_p_menu {
-    background-color: #eee;
-    margin-left: 1px;
+.boks_p_menu_toolbar {
+    background-color: #000;
+    color: #fff;
+    padding: 10px;
     border-bottom: 1px solid #bbb;
-    min-height: 40px;
+    text-align: center;
 }
 
-#boks_p_menu > button {
+.boks_p_menu_toolbar > button {
     font-size: 1em;
     padding: 5px;
+    background: none;
+    color: #fff;
 }
 
-#boks_p_menu .boks_p_link {
+.boks_p_menu_toolbar .boks_p_link {
     margin: 0 10px 0 10px;
     cursor: pointer;
     font-weight: lighter;
-    color: #000;
+    color: #fff;
 }
 
-#boks_p_menu .boks_p_link:hover {
+.boks_p_menu_toolbar .boks_p_link:hover {
     color: #0f0;
 }
 
-#boks_p_menu .boks_edit_p {
+.boks_p_menu_toolbar .boks_edit_p {
     border-bottom: 2px solid #70ACFF;
     padding: 5px 0 0 0;
 }
 
-#boks_p_menu .boks_reply {
+.boks_p_menu_toolbar .boks_reply {
     border-bottom: 5px solid #0f0;
     padding: 5px 0 0 0;
 }
@@ -361,7 +364,7 @@ p.paragraph:hover {
 }
 
 .boks_reply_box {
-    margin-top: 5px;
+    background-color: #eee;
 }
 
 .boks_reply_toolbar {

@@ -295,12 +295,12 @@ var bok = function(x){
         }
 
         templates.p_menu = function(p){
-            var html = "<div id='boks_p_menu' class='data' data-p='" + p + "'>"
-                + "         <span class='boks_p_link' data-p-link='" + p + "'>#" + p + "</span>"
-                + "         <button class='boks_edit_p'>EDIT</button>"
-                + "         <button class='boks_reply'>REPLY</button>"
-                // + "         <button class='boks_edit_p'><i class='icon-font'></i></button>"
-                // + "         <button class='boks_reply'><i class='icon-pencil'></i></button>"
+            var html = "<div class='boks_p_menu data' data-p='" + p + "'>"
+                + "         <div class='boks_p_menu_toolbar'>"
+                + "             <span class='boks_p_link' data-p-link='" + p + "'>Paragraph #" + p + "</span>"
+                + "             <button class='boks_edit_p'>EDIT</button>"
+                + "             <button class='boks_reply'>REPLY</button>"
+                + "         </div>"
                 + "         <div class='boks_reply_box_box'></div>"
                 + "     </div>"
             return html
@@ -330,7 +330,6 @@ var bok = function(x){
                 + "         <div class='boks_reply_text'></div>"
                 + "         <div class='boks_reply_img'><img></div>"
                 + "         <div class='boks_youtube_embed_box'>"
-            // mark
                 + "             <div class='boks_youtube_embed_video'></div>"
                 + "             <div class='boks_youtube_embed_menu'>"
                 + "                 <input class='boks_youtube_embed_link' type='text' placeholder='Paste your Youtube link here'>"
@@ -413,7 +412,6 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.latest_comment = function(comment){
             var is_edit = (comment.edit ? "is_edit" : "")
             var dataid = "data-id='" + comment._id + "'"
@@ -446,7 +444,6 @@ var bok = function(x){
     var yt = (function(){
         var yt = {}
 
-        // mark
         yt.embed = function(link){
             var html = "<iframe type='text/html' width='100%' height='390' src='http://www.youtube.com/embed/"
                 + yt.extract_id(link)
@@ -911,9 +908,8 @@ var bok = function(x){
                 function(comment, done){
                     var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(comment.p)
                     $("html, body").animate({scrollTop:paragraph.offset().top - 40}, 100)
-                    dom.content_right.html(templates.p_menu(comment.p))
-                    $("#boks_p_menu > .boks_reply").fadeOut(200).fadeIn(200)
-                    dom.content_right.append(templates.comments_box([comment], comment.p, comment.parent))
+                    dom.content_right.prepend(templates.comments_box([comment], comment.p, comment.parent))
+                    dom.content_right.prepend(templates.p_menu(comment.p)).animate({scrollTop:0}, 100)
                     done(null)
                 }
             ], function(er){
@@ -926,7 +922,8 @@ var bok = function(x){
             if (comment.parent){
                 $(".boks_comment[data-id='" + comment.parent + "']").find(".boks_comments").eq(0).prepend(elmt)
             } else {
-                $(".boks_content_right .boks_comments").eq(0).prepend(elmt)
+                dom.content_right.find(".boks_comments_box[data-p='" + comment.p + "']").first()
+                    .find(".boks_comments").eq(0).prepend(elmt)
             }
             return elmt
         }
@@ -1013,16 +1010,15 @@ var bok = function(x){
         bindings.click_p = function(){
             var that = $(this)
             var p = that.attr("data-p") || that.index() // all new books should have data-p paragraphs
-            dom.content_right.html(templates.p_menu(p))
-            $("#boks_p_menu > .boks_reply").fadeOut(200).fadeIn(200)
             api.get_book_comments(o.bID, p, false, 0, function(er, comments){
                 if (comments && comments.length){
                     dom.content_right
-                        .append(templates.comments_box(comments, p, comments[0].parent)) // parent should be null
-                        .animate({scrollTop:0}, 100)
+                        .prepend(templates.comments_box(comments, p, comments[0].parent)) // parent should be null
+                        // .animate({scrollTop:0}, 100)
                 } else {
-                    dom.content_right.append(templates.comments_box([], p, null))
+                    dom.content_right.prepend(templates.comments_box([], p, null))
                 }
+                dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
                 $("html, body").animate({scrollTop:that.offset().top - 40}, 100)
                 // $(document).trigger(events.k.comments_loaded)
             })
@@ -1138,7 +1134,6 @@ var bok = function(x){
                 img_src = URL.createObjectURL(img)
             }
 
-            // mark
             var link = data_box.find(".boks_youtube_embed_link").val().trim()
             if (link) data.append("youtube", link)
 
@@ -1213,7 +1208,7 @@ var bok = function(x){
                 if (!user || !user.loggedin) return users.show_login_box($("#popup"))
                 var p = that.closest(".data").attr("data-p")
                 var text = $("#" + o.bID + " .boks_text p.paragraph").eq(p).html()
-                var box = dom.content_right.html(templates.p_menu(p))
+                var box = dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
                 box.append(templates.edit_p_box(p))
                 var editor = box.find(".edit_p_text").hallo({
                     plugins: {
@@ -1238,7 +1233,8 @@ var bok = function(x){
                 box.append(templates.comments_box([], p, null))
                 api.get_book_comments(o.bID, p, true, 0, function(er, comments){
                     if (comments && comments.length){
-                        box.append(templates.comments_box(comments, p, comments[0].parent)).animate({scrollTop:0}, 100)
+                        box.append(templates.comments_box(comments, p, comments[0].parent))
+                            // .animate({scrollTop:0}, 100)
                     } else {
                         box.append(templates.comments_box([], p, null))
                     }
@@ -1302,13 +1298,12 @@ var bok = function(x){
             var id = that.attr("data-id")
             var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(p)
             $("html, body").animate({scrollTop:paragraph.offset().top - 40}, 100)
-            dom.content_right.html(templates.p_menu(p))
-            $("#boks_p_menu > .boks_reply").fadeOut(200).fadeIn(200)
             api.get_comment(id, function(er, comment){
                 if (er){
                     console.log(JSON.stringify(er, 0, 2))
                 } else if (comment){
-                    dom.content_right.append(templates.comments_box([comment], p, comment.parent))
+                    dom.content_right.prepend(templates.comments_box([comment], p, comment.parent))
+                    dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
                 } else {
                     console.log(JSON.stringify({error:"click latest comment: can't find comment"}, 0, 2))
                 }
@@ -1322,7 +1317,6 @@ var bok = function(x){
             views.load_latest_comments(page, function(er){})
         }
 
-        // mark
         bindings.click_youtube_embed_button = function(){
             var link = $(".boks_youtube_embed_link").val().trim()
             if (!link) return alert("Please paste a link")
