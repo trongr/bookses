@@ -1208,8 +1208,8 @@ var bok = function(x){
                 if (!user || !user.loggedin) return users.show_login_box($("#popup"))
                 var p = that.closest(".data").attr("data-p")
                 var text = $("#" + o.bID + " .boks_text p.paragraph").eq(p).html()
-                var box = dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
-                box.append(templates.edit_p_box(p))
+                var box = dom.content_right.prepend(templates.edit_p_box(p)).animate({scrollTop:0}, 100)
+                box.prepend(templates.p_menu(p))
                 var editor = box.find(".edit_p_text").hallo({
                     plugins: {
                         halloformat: {
