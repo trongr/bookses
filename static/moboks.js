@@ -332,7 +332,7 @@ var bok = function(x){
                 + "         <div class='boks_youtube_embed_box'>"
                 + "             <div class='boks_youtube_embed_video'></div>"
                 + "             <div class='boks_youtube_embed_menu'>"
-                + "                 <input class='boks_youtube_embed_link' type='text' placeholder='Paste your Youtube link here'>"
+                + "                 <input class='boks_youtube_embed_link' type='text' placeholder='Copy your Youtube link here'>"
                 + "                 <button class='boks_youtube_embed_button'>Preview embed</button>"
                 + "                 <div class='clear_both'></div>"
                 + "             </div>"
@@ -445,7 +445,7 @@ var bok = function(x){
         var yt = {}
 
         yt.embed = function(link){
-            var html = "<iframe type='text/html' width='100%' height='390' src='http://www.youtube.com/embed/"
+            var html = "<iframe type='text/html' width='100%' height='300' src='http://www.youtube.com/embed/"
                 + yt.extract_id(link)
                 + "?autoplay=0' frameborder='0'/>"
             return html
@@ -1005,6 +1005,11 @@ var bok = function(x){
 
         bindings.init = function(){
             $("#go_top_page").on("click", bindings.click_go_top_page)
+            $("#clear_comments").on("click", bindings.click_clear_comments)
+        }
+
+        bindings.click_clear_comments = function(){
+            if (dom.content_right) dom.content_right.html("")
         }
 
         bindings.click_p = function(){
@@ -1316,9 +1321,10 @@ var bok = function(x){
         }
 
         bindings.click_youtube_embed_button = function(){
-            var link = $(".boks_youtube_embed_link").val().trim()
+            var box = $(this).closest(".data")
+            var link = box.find(".boks_youtube_embed_link").val().trim()
             if (!link) return alert("Please paste a link")
-            $(".boks_youtube_embed_video").html(yt.embed(link))
+            box.find(".boks_youtube_embed_video").html(yt.embed(link))
         }
 
         return bindings
