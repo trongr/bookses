@@ -604,7 +604,7 @@ div.popup_cancel {
 }
 
 .latest_comment {
-    background-color: #e4e4e4;
+    background-color: #fff;
     cursor: pointer;
     display: table;
     width: 100%;
@@ -613,7 +613,7 @@ div.popup_cancel {
 }
 
 .latest_comment:hover {
-    background-color: #fff;
+    background-color: #e4e4e4;
 }
 
 .comment_text {
@@ -667,7 +667,7 @@ div.popup_cancel {
 }
 
 .is_edit {
-    display: inline-block;
+
 }
 
 .is_edit .latest_comment {

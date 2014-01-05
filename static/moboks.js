@@ -836,6 +836,7 @@ var bok = function(x){
                         .on("click", ".boks_reply_img_input_button", bindings.click_reply_img_input)
                         .on("click", ".boks_youtube_embed_button", bindings.click_youtube_embed_button)
                         .on("click", ".youtube_thumb", bindings.click_youtube_thumb)
+                        .on("click", ".youtube_thumb_caption", bindings.click_youtube_thumb)
                     done(null)
                 },
                 function(done){
