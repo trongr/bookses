@@ -16,6 +16,8 @@ var bok = function(x){
         date_format_alt: "h:mm A D MMM YYYY",
         page_size: 10,
         request_ahead: 20,
+        big: "big",
+        small: "small",
     }
 
     var page = (function(){
@@ -374,7 +376,7 @@ var bok = function(x){
         templates.comment = function(comment){
             var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment))
             var img = (comment.img ? "<div class='boks_comment_img_box'><img class='boks_comment_img' src='" + comment.img + "'></div>" : "")
-            var youtube = (comment.youtube ? yt.embed(comment.youtube) : "")
+            var youtube = (comment.youtube ? yt.thumbnail(comment.youtube, k.big) : "")
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
             var has_replies = (comment.replies > 0 ? "has_comments" : "")
@@ -418,7 +420,7 @@ var bok = function(x){
             var datap = "data-p='" + comment.p + "'"
             var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment.slice(0, 200))) + (comment.comment.length > 200 ? " . . ." : "")
             var img = (comment.img ? "<div class='latest_comment_img_box'><img class='latest_comment_img' src='" + comment.thumb + "'></div>" : "")
-            var youtube = (comment.youtube ? yt.thumbnail(comment.youtube) : "")
+            var youtube = (comment.youtube ? yt.thumbnail(comment.youtube, k.small) : "")
             var replies
             if (comment.replies == 0) replies = "<div class='comment_replies red'>new</div>"
             else if (comment.replies == 1) replies = "<div class='comment_replies green'>1 reply</div>"
@@ -451,10 +453,15 @@ var bok = function(x){
             return html
         }
 
-        yt.thumbnail = function(link){
-            var html = "<div class='youtube_thumb_box'>"
+        yt.thumbnail = function(link, size){
+            var random_id = Math.random() // so youtube can find the right box if you have multiple copies of the same video
+            var id = yt.extract_id(link)
+            var img_size
+            if (size == k.big) img_size = "0"
+            else if (size == k.small) img_size = "default"
+            var html = "<div id='" + random_id + "' class='youtube_thumb_box data' data-ytid='" + id + "'>"
                 + "         <img class='youtube_thumb' src='http://img.youtube.com/vi/"
-                +               yt.extract_id(link) + "/default.jpg' alt='youtube video'>"
+                +               id + "/" + img_size + ".jpg' alt='youtube video'>"
                 + "         <div class='youtube_thumb_caption'><i class='icon-play-circle'></i></div>"
                 + "     </div>"
             return html
@@ -828,6 +835,7 @@ var bok = function(x){
                         .on("click", ".boks_reply_img_button", bindings.click_reply_img)
                         .on("click", ".boks_reply_img_input_button", bindings.click_reply_img_input)
                         .on("click", ".boks_youtube_embed_button", bindings.click_youtube_embed_button)
+                        .on("click", ".youtube_thumb", bindings.click_youtube_thumb)
                     done(null)
                 },
                 function(done){
@@ -1000,6 +1008,91 @@ var bok = function(x){
         return events
     }())
 
+    var pl = (function(){
+        var pl = {}
+
+        pl.k = {
+            playing: false,
+            playlist_pos: -1,
+            playlist: []
+        }
+
+        pl.init = function(){
+            $("#prev_track").off().on("click", pl.click_prev_track)
+            $("#toggle_play_pause").off().on("click", pl.click_toggle_play_pause)
+            $("#next_track").off().on("click", pl.click_next_track)
+        }
+
+        pl.clear = function(){
+            $("#playlist_menu").hide()
+            pl.k = {
+                playing: false,
+                playlist_pos: -1,
+                playlist: []
+            }
+        }
+
+        pl.click_prev_track = function(){
+            if (pl.k.playlist_pos == 0) return
+            var pos = pl.k.playlist_pos - 1
+            pl.play_track(pos)
+        }
+
+        pl.click_next_track = function(){
+            if (pl.k.playlist_pos == pl.k.playlist.length - 1) return
+            var pos = pl.k.playlist_pos + 1
+            pl.play_track(pos)
+        }
+
+        pl.click_toggle_play_pause = function(){
+            if (pl.k.playing){
+                pl.k.playlist[pl.k.playlist_pos].pauseVideo()
+            } else {
+                pl.k.playlist[pl.k.playlist_pos].playVideo()
+            }
+            pl.k.playing = !pl.k.playing
+            pl.toggle_play_pause_buttons(pl.k.playing)
+        }
+
+        pl.play_track = function(pos){
+            if (pos != pl.k.playlist_pos){ // pause current track if different
+                var player = pl.k.playlist[pl.k.playlist_pos]
+                if (player) player.pauseVideo()
+            }
+            setTimeout(function(){
+                pl.k.playing = true
+                pl.k.playlist_pos = pos
+                pl.k.playlist[pl.k.playlist_pos].playVideo() // what if this is already playing? . . . it's fine
+                pl.toggle_play_pause_buttons(pl.k.playing)
+            }, 500)
+        }
+
+        pl.pause_track = function(pos){
+            pl.k.playing = false
+            pl.toggle_play_pause_buttons(pl.k.playing)
+        }
+
+        pl.toggle_play_pause_buttons = function(playing){
+            if (playing){
+                $("#toggle_play_pause").html("<i class='icon-pause'></i>")
+            } else {
+                $("#toggle_play_pause").html("<i class='icon-play'></i>")
+            }
+        }
+
+        pl.add_track = function(player){
+            var current = pl.k.playlist[pl.k.playlist_pos]
+            if (current) current.pauseVideo()
+            pl.k.playlist_pos = pl.k.playlist.length
+            pl.k.playlist.push(player)
+            pl.k.playing = true
+            pl.toggle_play_pause_buttons(pl.k.playing)
+            return pl.k.playlist_pos
+        }
+
+        return pl
+    }())
+
     var bindings = (function(){
         var bindings = {}
 
@@ -1010,6 +1103,7 @@ var bok = function(x){
 
         bindings.click_clear_comments = function(){
             if (dom.content_right) dom.content_right.html("")
+            pl.clear()
         }
 
         bindings.click_p = function(){
@@ -1019,7 +1113,6 @@ var bok = function(x){
                 if (comments && comments.length){
                     dom.content_right
                         .prepend(templates.comments_box(comments, p, comments[0].parent)) // parent should be null
-                        // .animate({scrollTop:0}, 100)
                 } else {
                     dom.content_right.prepend(templates.comments_box([], p, null))
                 }
@@ -1324,7 +1417,32 @@ var bok = function(x){
             var box = $(this).closest(".data")
             var link = box.find(".boks_youtube_embed_link").val().trim()
             if (!link) return alert("Please paste a link")
-            box.find(".boks_youtube_embed_video").html(yt.embed(link))
+            box.find(".boks_youtube_embed_video").html(yt.thumbnail(link, k.big))
+        }
+
+        bindings.click_youtube_thumb = function(){
+            $("#playlist_menu").show()
+            var box = $(this).closest(".data")
+            var id = box.attr("id")
+            var yt_id = box.attr("data-ytid")
+            var player = new YT.Player(id, {
+                height: 300,
+                width: "100%",
+                playerVars: {
+                    autoplay: 1,
+                },
+                videoId: yt_id,
+            })
+            var pos = pl.add_track(player)
+            player.addEventListener("onStateChange", (function(id, pos){
+                return function(e){
+                    if (e.data == YT.PlayerState.PLAYING){
+                        pl.play_track(pos)
+                    } else if (e.data == YT.PlayerState.PAUSED){
+                        pl.pause_track(pos)
+                    }
+                }
+            })(id, pos))
         }
 
         return bindings
@@ -1334,6 +1452,7 @@ var bok = function(x){
         views.init()
         bindings.init()
         events.init()
+        pl.init()
     }
 
     this.next_chapter = function(){

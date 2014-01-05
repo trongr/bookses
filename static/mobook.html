@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width">
 
     <!-- <script src="/static/jquery-1.9.1.min.js"></script> -->
+    <script src="http://youtube.com/player_api"></script>
     <script src="/static/jquery-2.0.3.js"></script>
     <script src="/static/purl.js"></script>
     <!-- <script src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script> -->
@@ -51,6 +52,11 @@
         </div>
         <div id="banner_right">
             <button id="go_top_page">TOP</button>
+            <span id="playlist_menu">
+                <button id="prev_track"><i class="icon-fast-backward"></i></button>
+                <button id="toggle_play_pause"><i class="icon-pause"></i></button>
+                <button id="next_track"><i class="icon-fast-forward"></i></button>
+            </span>
             <button id="clear_comments">CLEAR<i class="icon-long-arrow-right"></i></button>
         </div>
     </div>
@@ -61,6 +67,8 @@
     <div id="tagline_box">
         <a id="tagline" href="/">Bookses: more fun than reading</a>
     </div>
+
+    <div id="player"></div>
 
     <div id="error">
         I think this book is being processed. If you've just uploaded
