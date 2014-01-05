@@ -67,6 +67,7 @@ button:hover {
 #banner button {
     font-size: 1em;
     background: none;
+    padding: 0;
 }
 
 #banner button:hover {
