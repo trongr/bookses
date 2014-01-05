@@ -566,7 +566,7 @@ div.popup_cancel {
 }
 
 .boks_latest_comments_header {
-    margin: 30px 10px 10px 10px;
+    margin: 30px 10px 0 10px;
     border-bottom: 1px solid #bbb;
 }
 
@@ -593,54 +593,65 @@ div.popup_cancel {
 }
 
 .boks_latest_comments {
-    width: 100%;
-    overflow-x: hidden;
-    background: linear-gradient(#eee, #aaa);
+    padding: 5px;
 }
 
 .latest_comment_box {
-    vertical-align: top;
-    display: inline-block;
+    clear: both;
     font-size: 0.8em;
-    padding: 5px 0 5px 5px;
-    width: 33%;
-    box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -webkit-box-sizing: border-box;
+    width: 100%;
+    margin: 5px 0 5px 0;
 }
 
 .latest_comment {
-    padding: 5px;
-    background-color: #fff;
+    background-color: #e4e4e4;
     cursor: pointer;
-    border-radius: 3px;
+    display: table;
+    width: 100%;
+    padding: 5px 0 5px 0;
+    border: 1px solid #bbb;
 }
 
 .latest_comment:hover {
-    border: 1px solid #999;
+    background-color: #fff;
 }
 
 .comment_text {
-    padding: 10px;
+    display: table-cell;
+    vertical-align: top;
+    padding: 5px;
 }
 
 .latest_comment_img_box {
-    width: 100%;
+    display: table-cell;
+    width: 200px;
+    text-align: center;
+    padding: 5px;
 }
 
 .latest_comment_img {
-    width: 100%;
+    height: 100%;
+    vertical-align: middle;
+}
+
+.latest_comment_yt_thumb {
+    display: table-cell;
+    width: 120px;
+    vertical-align: middle;
+    text-align: center;
+    padding: 5px;
 }
 
 .comment_info {
-    border-bottom: 1px solid #aaa;
-    margin: 10px 10px 0 10px;
-    padding: 0 0 5px 0;
+    display: table-cell;
+    width: 120px;
+    vertical-align: top;
+    text-align: right;
+    padding: 5px;
 }
 
 .comment_user {
     width: 100%;
-    text-align: right;
     color: #666;
 }
 
@@ -648,13 +659,11 @@ div.popup_cancel {
     font-size: 0.9em;
     color: #666;
     width: 100%;
-    text-align: right;
 }
 
 .comment_replies {
     font-size: 0.9em;
     width: 100%;
-    text-align: right;
 }
 
 .is_edit {
@@ -668,9 +677,9 @@ div.popup_cancel {
 .boks_latest_comments_more {
     width: 100%;
     font-size: 2em;
-    padding: 40px;
-    color: #fff;
-    background-color: #aaa;
+    padding: 20px;
+    color: #666;
+    background-color: #eee;
 }
 
 .boks_latest_comments_more:hover {

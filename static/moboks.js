@@ -420,7 +420,8 @@ var bok = function(x){
             var datap = "data-p='" + comment.p + "'"
             var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment.slice(0, 200))) + (comment.comment.length > 200 ? " . . ." : "")
             var img = (comment.img ? "<div class='latest_comment_img_box'><img class='latest_comment_img' src='" + comment.thumb + "'></div>" : "")
-            var youtube = (comment.youtube ? yt.thumbnail(comment.youtube, k.small) : "")
+            var youtube = (comment.youtube ? "<div class='latest_comment_yt_thumb'>" + yt.thumbnail(comment.youtube, k.small) + "</div>" : "")
+            if (youtube) img = ""
             var replies
             if (comment.replies == 0) replies = "<div class='comment_replies red'>new</div>"
             else if (comment.replies == 1) replies = "<div class='comment_replies green'>1 reply</div>"
@@ -432,9 +433,9 @@ var bok = function(x){
                 +                   replies
                 + "                 <div class='comment_modified'>" + Date.create(comment.modified).relative() + "</div>"
                 + "             </div>"
-                + "             <div class='comment_text'>" + text + "</div>"
                 +               img
                 +               youtube
+                + "             <div class='comment_text'>" + text + "</div>"
                 + "         </div>"
                 + "     </div>"
             return html
@@ -571,7 +572,6 @@ var bok = function(x){
                 .on("click", ".draw_undo_button", draw.bindings.click_draw_undo_button)
                 .on("click", ".draw_picture_button", draw.bindings.click_choose_img)
                 .on("change", ".draw_picture_input", draw.bindings.change_img_input)
-                .on("change", ".direct_picture_input", draw.bindings.change_direct_img_input)
             draw.clear()
             draw.k.preview = img
             if (img.attr("src")) draw.bindings.load_img(img.attr("src"))
@@ -1278,7 +1278,7 @@ var bok = function(x){
         }
 
         bindings.click_reply_img_input = function(){
-            draw.init_input($(this).closest(".data").find("img"))
+            draw.init_input($(this).closest(".data").find(".boks_reply_img img"))
         }
 
         bindings.click_para_box = function(){
