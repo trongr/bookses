@@ -67,11 +67,12 @@ jQuery(function($){
             var imgs = ""
             if (book.img_comments){
                 for (var i = 0; i < book.img_comments.length; i++){
-                    var img = "<img class='book_img' src='" + book.img_comments[i].thumb + "'>"
-                    var youtube = (book.img_comments[i].youtube ? "<div class='latest_comment_yt_thumb'>"
-                                   + yt.thumbnail(book.img_comments[i].youtube, yt.k.small) + "</div>" : "")
+                    var comment = book.img_comments[i]
+                    var img = "<img class='book_img' src='" + comment.thumb + "'>"
+                    var youtube = (comment.youtube ? "<div class='latest_comment_yt_thumb'>"
+                                   + yt.thumbnail(comment.youtube, yt.k.small) + "</div>" : "")
                     if (youtube) img = ""
-                    imgs += "<div class='book_img_box'>" + img + youtube + "</div>"
+                    imgs += "<a class='book_img_box' href='/read/" + book._id + "?c=" + comment._id + "'>" + img + youtube + "</a>"
                 }
             }
             var description = templates.drop_caps(book.description.slice(0, 500))
