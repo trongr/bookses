@@ -327,7 +327,7 @@ p.paragraph:hover {
     font-size: 0.9em;
     clear: both;
     float: right;
-    margin: 0 5px 0 5px;
+    margin: 10px 5px 10px 5px;
 }
 
 .boks_comment_menu button {
@@ -335,8 +335,13 @@ p.paragraph:hover {
     font-weight: lighter;
     background: none;
     font-family: helvetica, arial, sans;
-    margin: 10px 0 10px 0;
     padding: 5px 0 0 0;
+}
+
+.boks_comment .addthis_toolbox {
+    clear: both;
+    float: right;
+    margin: 0 10px 10px 0;
 }
 
 .boks_comment_created {

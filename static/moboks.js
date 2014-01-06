@@ -237,14 +237,14 @@ var bok = function(x){
                 + "         </div>"
                 + "         <div class='boks_social'>"
                 + "             <div class='addthis_toolbox addthis_default_style addthis_32x32_style'>"
-                + "             <a class='addthis_button_facebook'></a>"
-                + "             <a class='addthis_button_twitter'></a>"
-                + "             <a class='addthis_button_pinterest_share'></a>"
-                + "             <a class='addthis_button_google_plusone_share'></a>"
-                + "             <a class='addthis_button_blogger'></a>"
-                + "             <a class='addthis_button_tumblr'></a>"
-                + "             <a class='addthis_button_reddit'></a>"
-                + "             <a class='addthis_button_compact'></a><a class='addthis_counter addthis_bubble_style'></a>"
+                + "                 <a class='addthis_button_facebook'></a>"
+                + "                 <a class='addthis_button_twitter'></a>"
+                + "                 <a class='addthis_button_pinterest_share'></a>"
+                + "                 <a class='addthis_button_google_plusone_share'></a>"
+                + "                 <a class='addthis_button_blogger'></a>"
+                + "                 <a class='addthis_button_tumblr'></a>"
+                + "                 <a class='addthis_button_reddit'></a>"
+                + "                 <a class='addthis_button_compact'></a><a class='addthis_counter addthis_bubble_style'></a>"
                 + "             </div>"
                 + "         </div>"
                 + "         <div class='boks_book_para_graph_header'>"
@@ -388,13 +388,20 @@ var bok = function(x){
                 + "             </div>"
                 + "             <div class='boks_comment_username'>" + comment.username + "</div>"
                 + "             <div class='boks_comment_created'>" + Date.create(comment.created).long() + "</div>"
-                // + "             <div class='boks_comment_created'>" + moment(comment.created).format(k.date_format_alt) + "</div>"
                 + "             <div class='boks_comment_menu'>"
                 + "                 <button class='boks_reply boks_green_underline'>REPLY</button>"
                 // + "                 <button class='boks_reply boks_green_underline'><i class='icon-pencil'></i></button>"
                 + "                 <button class='boks_comment_reply " + has_replies + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
                 + "                 <button class='boks_comment_thumbs_up " + has_votes + "'><i class='icon-thumbs-up-alt'></i><span class='boks_comment_votes'>" + comment.votes + "</span></button>"
                 + "                 <button class='boks_comment_flag'><i class='icon-flag'></i></button>"
+                + "             </div>"
+                + "             <div class='addthis_toolbox addthis_default_style addthis_32x32_style' "
+                + "                     addthis:url='http://bookses.com/read/" + o.bID + "?c=" + comment._id + "'>"
+                + "                 <a class='addthis_button_facebook'></a>"
+                + "                 <a class='addthis_button_twitter'></a>"
+                + "                 <a class='addthis_button_pinterest_share'></a>"
+                + "                 <a class='addthis_button_google_plusone_share'></a>"
+                + "                 <a class='addthis_button_tumblr'></a>"
                 + "             </div>"
                 + "             <div class='clear_both'></div>"
                 + "         </div>"
@@ -902,6 +909,7 @@ var bok = function(x){
                 },
                 function(comments, done){
                     box.html(templates.comments_box(comments, p, parentid))
+                    addthis.toolbox(".addthis_toolbox")
                     done(null)
                 },
             ], function(er, re){
@@ -921,6 +929,7 @@ var bok = function(x){
                     var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(comment.p)
                     $("html, body").animate({scrollTop:paragraph.offset().top - 40}, 100)
                     dom.content_right.prepend(templates.comments_box([comment], comment.p, comment.parent))
+                    addthis.toolbox(".addthis_toolbox")
                     dom.content_right.prepend(templates.p_menu(comment.p)).animate({scrollTop:0}, 100)
                     done(null)
                 }
@@ -937,6 +946,7 @@ var bok = function(x){
                 dom.content_right.find(".boks_comments_box[data-p='" + comment.p + "']").first()
                     .find(".boks_comments").eq(0).prepend(elmt)
             }
+            addthis.toolbox(".addthis_toolbox")
             return elmt
         }
 
@@ -1120,6 +1130,7 @@ var bok = function(x){
                 } else {
                     dom.content_right.prepend(templates.comments_box([], p, null))
                 }
+                addthis.toolbox(".addthis_toolbox")
                 dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
                 $("html, body").animate({scrollTop:that.offset().top - 40}, 100)
                 // $(document).trigger(events.k.comments_loaded)
@@ -1143,7 +1154,10 @@ var bok = function(x){
                     })
                 },
                 function(comments, done){
-                    if (comments.length) box.append(templates.comments(comments.slice(0, k.page_size)))
+                    if (comments.length){
+                        box.append(templates.comments(comments.slice(0, k.page_size)))
+                        addthis.toolbox(".addthis_toolbox")
+                    }
                     if (comments.length <= k.page_size) that.hide()
                     else that.attr("data-page", page)
                     done(null)
@@ -1316,6 +1330,7 @@ var bok = function(x){
                     } else {
                         dom.content_right.prepend(templates.comments_box([], p, null))
                     }
+                    addthis.toolbox(".addthis_toolbox")
                     dom.content_right.prepend(templates.edit_p_box(p))
                     dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
                     var editor = dom.content_right.find(".edit_p_text").eq(0).hallo({
@@ -1403,6 +1418,7 @@ var bok = function(x){
                     console.log(JSON.stringify(er, 0, 2))
                 } else if (comment){
                     dom.content_right.prepend(templates.comments_box([comment], p, comment.parent))
+                    addthis.toolbox(".addthis_toolbox")
                     dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
                 } else {
                     console.log(JSON.stringify({error:"click latest comment: can't find comment"}, 0, 2))
