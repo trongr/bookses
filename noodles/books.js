@@ -911,10 +911,14 @@ var books = module.exports = (function(){
     books.get_book_img_comments = function(id, done){
         var query = {
             book: id,
-            img: {$exists:true}
+            $or: [{
+                img: {$exists:true}
+            },{
+                youtube: {$exists:true}
+            }]
         }
         var aux = {
-            sort: [["pop","desc"]],
+            sort: [["pop","desc"],["modified","desc"]],
             limit: 5,
         }
         DB.get_entries(k.tables.comments, query, aux, function(er, entries){

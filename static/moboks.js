@@ -16,8 +16,6 @@ var bok = function(x){
         date_format_alt: "h:mm A D MMM YYYY",
         page_size: 10,
         request_ahead: 20,
-        big: "big",
-        small: "small",
     }
 
     var page = (function(){
@@ -376,7 +374,7 @@ var bok = function(x){
         templates.comment = function(comment){
             var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment))
             var img = (comment.img ? "<div class='boks_comment_img_box'><img class='boks_comment_img' src='" + comment.img + "'></div>" : "")
-            var youtube = (comment.youtube ? yt.thumbnail(comment.youtube, k.big) : "")
+            var youtube = (comment.youtube ? yt.thumbnail(comment.youtube, yt.k.big) : "")
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
             var has_replies = (comment.replies > 0 ? "has_comments" : "")
@@ -420,7 +418,7 @@ var bok = function(x){
             var datap = "data-p='" + comment.p + "'"
             var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment.slice(0, 200))) + (comment.comment.length > 200 ? " . . ." : "")
             var img = (comment.img ? "<div class='latest_comment_img_box'><img class='latest_comment_img' src='" + comment.thumb + "'></div>" : "")
-            var youtube = (comment.youtube ? "<div class='latest_comment_yt_thumb'>" + yt.thumbnail(comment.youtube, k.small) + "</div>" : "")
+            var youtube = (comment.youtube ? "<div class='latest_comment_yt_thumb'>" + yt.thumbnail(comment.youtube, yt.k.small) + "</div>" : "")
             if (youtube) img = ""
             var replies
             if (comment.replies == 0) replies = "<div class='comment_replies red'>new</div>"
@@ -447,6 +445,11 @@ var bok = function(x){
     var yt = (function(){
         var yt = {}
 
+        yt.k = {
+            small: "small",
+            big: "big"
+        }
+
         yt.embed = function(link){
             var html = "<iframe type='text/html' width='100%' height='300' src='http://www.youtube.com/embed/"
                 + yt.extract_id(link)
@@ -458,8 +461,8 @@ var bok = function(x){
             var random_id = Math.random() // so youtube can find the right box if you have multiple copies of the same video
             var id = yt.extract_id(link)
             var img_size
-            if (size == k.big) img_size = "0"
-            else if (size == k.small) img_size = "default"
+            if (size == yt.k.big) img_size = "0"
+            else if (size == yt.k.small) img_size = "default"
             var html = "<div id='" + random_id + "' class='youtube_thumb_box data' data-ytid='" + id + "'>"
                 + "         <img class='youtube_thumb' src='http://img.youtube.com/vi/"
                 +               id + "/" + img_size + ".jpg' alt='youtube video'>"
@@ -1418,7 +1421,7 @@ var bok = function(x){
             var box = $(this).closest(".data")
             var link = box.find(".boks_youtube_embed_link").val().trim()
             if (!link) return alert("Please paste a link")
-            box.find(".boks_youtube_embed_video").html(yt.thumbnail(link, k.big))
+            box.find(".boks_youtube_embed_video").html(yt.thumbnail(link, yt.k.big))
         }
 
         bindings.click_youtube_thumb = function(){

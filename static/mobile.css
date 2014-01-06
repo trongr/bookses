@@ -309,3 +309,21 @@ div.popup_cancel {
 .class_selected button {
     color: #000 !important;
 }
+
+.youtube_thumb_box {
+    width: 100%;
+    position: relative;
+}
+
+.youtube_thumb {
+    width: 100%;
+}
+
+.youtube_thumb_caption {
+    position: absolute;
+    color: #f00;
+    font-size: 2em;
+    left: 0;
+    bottom: 0;
+    margin: 10px;
+}

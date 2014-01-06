@@ -67,9 +67,11 @@ jQuery(function($){
             var imgs = ""
             if (book.img_comments){
                 for (var i = 0; i < book.img_comments.length; i++){
-                    imgs += "<div class='book_img_box'>"
-                        +        "<img class='book_img' src='" + book.img_comments[i].thumb + "'>"
-                        +   "</div>"
+                    var img = "<img class='book_img' src='" + book.img_comments[i].thumb + "'>"
+                    var youtube = (book.img_comments[i].youtube ? "<div class='latest_comment_yt_thumb'>"
+                                   + yt.thumbnail(book.img_comments[i].youtube, yt.k.small) + "</div>" : "")
+                    if (youtube) img = ""
+                    imgs += "<div class='book_img_box'>" + img + youtube + "</div>"
                 }
             }
             var description = templates.drop_caps(book.description.slice(0, 500))
@@ -93,6 +95,42 @@ jQuery(function($){
         }
 
         return templates
+    }())
+
+    var yt = (function(){
+        var yt = {}
+
+        yt.k = {
+            small: "small",
+            big: "big"
+        }
+
+        yt.embed = function(link){
+            var html = "<iframe type='text/html' width='100%' height='300' src='http://www.youtube.com/embed/"
+                + yt.extract_id(link)
+                + "?autoplay=0' frameborder='0'/>"
+            return html
+        }
+
+        yt.thumbnail = function(link, size){
+            var random_id = Math.random() // so youtube can find the right box if you have multiple copies of the same video
+            var id = yt.extract_id(link)
+            var img_size
+            if (size == k.big) img_size = "0"
+            else if (size == yt.k.small) img_size = "default"
+            var html = "<div id='" + random_id + "' class='youtube_thumb_box data' data-ytid='" + id + "'>"
+                + "         <img class='youtube_thumb' src='http://img.youtube.com/vi/"
+                +               id + "/" + img_size + ".jpg' alt='youtube video'>"
+                + "         <div class='youtube_thumb_caption'><i class='icon-play-circle'></i></div>"
+                + "     </div>"
+            return html
+        }
+
+        yt.extract_id = function(link){
+            return $.url(link).param("v")
+        }
+
+        return yt
     }())
 
     var views = (function(){
