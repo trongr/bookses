@@ -149,7 +149,8 @@ var DB = (function(){
         })
     }
 
-    DB.update_comment_recursive = function(id, update, recursion){
+    // mark
+    DB.update_comment_recursive = function(id, update, recursion, exclude){
         console.log(id, recursion)
         if (recursion < 0) return
         async.waterfall([
@@ -161,16 +162,19 @@ var DB = (function(){
                 })
             },
             function(comment, done){
-                // only update notis if someone else, not you, responds to your comment
-                if (comment.username != update.$set.notee) update.$set.notis = true
+                // exclude your comment if it's already been notis'ed in this thread.
+                // only update notis if someone else, not you, responds to your comment.
+                if (exclude[comment.username]) delete update.$set.notis
+                else if (comment.username != update.$set.notee) update.$set.notis = true
                 else delete update.$set.notis
+                exclude[comment.username] = true
                 DB.update_entry_by_id(k.tables.comments, id, update, function(er, num){
                     done(er, comment)
                 })
             },
         ], function(er, comment){
             if (er) console.log(JSON.stringify({error:"update comment mod time",id:id,recursion:recursion,er:er}, 0, 2))
-            else if (comment.parent) DB.update_comment_recursive(comment.parent, update, --recursion)
+            else if (comment.parent) DB.update_comment_recursive(comment.parent, update, --recursion, exclude)
         })
     }
 
@@ -565,7 +569,7 @@ var books = module.exports = (function(){
                         modified: new Date(),
                         notee: req.session.username
                     }
-                }, k.recursion_limit)
+                }, k.recursion_limit, {})
             }
         ], function(er, comment){
             if (er){
@@ -750,7 +754,7 @@ var books = module.exports = (function(){
                         modified: new Date(),
                         notee: req.session.username
                     }
-                }, k.recursion_limit)
+                }, k.recursion_limit, {})
             }
         ], function(er, num){
             if (er){
