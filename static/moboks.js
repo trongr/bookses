@@ -478,6 +478,14 @@ var bok = function(x){
             return html
         }
 
+        yt.thumbnail_src = function(link, size){
+            var id = yt.extract_id(link)
+            var img_size
+            if (size == yt.k.big) img_size = "0"
+            else if (size == yt.k.small) img_size = "default"
+            return "http://img.youtube.com/vi/" + id + "/" + img_size + ".jpg"
+        }
+
         yt.extract_id = function(link){
             return $.url(link).param("v")
         }
