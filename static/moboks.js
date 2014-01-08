@@ -69,7 +69,8 @@ var bok = function(x){
 
         css.color_code_p_margin = function(p, pop){
             p.css({
-                "border-right": "5px solid #" + color.code_point_range(css.k.cold, css.k.hot, pop, k.page_size)
+                "border-right": "5px solid #0f0"
+                // "border-right": "5px solid #" + color.code_point_range(css.k.cold, css.k.hot, pop, k.page_size)
             })
         }
 
