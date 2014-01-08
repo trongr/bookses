@@ -149,7 +149,6 @@ var DB = (function(){
         })
     }
 
-    // mark
     DB.update_comment_recursive = function(id, update, recursion, exclude){
         console.log(id, recursion)
         if (recursion < 0) return

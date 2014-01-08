@@ -165,6 +165,24 @@ var users = module.exports = (function(){
         })
     }
 
+    users.authenticate_anonymous = function(req, res, next){
+        var username = req.session.username
+        var password = req.session.password
+        if (!username || username == "anonymous"){
+            req.session.username = "anonymous"
+            next(null)
+        } else if (username) DB.get_user(username, password, function(er, user){
+            if (er){
+                console.log(JSON.stringify({error:"users.authenticate",er:er}, 0, 2))
+                res.send({error:"authenticate"})
+            } else if (user){
+                next(null)
+            } else {
+                res.send({loggedin:false})
+            }
+        })
+    }
+
     users.is_logged_in = function(req, res){
         if (req.session.username && req.session.password){
             res.send({

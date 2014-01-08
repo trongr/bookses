@@ -1210,8 +1210,8 @@ var bok = function(x){
         bindings.click_reply = function(){
             draw.clear()
             var that = $(this)
-            users.is_logged_in(function(er, user){
-                if (!user || !user.loggedin) return users.show_login_box($("#popup"))
+            // users.is_logged_in(function(er, user){
+            //     if (!user || !user.loggedin) return users.show_login_box($("#popup"))
                 $(".edit_p_box").remove()
                 var data_box = that.closest(".data")
                 var id = data_box.attr("data-id")
@@ -1234,7 +1234,7 @@ var bok = function(x){
                     parentElement: box.find(".boks_reply_toolbar").eq(0)
                 }).focus().trigger("halloactivated")
                 data_box.find(".boks_comment_content").click()
-            })
+            // })
         }
 
         bindings.click_reply_post = function(){

@@ -91,7 +91,8 @@ server.post("/book/:id/like", users.authenticate, books.like_book_validate, book
 server.get("/book/:id/paragraphs", books.get_paragraphs_validate, books.get_paragraphs)
 server.get("/book/:id/edits", books.get_book_edits_validate, books.get_book_edits)
 
-server.post("/comment", users.authenticate, books.create_comment_validate, books.create_comment)
+// authenticate_anonymous lets anonymous users through as well as logged in users
+server.post("/comment", users.authenticate_anonymous, books.create_comment_validate, books.create_comment)
 server.get("/comment/:id", books.get_comment_validate, books.get_comment)
 server.get("/book/:id/comments", books.get_book_comments_validate, books.get_book_comments)
 server.get("/book/:id/latest_comments", books.get_book_latest_comments_validate, books.get_book_latest_comments)
