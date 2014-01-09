@@ -1290,6 +1290,7 @@ var bok = function(x){
                     if (re.comment){
                         new_comment.attr("data-id", re.comment._id)
                         new_comment.find(".boks_comment_username").eq(0).html(re.comment.username)
+                        if (re.comment.img) new_comment.find(".boks_comment_img_box img").attr("src", re.comment.img)
                         new_comment.find(".addthis_toolbox").attr("addthis:url", "http://bookses.com/read/" + o.bID + "?c=" + re.comment._id)
                         addthis.toolbox(".addthis_toolbox")
                     } else if (re.loggedin == false) alert("you have to log in")
