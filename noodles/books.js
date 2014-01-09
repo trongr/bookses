@@ -727,24 +727,24 @@ var books = module.exports = (function(){
 
     books.upvote_comment = function(req, res){
         async.waterfall([
-            function(done){
-                DB.get_entries(k.tables.likes, {
-                    user: req.session.username,
-                    like: req.params.id
-                }, {}, function(er, entries){
-                    done(er, entries)
-                })
-            },
-            function(entries, done){
-                if (entries.length) done({info:"you already liked this"})
-                else DB.create(k.tables.likes, {
-                    user: req.session.username,
-                    like: req.params.id,
-                    created: new Date(),
-                }, function(er, like){
-                    done(er)
-                })
-            },
+            // function(done){
+            //     DB.get_entries(k.tables.likes, {
+            //         user: req.session.username,
+            //         like: req.params.id
+            //     }, {}, function(er, entries){
+            //         done(er, entries)
+            //     })
+            // },
+            // function(entries, done){
+            //     if (entries.length) done({info:"you already liked this"})
+            //     else DB.create(k.tables.likes, {
+            //         user: req.session.username,
+            //         like: req.params.id,
+            //         created: new Date(),
+            //     }, function(er, like){
+            //         done(er)
+            //     })
+            // },
             function(done){
                 done(null, 1)
                 DB.update_comment_recursive(req.params.id, {

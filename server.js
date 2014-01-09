@@ -97,7 +97,7 @@ server.get("/comment/:id", books.get_comment_validate, books.get_comment)
 server.get("/book/:id/comments", books.get_book_comments_validate, books.get_book_comments)
 server.get("/book/:id/latest_comments", books.get_book_latest_comments_validate, books.get_book_latest_comments)
 server.get("/comment/:id/comments", books.get_comment_comments_validate, books.get_comment_comments)
-server.post("/comment/:id/upvote", users.authenticate, books.upvote_comment_validate, books.upvote_comment)
+server.post("/comment/:id/upvote", users.authenticate_anonymous, books.upvote_comment_validate, books.upvote_comment)
 
 server.post("/user/:username/register", users.create_user_validate, users.create_user)
 server.post("/user/:username/login", users.login_validate, users.login)

@@ -1188,8 +1188,8 @@ var bok = function(x){
 
         bindings.click_comment_like = function(){
             var that = $(this)
-            users.is_logged_in(function(er, user){
-                if (!user || !user.loggedin) return users.show_login_box($("#popup"))
+            // users.is_logged_in(function(er, user){
+                // if (!user || !user.loggedin) return users.show_login_box($("#popup"))
                 try {
                     var id = that.closest(".data").attr("data-id")
                     var boks_comment_votes = that.find(".boks_comment_votes")
@@ -1201,7 +1201,7 @@ var bok = function(x){
                 } catch (e){
                     alert("something went wrong. couldn't upvote comment")
                 }
-            })
+            // })
         }
 
         bindings.click_go_top_page = function(){
