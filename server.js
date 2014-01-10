@@ -107,6 +107,7 @@ server.get("/user/login", users.is_logged_in) // tries to see if session is stil
 server.get("/user/notis", users.authenticate, books.get_user_notis_validate, books.get_user_notis)
 server.post("/user/clear_notis", users.authenticate, books.clear_user_notis_validate, books.clear_user_notis)
 server.get("/user/comments/notis", users.authenticate, books.get_comment_notis_validate, books.get_comment_notis)
+server.post("/comment/:id/clear_notis", users.authenticate, books.clear_comment_notis_validate, books.clear_comment_notis)
 
 var port = process.env.PORT || 8080
 app.listen(port, "127.0.0.1", function(){

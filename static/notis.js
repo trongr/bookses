@@ -83,6 +83,17 @@ var notis = (function(){
             })
         }
 
+        api.clear_comment_notis = function(id, done){
+            $.ajax({
+                url: "/comment/" + id + "/clear_notis",
+                type: "post",
+                success: function(re){
+                    if (re.ok) done(null)
+                    else done(re)
+                }
+            })
+        }
+
         return api
     }())
 
@@ -120,6 +131,7 @@ var notis = (function(){
             var box = $(this).closest(".data")
             var id = box.attr("data-id")
             var book = box.attr("data-book")
+            api.clear_comment_notis(id, function(er){})
             window.location = "/read/" + book + "?c=" + id
             return false
         }

@@ -960,20 +960,6 @@ var books = module.exports = (function(){
                     else if (comment) done(null, comment)
                     else done({info:"no such comment"})
                 })
-            },
-            function(comment, done){
-                done(null, comment)
-                if (req.session.username == comment.username){
-                    DB.update_entry_by_id(k.tables.comments, comment._id.toString(), {
-                        $set: {
-                            notis: false,
-                            notee: null,
-                            voter: null
-                        }
-                    }, function(er, num){
-                        if (er) console.log(JSON.stringify(er, 0, 2))
-                    })
-                }
             }
         ], function(er, comment){
             if (er){
@@ -1042,7 +1028,7 @@ var books = module.exports = (function(){
             function(done){
                 var query = {
                     username: req.session.username,
-                    // notis: true
+                    notis: {$exists:true}
                 }
                 var aux = {
                     sort: [["modified","desc"]],
@@ -1058,6 +1044,34 @@ var books = module.exports = (function(){
                 console.log(JSON.stringify({error:"get comment notis",er:er}, 0, 2))
                 res.send({error:"get comment notis",info:er.info})
             } else res.send({notis:entries})
+        })
+    }
+
+    books.clear_comment_notis_validate = function(req, res, next){
+        validate.id(req.params.id, function(er){
+            if (er){
+                console.log(JSON.stringify({error:"books.clear_comment_notis_validate",er:er}, 0, 2))
+                res.send({error:"clear comment notis"})
+            } else next(null)
+        })
+    }
+
+    books.clear_comment_notis = function(req, res){
+        async.waterfall([
+            function(done){
+                DB.update_entry(k.tables.comments, {
+                    _id: new mongo.ObjectID(req.params.id)
+                },{
+                    $set: {notis:false}
+                }, function(er, num){
+                    done(er)
+                })
+            },
+        ], function(er){
+            if (er){
+                console.log(JSON.stringify({error:"clear comment notis",er:er}, 0, 2))
+                res.send({error:"clear comment notis",info:er.info})
+            } else res.send({ok:true})
         })
     }
 
