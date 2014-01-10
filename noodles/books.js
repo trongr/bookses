@@ -935,7 +935,8 @@ var books = module.exports = (function(){
             }]
         }
         var aux = {
-            sort: [["pop","desc"],["modified","desc"]],
+            sort: [["modified","desc"]],
+            // sort: [["pop","desc"],["modified","desc"]],
             limit: 5,
         }
         DB.get_entries(k.tables.comments, query, aux, function(er, entries){
