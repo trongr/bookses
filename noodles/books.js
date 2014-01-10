@@ -105,6 +105,18 @@ var DB = (function(){
         })
     }
 
+    DB.update_entry = function(table, query, update, done){
+        db.collection(table, {safe:true}, function(er, docs){
+            if (er) done({error:"db.update_entry",table:table,query:query,update:update,er:er})
+            else docs.update(query, update, {
+                safe: true
+            }, function(er, num){
+                if (er) done({error:"db.update_entry",table:table,query:query,update:update,er:er})
+                else done(null, num)
+            })
+        })
+    }
+
     DB.get_entries = function(table, query, aux, done){
         db.collection(table, {safe:true}, function(er, docs){
             if (er) done({error:"db.get_entries",table:table,query:query,aux:aux,er:er})
@@ -149,7 +161,7 @@ var DB = (function(){
         })
     }
 
-    DB.update_comment_recursive = function(id, update, recursion, exclude){
+    DB.update_comment_recursive = function(id, _update, recursion, exclude){
         console.log(id, recursion)
         if (recursion < 0) return
         async.waterfall([
@@ -161,19 +173,35 @@ var DB = (function(){
                 })
             },
             function(comment, done){
-                // exclude your comment if it's already been notis'ed in this thread.
-                // only update notis if someone else, not you, responds to your comment.
+                var update = {
+                    $inc: {pop:1},
+                    $set: {modified:new Date()}
+                }
+                if (_update.notee){
+                    update.$inc.replies = 1
+                    update.$set.notee = _update.notee
+                    if (comment.username != update.$set.notee) update.$set.notis = true
+                } else if (recursion == k.recursion_limit){ // only notis direct likes
+                    update.$inc.votes = 1
+                    update.$set.voter = _update.voter
+                    if (comment.username != update.$set.voter) update.$set.notis = true
+                }
                 if (exclude[comment.username]) delete update.$set.notis
-                else if (comment.username != update.$set.notee) update.$set.notis = true
-                else delete update.$set.notis
                 exclude[comment.username] = true
+                if (update.$set.notis) DB.update_entry(k.tables.users, {
+                    username: comment.username
+                },{
+                    $set: {notis:true}
+                }, function(er, num){
+                    if (er) console.log(JSON.stringify(er, 0, 2))
+                })
                 DB.update_entry_by_id(k.tables.comments, id, update, function(er, num){
                     done(er, comment)
                 })
             },
         ], function(er, comment){
             if (er) console.log(JSON.stringify({error:"update comment mod time",id:id,recursion:recursion,er:er}, 0, 2))
-            else if (comment.parent) DB.update_comment_recursive(comment.parent, update, --recursion, exclude)
+            else if (comment.parent) DB.update_comment_recursive(comment.parent, _update, --recursion, exclude)
         })
     }
 
@@ -340,7 +368,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.get_all_books_validate = function(req, res, next){
         async.waterfall([
             function(done){
@@ -403,7 +430,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.search_validate = function(req, res, next){
         async.waterfall([
             function(done){
@@ -563,11 +589,7 @@ var books = module.exports = (function(){
                     if (er) console.log(JSON.stringify({error:"books.create_comment: updating book pop",id:req.body.book,er:er}, 0, 2))
                 })
                 if (req.body.parent) DB.update_comment_recursive(req.body.parent, {
-                    $inc: {replies:1, pop:1},
-                    $set: {
-                        modified: new Date(),
-                        notee: req.session.username
-                    }
+                    notee: req.session.username
                 }, k.recursion_limit, {})
             }
         ], function(er, comment){
@@ -748,11 +770,7 @@ var books = module.exports = (function(){
             function(done){
                 done(null, 1)
                 DB.update_comment_recursive(req.params.id, {
-                    $inc: {votes:1, pop:1},
-                    $set: {
-                        modified: new Date(),
-                        notee: req.session.username
-                    }
+                    voter: req.session.username
                 }, k.recursion_limit, {})
             }
         ], function(er, num){
@@ -948,7 +966,9 @@ var books = module.exports = (function(){
                 if (req.session.username == comment.username){
                     DB.update_entry_by_id(k.tables.comments, comment._id.toString(), {
                         $set: {
-                            notis: false
+                            notis: false,
+                            notee: null,
+                            voter: null
                         }
                     }, function(er, num){
                         if (er) console.log(JSON.stringify(er, 0, 2))
@@ -965,55 +985,78 @@ var books = module.exports = (function(){
         })
     }
 
-    books.notis_count_validate = function(req, res, next){
+    books.get_user_notis_validate = function(req, res, next){
         next(null) // nothing to validate
     }
 
-    books.notis_count = function(req, res){
+    books.get_user_notis = function(req, res){
         async.waterfall([
             function(done){
                 var query = {
                     username: req.session.username,
-                    notis: true
                 }
                 var aux = {}
-                DB.count_entries(k.tables.comments, query, aux, function(er, count){
-                    if (er) done({info:"can't count notis"})
-                    else done(null, count)
+                DB.get_entries(k.tables.users, query, aux, function(er, entries){
+                    if (er) done({info:"can't get user notis"})
+                    else if (entries && entries[0]) done(null, entries[0])
+                    else done({info:"no such user"})
                 })
             },
-        ], function(er, count){
+        ], function(er, user){
             if (er){
-                console.log(JSON.stringify({error:"notis count",er:er}, 0, 2))
-                res.send({error:"notis count",info:er.info})
-            } else res.send({count:count})
+                console.log(JSON.stringify({error:"get user notis",er:er}, 0, 2))
+                res.send({error:"get user notis",info:er.info})
+            } else res.send({user:user})
         })
     }
 
-    books.get_notis_validate = function(req, res, next){
+    books.clear_user_notis_validate = function(req, res, next){
         next(null) // nothing to validate
     }
 
-    books.get_notis = function(req, res){
+    books.clear_user_notis = function(req, res){
+        async.waterfall([
+            function(done){
+                DB.update_entry(k.tables.users, {
+                    username: req.session.username,
+                },{
+                    $set: {notis:false}
+                }, function(er, num){
+                    done(er)
+                })
+            },
+        ], function(er){
+            if (er){
+                console.log(JSON.stringify({error:"clear user notis",er:er}, 0, 2))
+                res.send({error:"clear user notis",info:er.info})
+            } else res.send({ok:true})
+        })
+    }
+
+    books.get_comment_notis_validate = function(req, res, next){
+        next(null) // nothing to validate
+    }
+
+    books.get_comment_notis = function(req, res){
         async.waterfall([
             function(done){
                 var query = {
                     username: req.session.username,
-                    notis: true
+                    // notis: true
                 }
                 var aux = {
                     sort: [["modified","desc"]],
                     limit: 10, // todo pagination
                 }
                 DB.get_entries(k.tables.comments, query, aux, function(er, entries){
-                    if (er) done({info:"can't get notis"})
+                    if (er) done({info:"can't get comment notis"})
                     else done(null, entries)
                 })
             },
         ], function(er, entries){
             if (er){
-                console.log(JSON.stringify({error:"get notis",er:er}, 0, 2))
-                res.send({error:"get notis",info:er.info})
+                console.log(JSON.stringify({error:"get comment notis",er:er}, 0, 2))
+                res.send({error:"get comment notis",info:er.info})
             } else res.send({notis:entries})
         })
     }

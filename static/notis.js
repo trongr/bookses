@@ -10,7 +10,7 @@ var notis = (function(){
 
         templates.notis_menu = function(){
             var html = "<div id='notis_box'>"
-                + "         <button id='notis_comments'><i class='icon-comments'></i><span></span></button>"
+                + "         <button id='notis_comments'><i class='icon-comments'></i></button>"
                 // + "         <button id='notis_mails'><i class='icon-envelope-alt'></i><span></span></button>"
                 + "     </div>"
             return html
@@ -29,10 +29,16 @@ var notis = (function(){
         }
 
         templates.noti = function(entry){
-            var html = "<div class='noti data' data-id='" + entry._id + "' data-book='" + entry.book + "'>"
+            var new_notis = (entry.notis ? "is_new_notis" : "")
+            var votes = (entry.votes ? "<div class='noti_votes'>" + entry.votes + " vote" + (entry.votes > 1 ? "s" : "") + "</div>" : "")
+            var notes = (entry.replies ? "<div class='noti_notes'>" + entry.replies + " comment" + (entry.replies > 1 ? "s" : "") + "</div>" : "")
+            var new_notee = (entry.notee ? "<div class='noti_notee'>last comment by " + entry.notee + "</div>" : "")
+            var html = "<div class='noti data " + new_notis + "' data-id='" + entry._id + "' data-book='" + entry.book + "'>"
                 +           "<div class='noti_text'>" + entry.comment.slice(0, 200) + (entry.comment.length > 200 ? " . . ." : "") + "</div>"
                 +           "<div class='noti_modified'>" + Date.create(entry.modified).relative() + "</div>"
-                +           "<div class='noti_notee'>by " + entry.notee + "</div>"
+                +           votes
+                +           notes
+                +           new_notee
                 +           "<div class='clear_both'></div>"
                 +      "</div>"
             return html
@@ -44,20 +50,31 @@ var notis = (function(){
     var api = (function(){
         var api = {}
 
-        api.count_notis_comments = function(done){
+        api.get_user_notis = function(done){
             $.ajax({
-                url: "/user/notiscount",
+                url: "/user/notis",
                 type: "get",
                 success: function(re){
-                    if (re.count != null) done(null, re.count)
+                    if (re.user) done(null, re.user)
                     else done(re)
                 }
             })
         }
 
-        api.get_notis = function(done){
+        api.clear_user_notis = function(done){
             $.ajax({
-                url: "/user/notis",
+                url: "/user/clear_notis",
+                type: "post",
+                success: function(re){
+                    if (re.ok) done(null)
+                    else done(re)
+                }
+            })
+        }
+
+        api.get_comment_notis = function(done){
+            $.ajax({
+                url: "/user/comments/notis",
                 type: "get",
                 success: function(re){
                     if (re.notis != null) done(null, re.notis)
@@ -75,7 +92,16 @@ var notis = (function(){
         bindings.click_notis_comments = function(){
             async.waterfall([
                 function(done){
-                    api.get_notis(function(er, entries){
+                    api.clear_user_notis(function(er){
+                        done(er)
+                    })
+                },
+                function(done){
+                    $("#notis_comments").removeClass("new_notis")
+                    done(null)
+                },
+                function(done){
+                    api.get_comment_notis(function(er, entries){
                         done(er, entries)
                     })
                 },
@@ -113,16 +139,13 @@ var notis = (function(){
                 var timeout
                 async.waterfall([
                     function(done){
-                        api.count_notis_comments(function(er, count){
-                            done(er, count)
+                        api.get_user_notis(function(er, user){
+                            done(er, user)
                         })
                     },
-                    function(count, done){
+                    function(user, done){
                         done(null)
-                        if (count > 0){
-                            $("#notis_comments").addClass("new_notis")
-                                .find("span").html(count)
-                        }
+                        if (user.notis) $("#notis_comments").addClass("new_notis")
                     }
                 ], function(er){
                     if (er) console.log(JSON.stringify(er, 0, 2))

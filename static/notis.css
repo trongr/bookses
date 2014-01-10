@@ -14,6 +14,10 @@ button#notis_mails {
     color: #63BA6E !important;
 }
 
+.is_new_notis {
+    background-color: #32C74D;
+}
+
 #notis_tray {
     position: fixed;
     top: 40px;
@@ -47,13 +51,10 @@ button#notis_mails {
     padding: 5px 0 5px 0;
 }
 
-.noti_modified {
+.noti_modified,
+.noti_notee,
+.noti_votes,
+.noti_notes {
     float: right;
-    font-size: 0.9em;
-    color: #aaa;
-}
-
-.noti_notee {
     clear: both;
-    float: right;
 }
