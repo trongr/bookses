@@ -116,7 +116,7 @@ button:hover {
 }
 
 #tagline {
-    font-size: 12pt;
+    font-size: 6pt;
     font-weight: bolder;
     color: #666;
 }
@@ -362,19 +362,21 @@ div.popup_cancel {
 }
 
 #intro #welcome_box {
-    width: 50%;
+    width: 40%;
     display: table-cell;
-    vertical-align: middle;
+    vertical-align: top;
+    text-align: center;
 }
 
 #welcome {
-    font-size: 12pt;
+    font-size: 6pt;
     font-weight: bolder;
 }
 
 #intro_right {
-    width: 50%;
+    width: 60%;
+    padding: 0 20px 0 20px;
     display: table-cell;
-    vertical-align: middle;
+    vertical-align: bottom;
     font-size: 1.4em;
 }
