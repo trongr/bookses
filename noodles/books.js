@@ -576,12 +576,12 @@ var books = module.exports = (function(){
                 }
             },
             function(comment, done){
-                done(null, comment)
                 if (req.files.img){
                     u.process_img(req.files.img, comment, function(er){
                         if (er) console.log(JSON.stringify(er, 0, 2))
+                        done(null, comment)
                     })
-                }
+                } else done(null, comment)
                 if (req.body.book) DB.update_entry_by_id(k.tables.books, req.body.book, {
                     $inc: {replies:1, pop:1},
                     $set: {modified:new Date()}
