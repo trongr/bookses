@@ -112,7 +112,6 @@ button:hover {
 
 #tagline_box {
     text-align: center;
-    margin: 40px 0 0 0;
     padding: 20px 0 20px 0;
 }
 
@@ -276,7 +275,7 @@ div.popup_cancel {
 #class_menu {
     display: table;
     width: 100%;
-    margin-bottom: 10px;
+    margin: 0 0 10px 0;
 }
 
 .class_button_box {
@@ -350,4 +349,32 @@ div.popup_cancel {
 
 #footer a:hover {
     color: #7DD6FA !important;
+}
+
+#intro {
+    width: 100%;
+    display: table;
+    padding: 20px;
+    margin: 50px 0 0 0;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+#intro #welcome_box {
+    width: 50%;
+    display: table-cell;
+    vertical-align: middle;
+}
+
+#welcome {
+    font-size: 12pt;
+    font-weight: bolder;
+}
+
+#intro_right {
+    width: 50%;
+    display: table-cell;
+    vertical-align: middle;
+    font-size: 1.4em;
 }
