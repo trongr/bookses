@@ -3,10 +3,10 @@ jQuery(function($){
         box: $("#book"),
         bID: document.URL.match(/read\/([a-zA-Z0-9]+).*$/)[1],
         error: function(er){
-            // if (er){
-            //     $("#book").hide()
-            //     $("#error").show()
-            // }
+            if (er){
+                $("#book").hide()
+                $("#error").show()
+            }
         }
     })
 
@@ -15,13 +15,8 @@ jQuery(function($){
 
         bindings.init = function(){
             $("body").on("keydown", ".input_enter_submit input", bindings.input_enter_submit)
-            // $("#more_menu").on("click", bindings.click_more_menu)
             $("#logins").on("click", bindings.click_logins)
         }
-
-        // bindings.click_more_menu = function(){
-        //     menu.show_menu($("#popup"))
-        // }
 
         bindings.click_logins = function(){
             users.show_login_box($("#popup"))

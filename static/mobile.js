@@ -223,7 +223,6 @@ jQuery(function($){
 
         bindings.init = function(){
             $("body").on("keydown", ".input_enter_submit input", bindings.input_enter_submit)
-            $("#more_menu").on("click", bindings.click_more_menu)
             $("#search_button").on("click", bindings.click_search_button)
             $("#upload_button").on("click", bindings.click_upload_button)
             $("#logins").on("click", bindings.click_logins)
@@ -232,7 +231,6 @@ jQuery(function($){
             $("#class_menu button").on("click", bindings.click_class_button)
         }
 
-        // mark
         bindings.click_class_button = function(){
             $(".class_button_box").removeClass("class_selected")
             $(this).parent().addClass("class_selected")
@@ -264,10 +262,6 @@ jQuery(function($){
             })
         }
 
-        bindings.click_more_menu = function(){
-            menu.show_menu($("#popup"))
-        }
-
         bindings.click_logins = function(){
             users.show_login_box($("#popup"))
         }
@@ -278,7 +272,6 @@ jQuery(function($){
             }
         }
 
-        // mark
         bindings.click_search_button = function(){
             k.search_page = 0
             views.load_more_search_results(k.search_page++, k.class)
