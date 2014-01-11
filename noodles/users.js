@@ -109,7 +109,7 @@ var users = module.exports = (function(){
             username: req.params.username,
             password: req.body.password,
             created: new Date(),
-            class: k.amateur
+            class: k.class.amateur
         }
         DB.create(k.tables.users, user, function(er, user){
             if (er){
