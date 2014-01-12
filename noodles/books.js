@@ -650,7 +650,7 @@ var books = module.exports = (function(){
         }
         var aux = {
             // sort: [["modified","desc"]],
-            sort: [["pop","desc"]],
+            sort: [["pop","desc"],["modified","desc"]],
             limit: k.page_size + 1,
             skip: req.query.page * k.page_size
         }
@@ -734,7 +734,7 @@ var books = module.exports = (function(){
         }
         var aux = {
             // sort: [["modified","desc"]],
-            sort: [["pop","desc"]],
+            sort: [["pop","desc"],["modified","desc"]],
             limit: k.page_size + 1,
             skip: req.query.page * k.page_size
         }
