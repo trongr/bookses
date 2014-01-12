@@ -1094,7 +1094,8 @@ var bok = function(x){
             pl.toggle_play_pause_buttons(pl.k.playing)
         }
 
-        pl.play_track = function(pos){
+        pl.play_track = function(pos, id){
+            if (id) window.location.href = "#" + id
             if (pos != pl.k.playlist_pos){ // pause current track if different
                 var player = pl.k.playlist[pl.k.playlist_pos]
                 if (player) player.pauseVideo()
@@ -1499,7 +1500,7 @@ var bok = function(x){
             player.addEventListener("onStateChange", (function(id, pos){
                 return function(e){
                     if (e.data == YT.PlayerState.PLAYING){
-                        pl.play_track(pos)
+                        pl.play_track(pos, id)
                     } else if (e.data == YT.PlayerState.PAUSED){
                         pl.pause_track(pos)
                     }
