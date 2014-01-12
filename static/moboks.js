@@ -426,15 +426,17 @@ var bok = function(x){
             var img = (comment.img ? "<div class='latest_comment_img_box'><img class='latest_comment_img' src='" + comment.thumb + "'></div>" : "")
             var youtube = (comment.youtube ? "<div class='latest_comment_yt_thumb'>" + yt.thumbnail(comment.youtube, yt.k.small) + "</div>" : "")
             if (youtube) img = ""
+            var votes = (comment.votes == 1 ? "1 vote" : comment.votes + " votes")
             var replies
-            if (comment.replies == 0) replies = "<div class='comment_replies red'>new</div>"
-            else if (comment.replies == 1) replies = "<div class='comment_replies green'>1 reply</div>"
-            else replies = "<div class='comment_replies green'>" + comment.replies + " replies</div>"
+            if (comment.replies == 0) replies = ""
+            else if (comment.replies == 1) replies = "1 reply"
+            else replies = comment.replies + " replies"
             var html = "<div class='latest_comment_box " + is_edit + "'>"
                 + "         <div class='latest_comment data' " + dataid + " " + datap +  ">"
                 + "             <div class='comment_info'>"
                 + "                 <div class='comment_user'>" + comment.username + "</div>"
-                +                   replies
+                + "                 <div class='comment_votes red'>" + votes + "</div>"
+                + "                 <div class='comment_replies green'>" + replies + "</div>"
                 + "                 <div class='comment_modified'>" + Date.create(comment.modified).relative() + "</div>"
                 + "             </div>"
                 +               img
