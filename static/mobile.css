@@ -233,10 +233,9 @@ img.book_img {
 }
 
 #more_books_button, #more_search_results_button {
-    font-size: 1.2em;
-    padding: 30px;
+    font-size: 2em;
+    padding: 50px 0 50px 0;
     width: 100%;
-    text-align: left;
 }
 
 #results_box {

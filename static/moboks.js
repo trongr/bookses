@@ -358,7 +358,7 @@ var bok = function(x){
                 +               content
                 + "         </div>"
                 + "         <div>"
-                + "             <button class='boks_more_comments_button " + more_comments + "' data-page='0'><i class='icon-chevron-down'></i></button>"
+                + "             <button class='boks_more_comments_button " + more_comments + "' data-page='0'>MORE</button>"
                 + "         </div>"
                 + "     </div>"
             return html

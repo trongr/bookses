@@ -364,6 +364,9 @@ p.paragraph:hover {
     width: 100%;
     font-size: 2em;
     padding: 20px;
+}
+
+.boks_more_comments_button:hover {
     color: #5BFC60;
 }
 
@@ -681,11 +684,10 @@ div.popup_cancel {
 
 .boks_latest_comments_more {
     width: 100%;
-    font-size: 1.2em;
-    padding: 20px;
+    font-size: 2em;
+    padding: 30px 0 30px 0;
     color: #666;
     background-color: #eee;
-    text-align: left;
 }
 
 .boks_latest_comments_more:hover {

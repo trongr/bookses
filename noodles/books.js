@@ -117,6 +117,16 @@ var DB = (function(){
         })
     }
 
+    DB.remove = function(table, query, done){
+        db.collection(table, {safe:true}, function(er, docs){
+            if (er) done({error:"db.remove",table:table,query:query,er:er})
+            else docs.remove(query, function(er, num){
+                if (er) done({error:"db.remove",table:table,query:query,er:er})
+                else done(null, num)
+            })
+        })
+    }
+
     DB.get_entries = function(table, query, aux, done){
         db.collection(table, {safe:true}, function(er, docs){
             if (er) done({error:"db.get_entries",table:table,query:query,aux:aux,er:er})
@@ -748,7 +758,8 @@ var books = module.exports = (function(){
     }
 
     books.upvote_comment = function(req, res){
-        var ip = req.ip
+        var ip = req.headers['x-forwarded-for']
+        var username = req.session.username
         async.waterfall([
             function(done){
                 if (process.env.ENV == "local") done(null, null)
@@ -764,6 +775,7 @@ var books = module.exports = (function(){
                 else if (entries.length) done({info:"you already liked this"})
                 else DB.create(k.tables.likes, {
                     ip: ip,
+                    username: username,
                     like: req.params.id,
                     created: new Date(),
                 }, function(er, like){
