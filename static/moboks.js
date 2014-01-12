@@ -609,7 +609,24 @@ var bok = function(x){
                 }).click()
         }
 
-
+        draw.init_drag_drop = function(img, e){
+            draw.clear()
+            draw.k.preview = img
+            var desktop = e.originalEvent.dataTransfer.files[0]
+            // this doesn't work for all images from the web
+            // just make an api that downloads the external domain image and send back your own domain url
+            // var src = $(e.originalEvent.dataTransfer.getData('text/html')).filter('img').attr('src')
+            if (desktop){
+                draw.k.drag_drop_file = desktop
+                var reader = new FileReader()
+                reader.onload = function(e){
+                    draw.k.preview.attr("src", e.target.result).show()
+                }
+                reader.readAsDataURL(draw.k.drag_drop_file)
+            } else {
+                alert("We can't drag an image from the web at the moment.\nPlease download it to your computer and upload by\nclicking on the picture button")
+            }
+        }
 
         draw.draw = function(){
             draw.bindings.click_draw_button()
@@ -617,6 +634,7 @@ var bok = function(x){
 
         draw.clear = function(){
             draw.k = {
+                drag_drop_file: null,
                 direct_input_file: null,
                 preview: null,
                 canvas: null,
@@ -703,7 +721,8 @@ var bok = function(x){
         }
 
         draw.get_file = function(){
-            if (draw.k.direct_input_file) return draw.k.direct_input_file
+            if (draw.k.drag_drop_file) return draw.k.drag_drop_file
+            else if (draw.k.direct_input_file) return draw.k.direct_input_file
             else if (draw.k.canvas) return draw.dataURL_to_blob(draw.k.canvas.toDataURL())
             else return null
         }
@@ -1211,28 +1230,41 @@ var bok = function(x){
             var that = $(this)
             // users.is_logged_in(function(er, user){
             //     if (!user || !user.loggedin) return users.show_login_box($("#popup"))
-                $(".edit_p_box").remove()
-                var data_box = that.closest(".data")
-                var id = data_box.attr("data-id")
-                var p = data_box.attr("data-p")
-                var box = data_box.find(".boks_reply_box_box").eq(0)
-                box.html(templates.reply_box(p, id))
-                box.find(".boks_reply_text").hallo({
-                    plugins: {
-                        halloformat: {
-                            formattings: {
-                                underline: true,
-                                strikethrough: true
-                            }
-                        },
-                        halloheadings: {},
-                        hallojustify: {},
-                        hallolists: {},
+            $(".edit_p_box").remove()
+            var data_box = that.closest(".data")
+            var id = data_box.attr("data-id")
+            var p = data_box.attr("data-p")
+            var box = data_box.find(".boks_reply_box_box").eq(0)
+            var drop = box.html(templates.reply_box(p, id)).find(".boks_reply_info")
+            var img = box.find(".boks_reply_img img")
+            drop.on("dragover", function(e){return false})
+                .on("dragleave", function(e){return false})
+                .on("drop", function(e){
+                    draw.init_drag_drop(img, e)
+                    return false
+                })
+            img.on("dragover", function(e){return false})
+                .on("dragleave", function(e){return false})
+                .on("drop", function(e){
+                    draw.init_drag_drop(img, e)
+                    return false
+                })
+            box.find(".boks_reply_text").hallo({
+                plugins: {
+                    halloformat: {
+                        formattings: {
+                            underline: true,
+                            strikethrough: true
+                        }
                     },
-                    toolbar: 'halloToolbarFixed',
-                    parentElement: box.find(".boks_reply_toolbar").eq(0)
-                }).focus().trigger("halloactivated")
-                data_box.find(".boks_comment_content").click()
+                    halloheadings: {},
+                    hallojustify: {},
+                    hallolists: {},
+                },
+                toolbar: 'halloToolbarFixed',
+                parentElement: box.find(".boks_reply_toolbar").eq(0)
+            }).focus().trigger("halloactivated")
+            data_box.find(".boks_comment_content").click()
             // })
         }
 
