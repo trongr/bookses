@@ -58,7 +58,7 @@ db.open(function(er, db) {
     })
     db.collection(k.tables.likes, {safe:true}, function(er, docs){
         if (er) throw er
-        else docs.ensureIndex({like:1}, function(er, re){
+        else docs.ensureIndex({like:1,ip:1}, function(er, re){
             if (er) throw er
         })
     })
@@ -639,8 +639,8 @@ var books = module.exports = (function(){
             edit: (req.query.edit == "true")
         }
         var aux = {
-            sort: [["modified","desc"]],
-            // sort: [["pop","desc"]],
+            // sort: [["modified","desc"]],
+            sort: [["pop","desc"]],
             limit: k.page_size + 1,
             skip: req.query.page * k.page_size
         }
@@ -723,8 +723,8 @@ var books = module.exports = (function(){
             parent: req.params.id
         }
         var aux = {
-            sort: [["modified","desc"]],
-            // sort: [["pop","desc"]],
+            // sort: [["modified","desc"]],
+            sort: [["pop","desc"]],
             limit: k.page_size + 1,
             skip: req.query.page * k.page_size
         }
@@ -748,25 +748,28 @@ var books = module.exports = (function(){
     }
 
     books.upvote_comment = function(req, res){
+        var ip = req.ip
         async.waterfall([
-            // function(done){
-            //     DB.get_entries(k.tables.likes, {
-            //         user: req.session.username,
-            //         like: req.params.id
-            //     }, {}, function(er, entries){
-            //         done(er, entries)
-            //     })
-            // },
-            // function(entries, done){
-            //     if (entries.length) done({info:"you already liked this"})
-            //     else DB.create(k.tables.likes, {
-            //         user: req.session.username,
-            //         like: req.params.id,
-            //         created: new Date(),
-            //     }, function(er, like){
-            //         done(er)
-            //     })
-            // },
+            function(done){
+                if (process.env.ENV == "local") done(null, null)
+                else DB.get_entries(k.tables.likes, {
+                    ip: ip,
+                    like: req.params.id
+                }, {}, function(er, entries){
+                    done(er, entries)
+                })
+            },
+            function(entries, done){
+                if (process.env.ENV == "local") done(null)
+                else if (entries.length) done({info:"you already liked this"})
+                else DB.create(k.tables.likes, {
+                    ip: ip,
+                    like: req.params.id,
+                    created: new Date(),
+                }, function(er, like){
+                    done(er)
+                })
+            },
             function(done){
                 done(null, 1)
                 DB.update_comment_recursive(req.params.id, {
