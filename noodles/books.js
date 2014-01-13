@@ -905,7 +905,7 @@ var books = module.exports = (function(){
                         edit: true
                     }
                 },{
-                    $sort: {modified:-1}
+                    $sort: {pop:-1, modified:-1}
                 },{
                     $group: {
                         _id: "$p",

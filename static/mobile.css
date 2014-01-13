@@ -139,7 +139,7 @@ button:hover {
 #books, #results {
     display: table;
     border-top: 1px solid #000;
-    border-bottom: 1px solid #000;
+    padding: 5px 0 0 0;
     width: 100%;
 }
 
@@ -180,7 +180,7 @@ button:hover {
 .book_main_box {
     display: table-cell;
     border-left: 1px solid #bbb;
-    border-bottom: 1px solid #bbb;
+    border-top: 1px solid #bbb;
 }
 
 .book_title {
@@ -275,7 +275,6 @@ div.popup_cancel {
 #class_menu {
     display: table;
     width: 100%;
-    margin: 0 0 10px 0;
 }
 
 .class_button_box {
