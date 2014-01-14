@@ -223,6 +223,10 @@ p.paragraph:hover {
     color: #0f0;
 }
 
+.boks_p_menu_toolbar .boks_sort {
+    padding: 5px 0 0 0;
+}
+
 .boks_p_menu_toolbar .boks_edit_p {
     border-bottom: 2px solid #70ACFF;
     padding: 5px 0 0 0;
@@ -257,7 +261,7 @@ p.paragraph:hover {
 
 .edit_p_info {
     padding: 10px;
-    color: #fff;
+    color: #FF998A;
     background-color: #000;
     font-size: 1em;
     text-align: right;
@@ -327,7 +331,7 @@ p.paragraph:hover {
     font-size: 0.9em;
     clear: both;
     float: right;
-    margin: 10px 5px 10px 5px;
+    margin: 5px;
 }
 
 .boks_comment_menu button {
@@ -335,7 +339,7 @@ p.paragraph:hover {
     font-weight: lighter;
     background: none;
     font-family: helvetica, arial, sans;
-    padding: 5px 0 0 0;
+    padding: 0;
 }
 
 .boks_comment .addthis_toolbox {
@@ -344,6 +348,7 @@ p.paragraph:hover {
     margin: 0 10px 10px 0;
 }
 
+.boks_comment_modifed,
 .boks_comment_created {
     clear: both;
     float: right;
@@ -403,7 +408,7 @@ p.paragraph:hover {
 
 .boks_reply_info {
     padding: 10px;
-    color: #fff;
+    color: #FF998A;
     background-color: #000;
     font-size: 1em;
     text-align: right;
@@ -487,14 +492,14 @@ div.popup_cancel {
 #click_to_reveal {
     font-size: 1.5em;
     background-color: #000;
-    color: #fff;
+    color: #FF998A;
     padding: 20px;
     text-align: right;
 }
 
 #click_to_reveal span {
     font-size: 1.5em;
-    border-bottom: 2px solid #fff;
+    border-bottom: 1px solid #FF998A;
     line-height: 1.5em;
 }
 
@@ -543,7 +548,7 @@ div.popup_cancel {
     left: 0;
     width: 20%;
     background-color: #000;
-    color: #fff;
+    color: #FF998A;
     box-sizing: border-box;
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;

@@ -16,6 +16,11 @@ var bok = function(x){
         date_format_alt: "h:mm A D MMM YYYY",
         page_size: 10,
         request_ahead: 20,
+        sort_type: "best",
+        sort: {
+            recent: "recent",
+            best: "best"
+        }
     }
 
     var page = (function(){
@@ -113,13 +118,14 @@ var bok = function(x){
             })
         }
 
-        api.get_book_comments = function(bID, p, edit, page, done){
+        api.get_book_comments = function(bID, p, edit, page, sort, done){
             $.ajax({
                 url: "/book/" + bID + "/comments",
                 type: "get",
                 data: {
                     p: p,
                     edit: edit,
+                    sort: sort, // optional, default "best"
                     page: page,
                 },
                 success: function(re){
@@ -296,9 +302,11 @@ var bok = function(x){
         }
 
         templates.p_menu = function(p){
+            var sort = k.sort_type + "<i style='font-size:0.8em' class='icon-sort-by-attributes-alt'></i>"
             var html = "<div class='boks_p_menu data' data-p='" + p + "'>"
                 + "         <div class='boks_p_menu_toolbar'>"
                 + "             <span class='boks_p_link' data-p-link='" + p + "'>#" + p + "</span>"
+                + "             <button class='boks_sort'>" + sort + "</button>"
                 + "             <button class='boks_edit_p'>EDIT</button>"
                 + "             <button class='boks_reply'>REPLY</button>"
                 + "         </div>"
@@ -389,6 +397,7 @@ var bok = function(x){
                 + "             </div>"
                 + "             <div class='boks_comment_username'>" + comment.username + "</div>"
                 + "             <div class='boks_comment_created'>" + Date.create(comment.created).long() + "</div>"
+                + "             <div class='boks_comment_modifed'>last response " + Date.create(comment.modified).relative() + "</div>"
                 + "             <div class='boks_comment_menu'>"
                 + "                 <button class='boks_reply boks_green_underline'>REPLY</button>"
                 + "                 <button class='boks_comment_reply " + has_replies + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
@@ -867,6 +876,7 @@ var bok = function(x){
                         .on("click", ".edit_p_cancel", bindings.click_edit_p_cancel)
                         .on("click", ".edit_p_post", bindings.click_edit_p_post)
                         .on("click", ".boks_reply", bindings.click_reply)
+                        .on("click", ".boks_sort", bindings.click_sort_comments)
                         .on("click", ".boks_p_link", bindings.click_p_link)
                         .on("click", ".boks_reply_post", bindings.click_reply_post)
                         .on("click", ".boks_reply_cancel", bindings.click_reply_cancel)
@@ -1152,10 +1162,13 @@ var bok = function(x){
         bindings.click_p = function(){
             var that = $(this)
             var p = that.attr("data-p") || that.index() // all new books should have data-p paragraphs
-            api.get_book_comments(o.bID, p, false, 0, function(er, comments){
+            bindings.load_top_comments(p, k.sort_type)
+        }
+
+        bindings.load_top_comments = function(p, sort_type){
+            api.get_book_comments(o.bID, p, false, 0, sort_type, function(er, comments){
                 if (comments && comments.length){
-                    dom.content_right
-                        .prepend(templates.comments_box(comments, p, comments[0].parent)) // parent should be null
+                    dom.content_right.prepend(templates.comments_box(comments, p, comments[0].parent)) // parent should be null
                 } else {
                     dom.content_right.prepend(templates.comments_box([], p, null))
                 }
@@ -1178,7 +1191,7 @@ var bok = function(x){
                     if (parentid) api.get_comment_comments(parentid, page, function(er, comments){
                         done(er, comments)
                     })
-                    else api.get_book_comments(o.bID, p, false, page, function(er, comments){
+                    else api.get_book_comments(o.bID, p, false, page, k.sort_type, function(er, comments){
                         done(er, comments)
                     })
                 },
@@ -1226,6 +1239,13 @@ var bok = function(x){
 
         bindings.click_go_top_page = function(){
             $("html, body").animate({scrollTop:0}, 100)
+        }
+
+        bindings.click_sort_comments = function(){
+            var p = $(this).closest(".data").attr("data-p")
+            if (k.sort_type == k.sort.best) k.sort_type = k.sort.recent
+            else k.sort_type = k.sort.best
+            bindings.load_top_comments(p, k.sort_type)
         }
 
         bindings.click_reply = function(){
@@ -1369,7 +1389,8 @@ var bok = function(x){
                 if (!user || !user.loggedin) return users.show_login_box($("#popup"))
                 var p = that.closest(".data").attr("data-p")
                 var text = $("#" + o.bID + " .boks_text p.paragraph").eq(p).html()
-                api.get_book_comments(o.bID, p, true, 0, function(er, comments){
+                // always use "best" for edits
+                api.get_book_comments(o.bID, p, true, 0, k.sort.best, function(er, comments){
                     if (comments && comments.length){
                         dom.content_right.prepend(templates.comments_box(comments, p, comments[0].parent))
                     } else {
