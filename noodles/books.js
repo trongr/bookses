@@ -663,7 +663,7 @@ var books = module.exports = (function(){
             edit: (req.query.edit == "true")
         }
         var aux = {
-            sort: [["pop","desc"],["modified","desc"]],
+            sort: k.sort_by.best,
             limit: k.page_size + 1,
             skip: req.query.page * k.page_size
         }
@@ -733,6 +733,12 @@ var books = module.exports = (function(){
                 validate.integer(page, function(er){
                     done(er)
                 })
+            },
+            function(done){
+                if (req.query.sort){
+                    if (req.query.sort == k.sort.best || req.query.sort == k.sort.recent) done(null)
+                    else done({error:"wrong sort parameter"})
+                } else done(null)
             }
         ], function(er, re){
             if (er){
@@ -747,11 +753,11 @@ var books = module.exports = (function(){
             parent: req.params.id
         }
         var aux = {
-            // sort: [["modified","desc"]],
-            sort: [["pop","desc"],["modified","desc"]],
+            sort: k.sort_by.best,
             limit: k.page_size + 1,
             skip: req.query.page * k.page_size
         }
+        if (req.query.sort) aux.sort = k.sort_by[req.query.sort]
         DB.get_entries(k.tables.comments, query, aux, function(er, entries){
             if (er){
                 console.log(JSON.stringify({error:"books.get_comment_comments",id:req.params.id,er:er}, 0, 2))

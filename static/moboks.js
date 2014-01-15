@@ -147,12 +147,13 @@ var bok = function(x){
             })
         }
 
-        api.get_comment_comments = function(id, page, done){
+        api.get_comment_comments = function(id, page, sort, done){
             $.ajax({
                 url: "/comment/" + id + "/comments",
                 type: "get",
                 data: {
-                    page: page
+                    page: page,
+                    sort: sort
                 },
                 success: function(re){
                     if (re.comments) done(null, re.comments)
@@ -397,7 +398,7 @@ var bok = function(x){
                 + "             </div>"
                 + "             <div class='boks_comment_username'>" + comment.username + "</div>"
                 + "             <div class='boks_comment_created'>" + Date.create(comment.created).long() + "</div>"
-                + "             <div class='boks_comment_modifed'>last response " + Date.create(comment.modified).relative() + "</div>"
+                + "             <div class='boks_comment_modifed'>last activity " + Date.create(comment.modified).relative() + "</div>"
                 + "             <div class='boks_comment_menu'>"
                 + "                 <button class='boks_reply boks_green_underline'>REPLY</button>"
                 + "                 <button class='boks_comment_reply " + has_replies + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
@@ -941,7 +942,7 @@ var bok = function(x){
         views.load_comments = function(parentid, p, box, done){
             async.waterfall([
                 function(done){
-                    api.get_comment_comments(parentid, 0, function(er, comments){
+                    api.get_comment_comments(parentid, 0, k.sort_type, function(er, comments){
                         done(er, comments)
                     })
                 },
@@ -1162,6 +1163,7 @@ var bok = function(x){
         bindings.click_p = function(){
             var that = $(this)
             var p = that.attr("data-p") || that.index() // all new books should have data-p paragraphs
+            $("html, body").animate({scrollTop:that.offset().top - 40}, 100)
             bindings.load_top_comments(p, k.sort_type)
         }
 
@@ -1174,7 +1176,6 @@ var bok = function(x){
                 }
                 addthis.toolbox(".addthis_toolbox")
                 dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
-                $("html, body").animate({scrollTop:that.offset().top - 40}, 100)
                 // $(document).trigger(events.k.comments_loaded)
             })
         }
@@ -1188,7 +1189,7 @@ var bok = function(x){
             var parentid = container.attr("data-parent")
             async.waterfall([
                 function(done){
-                    if (parentid) api.get_comment_comments(parentid, page, function(er, comments){
+                    if (parentid) api.get_comment_comments(parentid, page, k.sort_type, function(er, comments){
                         done(er, comments)
                     })
                     else api.get_book_comments(o.bID, p, false, page, k.sort_type, function(er, comments){
@@ -1297,7 +1298,7 @@ var bok = function(x){
             var p = data_box.attr("data-p")
             var parentid = data_box.attr("data-parent")
             var comment = data_box.find(".boks_reply_text").html().trim()
-            if (!comment) comment = "."
+            if (!comment) comment = "<br><br>" // blank blank looks better than a period
 
             if (!FormData) return alert("can't upload: please update your browser")
             var data = new FormData()
