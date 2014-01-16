@@ -1,14 +1,55 @@
 jQuery(function($){
-    var book = new bok({
-        box: $("#book"),
-        bID: document.URL.match(/read\/([a-zA-Z0-9]+).*$/)[1],
-        error: function(er){
-            if (er){
-                $("#book").hide()
-                $("#error").show()
+
+    var k = {
+        static_public: "/static/public",
+        date_format: "D MMMM YYYY",
+    }
+
+    var dom = {
+
+    }
+
+    var api = (function(){
+        var api = {}
+
+        return api
+    }())
+
+    var css = (function(){
+        var css = {}
+
+        css.init = function(){
+
+        }
+
+        css.fit = function(parent, child){
+            var parent_width = parent.width() - 50
+            var size = parseInt(child.css("font-size"))
+            while (child.width() < parent_width){
+                size++
+                child.css("font-size", size.toString() + "px")
             }
         }
-    })
+
+        return css
+    }())
+
+    var templates = (function(){
+        var templates = {}
+
+        return templates
+    }())
+
+    var views = (function(){
+        var views = {}
+
+        views.init = function(){
+            users.init()
+            notis.init($("#notification_menu"), $("#notification_tray"))
+        }
+
+        return views
+    }())
 
     var bindings = (function(){
         var bindings = {}
@@ -31,30 +72,11 @@ jQuery(function($){
         return bindings
     }())
 
-    var css = (function(){
-        var css = {}
-
-        css.init = function(){
-            // css.fit($("#click_colors"), $("#click_colors").children())
-            css.fit($("#tagline_box"), $("#tagline"))
-        }
-
-        css.fit = function(parent, child){
-            var parent_width = parent.width() - 50
-            var size = parseInt(child.css("font-size"))
-            while (child.width() < parent_width){
-                size++
-                child.css("font-size", size.toString() + "px")
-            }
-        }
-
-        return css
-    }())
-
     var app = (function(){
         var app = {}
 
         app.init = function(){
+            views.init()
             bindings.init()
             css.init()
         }

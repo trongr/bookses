@@ -265,7 +265,7 @@ jQuery(function($){
         }
 
         bindings.click_logins = function(){
-            users.show_login_box($("#popup"))
+            users.show_login_box($("#logins_box"))
         }
 
         bindings.input_enter_submit = function(e){

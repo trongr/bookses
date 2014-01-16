@@ -85,6 +85,11 @@ var users = module.exports = (function(){
                 })
             },
             function(done){
+                if (req.body.email && req.body.email.length > 1000){
+                    done({info:"email too long"})
+                } else done(null)
+            },
+            function(done){
                 var query = {
                     username: req.params.username
                 }
@@ -108,6 +113,7 @@ var users = module.exports = (function(){
             _id: id,
             username: req.params.username,
             password: req.body.password,
+            email: req.body.email,
             created: new Date(),
             class: k.class.amateur
         }

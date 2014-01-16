@@ -1,65 +1,92 @@
-div.popup_login_cancel {
+#login_box {
     position: fixed;
     top: 0;
     left: 0;
-    width: 10%;
+    width: 100%;
     height: 100%;
-    border: none !important;
-    opacity: 0;
+    padding-top: 200px;
+    overflow-y: scroll;
+    text-align: center;
 }
 
-#login_box {
-    background-color: #ddd;
-    width: 90%;
+#logout_box {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
     height: 100%;
-    margin-left: 10%;
+    padding-top: 200px;
+    overflow-y: scroll;
+    text-align: center;
 }
 
-#please_log_in {
-    padding: 10px 0 0 15px;
+#register_box {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding-top: 200px;
+    overflow-y: scroll;
+    text-align: center;
 }
 
+#register_box input,
 #login_box input {
-    font-size: 1em;
     padding: 5px;
-    margin: 10px 0 0 15px;
+    margin: 5px;
+    font-size: 1em;
     width: 300px;
 }
 
+#register_box button,
 #login_box button,
 #logout_box button {
     width: 300px;
-    padding: 10px;
-    margin: 10px 0 0 15px;
+    padding: 5px;
+    margin: 5px;
     font-size: 1em;
-    border: 1px solid #999;
-    border-radius: 3px;
 }
 
-#login {
-    background-color: #70ACFF;
+#register {
+    background-color: #5EB4FF;
     color: #fff;
     border: none !important;
     height: 3em;
 }
 
-#register {
-    color: #70ACFF;
+#register:hover {
+    background-color: #38A2FF;
+}
+
+#login {
+    background-color: #3BFF48;
+    color: #fff;
+    border: none !important;
+    height: 3em;
+}
+
+#login:hover {
+    background-color: #0f0;
+}
+
+#signup {
     border: none !important;
     height: 2.5em;
 }
 
 #logout {
-    background-color: #70ACFF;
+    background-color: #FF85FD;
     color: #fff;
     border: none !important;
     height: 3em;
 }
 
-#logout_box {
-    display: none;
-    background-color: #ddd;
-    width: 90%;
-    height: 100%;
-    margin-left: 10%;
+#logout:hover {
+    background-color: #FF54FC;
+}
+
+.popup_login_cancel {
+    font-size: 2em !important;
 }

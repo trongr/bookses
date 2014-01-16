@@ -11,20 +11,30 @@ var users = (function(){
 
         templates.logins = function(){
             var html = "<div id='login_box'>"
-                + "         <div class='popup_login_cancel'></div>"
-                + "         <div id='please_log_in'>Please log in or sign up</div>"
                 + "         <span class='input_enter_submit'>"
                 + "             <input id='username' placeholder='username'><br>"
                 + "             <input id='password' type='password' placeholder='password'><br>"
                 + "             <button id='login'>LOGIN</button><br>"
                 + "         </span>"
-                + "         <button id='register'>SIGN UP</button><br>"
-                + "         <button class='popup_login_cancel'>cancel</button>"
+                + "         <button id='signup'>sign me up</button><br>"
+                + "         <button class='popup_login_cancel'><i class='icon-circle-arrow-left'></i></button>"
                 + "     </div>"
                 + "     <div id='logout_box'>"
-                + "         <div class='popup_login_cancel'></div>"
                 + "         <button id='logout'>LOGOUT</button><br>"
-                + "         <button class='popup_login_cancel'>cancel</button>"
+                + "         <button class='popup_login_cancel'><i class='icon-circle-arrow-left'></i></button>"
+                + "     </div>"
+            return html
+        }
+
+        templates.register = function(){
+            var html = "<div id='register_box'>"
+                + "         <span class='input_enter_submit'>"
+                + "             <input id='reg_username' placeholder='username'><br>"
+                + "             <input id='reg_password' type='password' placeholder='password'><br>"
+                + "             <input id='reg_email' placeholder='email'><br>"
+                + "             <button id='register'>REGISTER</button><br>"
+                + "         </span>"
+                + "         <button class='popup_login_cancel'><i class='icon-circle-arrow-left'></i></button>"
                 + "     </div>"
             return html
         }
@@ -47,10 +57,10 @@ var users = (function(){
         k.box.html(templates.logins()).show()
             .off()
             .on("click", "#login", users.click_login)
-            .on("click", "#register", users.click_register)
+            .on("click", "#signup", users.click_signup)
             .on("click", "#logout", users.click_logout)
             .on("click", ".popup_login_cancel", bindings.click_popup_login_cancel)
-            .on("click", "button", function(){bindings.click_popup_login_cancel()}) // apparently if you put this guy before the other buttons they don't get called
+            // .on("click", "button", function(){bindings.click_popup_login_cancel()}) // apparently if you put this guy before the other buttons they don't get called
         users.init_login_boxes()
     }
 
@@ -60,6 +70,7 @@ var users = (function(){
             else {
                 $("#login_box").show()
                 $("#logout_box").hide()
+                k.box.hide()
                 users.init()
                 notis.clear()
             }
@@ -80,37 +91,46 @@ var users = (function(){
             } else {
                 $("#login_box").hide()
                 $("#logout_box").show()
+                k.box.hide()
                 users.init()
                 notis.init($("#notification_menu"), $("#notification_tray"))
             }
         })
     }
 
+    users.click_signup = function(){
+        k.box.html(templates.register())
+            .off()
+            .on("click", "#register", users.click_register)
+            .on("click", ".popup_login_cancel", bindings.click_popup_login_cancel)
+    }
+
     users.click_register = function(e){
-        var username = $("#username").val().trim()
-        var password = $("#password").val().trim()
+        var username = $("#reg_username").val().trim()
+        var password = $("#reg_password").val().trim()
+        var email = $("#reg_email").val().trim()
         if (!username || !password){
-            alert("Please enter a new username and password to register")
+            alert("Please enter a new username and password")
             e.stopImmediatePropagation()
         }
-        users.create_user(username, password, function(er, user){
+        users.create_user(username, password, email, function(er, user){
             if (er){
                 alert(JSON.stringify(er, 0, 2))
                 e.stopImmediatePropagation()
             } else {
-                $("#login_box").hide()
-                $("#logout_box").show()
-                alert("Registration complete. Your new identity: " + JSON.stringify(user, 0, 2))
-                users.init()
+                window.location = "/profile/" + user.username
             }
         })
     }
 
-    users.create_user = function(username, password, done){
+    users.create_user = function(username, password, email, done){
         $.ajax({
             url: "/user/" + username + "/register",
             type: "post",
-            data: {password:password},
+            data: {
+                password: password,
+                email: email
+            },
             success: function(re){
                 if (re.user) done(null, re.user)
                 else done({error:re})

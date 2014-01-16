@@ -75,6 +75,7 @@ server.get("/", function(req, res){res.render("mobile.html")})
 server.get("/read/:id", function(req, res){res.render("mobook.html")})
 server.get("/old", function(req, res){res.render("home.html")})
 server.get("/old/read/:id", function(req, res){res.render("book.html")})
+server.get("/profile/:username", function(req, res){res.render("profile.html")})
 
 server.get("/health", function(req, res){res.send({a:1})})
 server.post("/bug", function(req, res){
