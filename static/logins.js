@@ -103,6 +103,7 @@ var users = (function(){
             .off()
             .on("click", "#register", users.click_register)
             .on("click", ".popup_login_cancel", bindings.click_popup_login_cancel)
+            .find("#reg_username").focus()
     }
 
     users.click_register = function(e){
@@ -176,6 +177,8 @@ var users = (function(){
             if (user && user.loggedin){
                 $("#login_box").hide()
                 $("#logout_box").show()
+            } else {
+                $("#username").focus()
             }
         })
     }

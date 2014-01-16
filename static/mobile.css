@@ -388,4 +388,5 @@ div.popup_cancel {
     display: table-cell;
     vertical-align: bottom;
     font-size: 1.4em;
+    text-align: justify;
 }
