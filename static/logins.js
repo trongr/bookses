@@ -4,7 +4,8 @@ var users = (function(){
 
     var k = {
         box: null,
-        username: null
+        username: null,
+        oninout: null
     }
 
     var templates = (function(){
@@ -81,6 +82,7 @@ var users = (function(){
                 k.box.hide()
                 users.init()
                 notis.clear()
+                if (k.oninout) k.oninout()
             }
         })
     }
@@ -102,6 +104,7 @@ var users = (function(){
                 k.box.hide()
                 users.init()
                 notis.init($("#notification_menu"), $("#notification_tray"))
+                if (k.oninout) k.oninout()
             }
         })
     }
@@ -170,7 +173,8 @@ var users = (function(){
         })
     }
 
-    users.init = function(){
+    users.init = function(oninout){
+        if (oninout) k.oninout = oninout
         users.is_logged_in(function(er, user){
             if (user && user.loggedin){
                 $("#logins").html(user.username)
@@ -183,7 +187,6 @@ var users = (function(){
     users.init_login_boxes = function(){
         users.is_logged_in(function(er, user){
             if (user && user.loggedin){
-                k.username = user.username
                 $("#login_box").hide()
                 $("#logout_box").show()
             } else {
@@ -197,7 +200,10 @@ var users = (function(){
             url: "/user/login",
             type: "get",
             success: function(re){
-                if (re.user) done(null, re.user)
+                if (re.user){
+                    k.username = re.user.username
+                    done(null, re.user)
+                }
                 else done({error:"may not be logged in",re:re})
             }
         })

@@ -129,11 +129,21 @@ button:hover {
 #user_img_box {
     width: 200px;
     height: 200px;
+    max-height: 200px;
     background-color: #FFCCA8;
+    overflow: hidden;
+}
+
+#user_img_box #user_img {
+    width: 100%;
 }
 
 #user_info_box {
     margin: 0 0 0 20px;
+}
+
+#user_img_input {
+    display: none;
 }
 
 #user_username {
@@ -142,6 +152,7 @@ button:hover {
 
 #user_joined {
     color: #666;
+    font-size: 0.8em;
 }
 
 #user_follow {
@@ -155,4 +166,9 @@ button:hover {
 
 #user_follow:hover {
     background-color: #D10000;
+}
+
+/* mark todo remove */
+#user_update {
+    display: none;
 }

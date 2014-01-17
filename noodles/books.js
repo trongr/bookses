@@ -7,11 +7,11 @@
 var cron = require("cron").CronJob
 var request = require("request")
 var async = require("async")
+var child = require("child_process")
 var mongo = require("mongodb")
 var server = new mongo.Server('localhost', 27017, {auto_reconnect:true})
 var db = new mongo.Db(process.env.DB || "bookses", server)
 var validate = require("./validate.js")
-var child = require("child_process")
 var imglib = require("./img.js")
 
 var k = {
@@ -224,38 +224,6 @@ var DB = (function(){
     }
 
     return DB
-}())
-
-var u = (function(){
-    var u = {}
-
-    u.process_img = function(img, comment, done){
-        if (!img.headers || !img.headers["content-type"])
-            return done({error:"processing img",er:"can't read img"})
-        var ext = img.headers["content-type"].split("/")[1]
-        if (ext != "jpeg" && ext != "png" && ext != "gif")
-            return done({error:"processing img",er:"only accepts jpg, png, gif"})
-        var regular = k.static_public_dir + "/" + comment._id + "." + ext
-        var thumb = k.static_public_dir + "/" + comment._id + ".thumb." + ext
-        async.waterfall([
-            function(done){
-                imglib.resize(img.path, 200, thumb, function(er){
-                    done(er)
-                })
-            },
-            function(done){
-                child.exec("mv " + img.path + " " + regular, function(er, stdout, stder){
-                    done(er)
-                })
-            },
-        ], function(er){
-            if (er) done({error:"processing img",er:er})
-            else done(null)
-            child.exec("rm " + img.path, function(er, stdout, stder){})
-        })
-    }
-
-    return u
 }())
 
 var press = (function(){
@@ -595,7 +563,7 @@ var books = module.exports = (function(){
             },
             function(comment, done){
                 if (req.files.img){
-                    u.process_img(req.files.img, comment, function(er){
+                    imglib.process_img(req.files.img, 200, comment._id.toString(), function(er){
                         if (er) console.log(JSON.stringify(er, 0, 2))
                         done(null, comment)
                     })

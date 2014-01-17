@@ -4,6 +4,7 @@ var db = new mongo.Db(process.env.DB || "bookses", server)
 var async = require("async")
 var request = require("request")
 var validate = require("./validate.js")
+var imglib = require("./img.js")
 
 var k = {
     tables: {
@@ -58,6 +59,19 @@ var DB = (function(){
             else docs.findOne(query, excludes, function(er, entry){
                 if (er) done({error:"db.get_user",query:query,er:er})
                 else done(null, entry)
+            })
+        })
+    }
+
+    // mark
+    DB.update_entry = function(table, query, update, done){
+        db.collection(table, {safe:true}, function(er, docs){
+            if (er) done({error:"db.update_entry",table:table,query:query,update:update,er:er})
+            else docs.update(query, update, {
+                safe: true
+            }, function(er, num){
+                if (er) done({error:"db.update_entry",table:table,query:query,update:update,er:er})
+                else done(null, num)
             })
         })
     }
@@ -212,13 +226,13 @@ var users = module.exports = (function(){
         next(null)
     }
 
-    // mark
     users.get_user_public_info = function(req, res){
         DB.get_user({
             username: req.params.username,
         }, {
             password: 0,
             notis: 0,
+            email: 0,
         }, function(er, user){
             if (er){
                 console.log(JSON.stringify({error:"users.get_user_public_info",er:er}, 0, 2))
@@ -227,6 +241,67 @@ var users = module.exports = (function(){
                 res.send({user:user})
             } else {
                 res.send({error:"no such user"})
+            }
+        })
+    }
+
+    // mark todo
+    users.edit_user_validate = function(req, res, next){
+        async.waterfall([
+            function(done){
+                done(null)
+            }
+        ], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"users.edit_user_validate",er:er}, 0, 2))
+                res.send({error:"edit user validate",info:er.error})
+            } else next(null)
+        })
+    }
+
+    users.edit_user = function(req, res){
+        async.waterfall([
+            function(done){
+                var update = {}
+                if (req.body.email) update.email = req.body.email
+                if (req.files.img && req.files.img.headers && req.files.img.headers["content-type"]){
+                    var ext = req.files.img.headers["content-type"].split("/")[1]
+                    if (ext != "jpeg" && ext != "png" && ext != "gif")
+                        return done({error:"processing img",er:"only accepts jpg, png, gif"})
+                    update.img = k.static_public + "/" + id + "." + ext
+                    update.thumb = k.static_public + "/" + id + ".thumb." + ext
+                } else if (req.files.img){
+                    return done({error:"processing img",er:"can't read img headers"})
+                }
+                DB.update_entry(k.tables.users, {
+                    username: req.session.username
+                },{
+                    $set: update
+                }, function(er, num){
+                    done(er)
+                })
+            },
+            function(done){
+                DB.get_user({
+                    username: req.session.username,
+                }, {}, function(er, user){
+                    done(er, user)
+                })
+            },
+            function(user, done){
+                if (req.files.img){
+                    imglib.process_img(req.files.img, 100, user.username, function(er){
+                        if (er) console.log(JSON.stringify(er, 0, 2))
+                        done(null, user)
+                    })
+                } else done(null, user)
+            }
+        ], function(er, user){
+            if (er){
+                console.log(JSON.stringify({error:"users.edit_user",body:req.body,er:er}, 0, 2))
+                res.send({error:"edit user"})
+            } else {
+                res.send({user:user})
             }
         })
     }

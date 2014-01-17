@@ -105,6 +105,7 @@ server.post("/user/:username/login", users.login_validate, users.login)
 server.post("/user/logout", users.logout) // clears session
 server.get("/user/login", users.is_logged_in) // tries to see if session is still open, without requiring user entering credentials
 server.get("/user/:username/public", users.get_user_public_info_validate, users.get_user_public_info)
+server.post("/user/edit", users.authenticate, users.edit_user_validate, users.edit_user)
 
 server.get("/user/notis", users.authenticate, books.get_user_notis_validate, books.get_user_notis)
 server.post("/user/clear_notis", users.authenticate, books.clear_user_notis_validate, books.clear_user_notis)

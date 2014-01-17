@@ -3,12 +3,33 @@ jQuery(function($){
     var k = {
         static_public: "/static/public",
         date_format: "D MMMM YYYY",
-        username: null
+        username: null,
+        img: null,
     }
 
     var dom = {
         profile: $("#profile")
     }
+
+    var imglib = (function(){
+        var imglib = {}
+
+        // mark
+        imglib.choose_img = function(input, imgtag, done){
+            var file
+            input.off().on("change", function(e){
+                file = e.target.files[0]
+                var reader = new FileReader()
+                reader.onload = function(e){
+                    imgtag.attr("src", e.target.result)
+                    done(null, file)
+                }
+                reader.readAsDataURL(file)
+            }).click()
+        }
+
+        return imglib
+    }())
 
     var api = (function(){
         var api = {}
@@ -54,13 +75,20 @@ jQuery(function($){
         // mark
         templates.profile = function(user){
             var html = "<div id='herotron'>"
-                +          "<div id='user_img_box'>" + (user.img ? "<img id='user_img' src='" + user.img + "'>" : "") + "</div>"
+                +          "<input id='user_img_input' accept='image/*' type='file'>"
+                +          "<div id='user_img_box'>" + (user.img ? templates.user_img(user.img) : "") + "</div>"
                 +          "<div id='user_info_box'>"
                 +               "<div id='user_username'>" + user.username + "</div>"
                 +               "<div id='user_joined'>Joined " + Date.create(user.created).relative() + "</div>"
                 +               "<button id='user_follow'><i class='icon-rss'></i> subscribe</button>"
+                +               "<button id='user_update'>dummy update</button>"
                 +          "</div>"
                 +      "</div>"
+            return html
+        }
+
+        templates.user_img = function(src){
+            var html = "<img id='user_img' src='" + src + "'>"
             return html
         }
 
@@ -71,12 +99,11 @@ jQuery(function($){
         var views = {}
 
         views.init = function(){
-            users.init()
+            users.init(views.load_user_edits)
             notis.init($("#notification_menu"), $("#notification_tray"))
             views.load_profile()
         }
 
-        // mark
         views.load_profile = function(){
             async.waterfall([
                 function(done){
@@ -94,16 +121,85 @@ jQuery(function($){
             })
         }
 
+        views.load_user_edits = function(){
+            k.username = $.url(window.location).param("u")
+            async.waterfall([
+                function(done){
+                    users.is_logged_in(function(er, user){
+                        done(er, user)
+                    })
+                },
+                function(user, done){
+                    var loggedin = k.username == user.username
+                    views.load_user_img_edit(loggedin)
+                    done(null)
+                }
+            ], function(er){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+            })
+        }
+
+        // mark
+        views.load_user_img_edit = function(loggedin){
+            if (loggedin){
+                $("#user_update").show()
+                    .off()
+                    .on("click", bindings.choose_img)
+            } else {
+                $("#user_update").hide()
+            }
+        }
+
         return views
     }())
 
     var bindings = (function(){
         var bindings = {}
 
-        // mark
         bindings.init = function(){
             $("body").on("keydown", ".input_enter_submit input", bindings.input_enter_submit)
             $("#logins").on("click", bindings.click_logins)
+            views.load_user_edits()
+        }
+
+        bindings.choose_img = function(){
+            var input = $("#user_img_input")
+            var imgtag = $("#user_img_box img")
+            if (imgtag.length == 0) imgtag = $("#user_img_box").html(templates.user_img("")).find("img").hide()
+            imglib.choose_img(input, imgtag, function(er, file){
+                if (er) alert("Something's wrong: I can't choose a file")
+                else {
+                    imgtag.show()
+                    $("#user_img_box").css({height:"auto"})
+                }
+            })
+        }
+
+        // mark
+        bindings.edit_user_img = function(){
+            if (!FormData) return alert("can't upload: please update your browser")
+            var data = new FormData()
+            data.append("img", "nahn.truong@gmail.com")
+
+            // var img = draw.get_file(), img_src
+            // if (img){
+            //     data.append("img", img)
+            //     img_src = URL.createObjectURL(img)
+            // }
+
+            $.ajax({
+                url: "/user/edit",
+                type: "post",
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function(re){
+                    if (re.user){
+                        console.log(JSON.stringify(re.user, 0, 2))
+                    } else if (re.loggedin == false) alert("you have to log in")
+                    else alert(JSON.stringify({error:"update user",er:re}, 0, 2))
+                }
+            })
         }
 
         bindings.click_follow = function(){
