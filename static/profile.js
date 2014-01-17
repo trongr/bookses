@@ -3,14 +3,28 @@ jQuery(function($){
     var k = {
         static_public: "/static/public",
         date_format: "D MMMM YYYY",
+        username: null
     }
 
     var dom = {
-
+        profile: $("#profile")
     }
 
     var api = (function(){
         var api = {}
+
+        api.get_user = function(done){
+            k.username = $.url(window.location).param("u")
+            $.ajax({
+                url: "/user/" + k.username + "/public",
+                type: "get",
+                data: {},
+                success: function(re){
+                    if (re.user) done(null, re.user)
+                    else done({error:re})
+                }
+            })
+        }
 
         return api
     }())
@@ -37,6 +51,19 @@ jQuery(function($){
     var templates = (function(){
         var templates = {}
 
+        // mark
+        templates.profile = function(user){
+            var html = "<div id='herotron'>"
+                +          "<div id='user_img_box'>" + (user.img ? "<img id='user_img' src='" + user.img + "'>" : "") + "</div>"
+                +          "<div id='user_info_box'>"
+                +               "<div id='user_username'>" + user.username + "</div>"
+                +               "<div id='user_joined'>Joined " + Date.create(user.created).relative() + "</div>"
+                +               "<button id='user_follow'><i class='icon-rss'></i> subscribe</button>"
+                +          "</div>"
+                +      "</div>"
+            return html
+        }
+
         return templates
     }())
 
@@ -46,6 +73,25 @@ jQuery(function($){
         views.init = function(){
             users.init()
             notis.init($("#notification_menu"), $("#notification_tray"))
+            views.load_profile()
+        }
+
+        // mark
+        views.load_profile = function(){
+            async.waterfall([
+                function(done){
+                    api.get_user(function(er, user){
+                        done(er, user)
+                    })
+                },
+                function(user, done){
+                    dom.profile.html(templates.profile(user))
+                        .off()
+                        .on("click", "#user_follow", bindings.click_follow)
+                }
+            ], function(er){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+            })
         }
 
         return views
@@ -54,9 +100,14 @@ jQuery(function($){
     var bindings = (function(){
         var bindings = {}
 
+        // mark
         bindings.init = function(){
             $("body").on("keydown", ".input_enter_submit input", bindings.input_enter_submit)
             $("#logins").on("click", bindings.click_logins)
+        }
+
+        bindings.click_follow = function(){
+            alert("coming soon")
         }
 
         bindings.click_logins = function(){

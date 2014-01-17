@@ -380,6 +380,12 @@ div.popup_cancel {
 #welcome {
     font-size: 6pt;
     font-weight: bolder;
+    font-family: serif, times, georgia;
+    color: #000;
+}
+
+#welcome:hover {
+    color: #006AFF;
 }
 
 #intro_right {

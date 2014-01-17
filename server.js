@@ -75,7 +75,7 @@ server.get("/", function(req, res){res.render("mobile.html")})
 server.get("/read/:id", function(req, res){res.render("mobook.html")})
 server.get("/old", function(req, res){res.render("home.html")})
 server.get("/old/read/:id", function(req, res){res.render("book.html")})
-server.get("/profile/:username", function(req, res){res.render("profile.html")})
+server.get("/profile", function(req, res){res.render("profile.html")})
 
 server.get("/health", function(req, res){res.send({a:1})})
 server.post("/bug", function(req, res){
@@ -104,6 +104,7 @@ server.post("/user/:username/register", users.create_user_validate, users.create
 server.post("/user/:username/login", users.login_validate, users.login)
 server.post("/user/logout", users.logout) // clears session
 server.get("/user/login", users.is_logged_in) // tries to see if session is still open, without requiring user entering credentials
+server.get("/user/:username/public", users.get_user_public_info_validate, users.get_user_public_info)
 
 server.get("/user/notis", users.authenticate, books.get_user_notis_validate, books.get_user_notis)
 server.post("/user/clear_notis", users.authenticate, books.clear_user_notis_validate, books.clear_user_notis)

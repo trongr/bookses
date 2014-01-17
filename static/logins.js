@@ -3,7 +3,8 @@ var users = (function(){
     var users = {}
 
     var k = {
-        box: null
+        box: null,
+        username: null
     }
 
     var templates = (function(){
@@ -20,6 +21,7 @@ var users = (function(){
                 + "         <button class='popup_login_cancel'><i class='icon-circle-arrow-left'></i></button>"
                 + "     </div>"
                 + "     <div id='logout_box'>"
+                + "         <button id='profile'>Go to my profile</button><br>"
                 + "         <button id='logout'>LOGOUT</button><br>"
                 + "         <button class='popup_login_cancel'><i class='icon-circle-arrow-left'></i></button>"
                 + "     </div>"
@@ -58,10 +60,16 @@ var users = (function(){
             .off()
             .on("click", "#login", users.click_login)
             .on("click", "#signup", users.click_signup)
+            .on("click", "#profile", users.click_profile)
             .on("click", "#logout", users.click_logout)
             .on("click", ".popup_login_cancel", bindings.click_popup_login_cancel)
             // .on("click", "button", function(){bindings.click_popup_login_cancel()}) // apparently if you put this guy before the other buttons they don't get called
         users.init_login_boxes()
+    }
+
+    users.click_profile = function(){
+        if (k.username) window.location = "/profile?u=" + k.username
+        else alert("Something's wrong: we can't get to your profile.\nPlease let Team Bookses know")
     }
 
     users.click_logout = function(){
@@ -119,7 +127,7 @@ var users = (function(){
                 alert(JSON.stringify(er, 0, 2))
                 e.stopImmediatePropagation()
             } else {
-                window.location = "/profile/" + user.username
+                window.location = "/profile?u=" + user.username
             }
         })
     }
@@ -175,6 +183,7 @@ var users = (function(){
     users.init_login_boxes = function(){
         users.is_logged_in(function(er, user){
             if (user && user.loggedin){
+                k.username = user.username
                 $("#login_box").hide()
                 $("#logout_box").show()
             } else {

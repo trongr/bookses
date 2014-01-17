@@ -119,6 +119,7 @@ button:hover {
 #tagline {
     font-size: 12pt;
     font-weight: bolder;
+    font-family: serif, times, georgia;
     color: #666;
 }
 

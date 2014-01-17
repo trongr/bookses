@@ -1386,42 +1386,42 @@ var bok = function(x){
 
         bindings.click_edit_p = function(){
             var that = $(this)
-            users.is_logged_in(function(er, user){
-                if (!user || !user.loggedin) return users.show_login_box($("#popup"))
-                var p = that.closest(".data").attr("data-p")
-                var text = $("#" + o.bID + " .boks_text p.paragraph").eq(p).html()
-                // always use "best" for edits
-                api.get_book_comments(o.bID, p, true, 0, k.sort.best, function(er, comments){
-                    if (comments && comments.length){
-                        dom.content_right.prepend(templates.comments_box(comments, p, comments[0].parent))
-                    } else {
-                        dom.content_right.prepend(templates.comments_box([], p, null))
-                    }
-                    addthis.toolbox(".addthis_toolbox")
-                    dom.content_right.prepend(templates.edit_p_box(p))
-                    dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
-                    var editor = dom.content_right.find(".edit_p_text").eq(0).hallo({
-                        plugins: {
-                            halloformat: {
-                                formattings: {
-                                    underline: true,
-                                    strikethrough: true
-                                }
-                            },
-                            halloheadings: {},
-                            hallojustify: {},
-                            hallolists: {},
+            // users.is_logged_in(function(er, user){
+            //     if (!user || !user.loggedin) return users.show_login_box($("#popup")) // users.show_login_box(arg) is outdated. see logins.js for details
+            var p = that.closest(".data").attr("data-p")
+            var text = $("#" + o.bID + " .boks_text p.paragraph").eq(p).html()
+            // always use "best" for edits
+            api.get_book_comments(o.bID, p, true, 0, k.sort.best, function(er, comments){
+                if (comments && comments.length){
+                    dom.content_right.prepend(templates.comments_box(comments, p, comments[0].parent))
+                } else {
+                    dom.content_right.prepend(templates.comments_box([], p, null))
+                }
+                addthis.toolbox(".addthis_toolbox")
+                dom.content_right.prepend(templates.edit_p_box(p))
+                dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
+                var editor = dom.content_right.find(".edit_p_text").eq(0).hallo({
+                    plugins: {
+                        halloformat: {
+                            formattings: {
+                                underline: true,
+                                strikethrough: true
+                            }
                         },
-                        toolbar: 'halloToolbarFixed',
-                        parentElement: $(".edit_p_toolbar").eq(0)
-                    })
-                        .html(text)
-                        .focus()
-                        .trigger("halloactivated")
-                    if (k.book.poetry) editor.addClass("poetry_edit")
-                    dom.content_right.find(".edit_p_original").eq(0).html(edits.get_original(p) || text)
+                        halloheadings: {},
+                        hallojustify: {},
+                        hallolists: {},
+                    },
+                    toolbar: 'halloToolbarFixed',
+                    parentElement: $(".edit_p_toolbar").eq(0)
                 })
+                    .html(text)
+                    .focus()
+                    .trigger("halloactivated")
+                if (k.book.poetry) editor.addClass("poetry_edit")
+                dom.content_right.find(".edit_p_original").eq(0).html(edits.get_original(p) || text)
             })
+            // })
         }
 
         bindings.click_edit_p_cancel = function(){

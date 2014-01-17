@@ -52,14 +52,10 @@ var DB = (function(){
         })
     }
 
-    DB.get_user = function(username, password, done){
-        var query = {
-            username: username,
-            password: password
-        }
+    DB.get_user = function(query, excludes, done){
         db.collection(k.tables.users, {safe:true}, function(er, docs){
             if (er) done({error:"db.get_user",query:query,er:er})
-            else docs.findOne(query, function(er, entry){
+            else docs.findOne(query, excludes, function(er, entry){
                 if (er) done({error:"db.get_user",query:query,er:er})
                 else done(null, entry)
             })
@@ -134,9 +130,10 @@ var users = module.exports = (function(){
     }
 
     users.login = function(req, res){
-        var username = req.params.username
-        var password = req.body.password
-        DB.get_user(username, password, function(er, user){
+        DB.get_user({
+            username: req.params.username,
+            password: req.body.password
+        }, {}, function(er, user){
             if (er){
                 console.log(JSON.stringify({error:"users.login",er:er}, 0, 2))
                 res.send({error:"login"})
@@ -157,9 +154,10 @@ var users = module.exports = (function(){
     }
 
     users.authenticate = function(req, res, next){
-        var username = req.session.username
-        var password = req.session.password
-        DB.get_user(username, password, function(er, user){
+        DB.get_user({
+            username: req.session.username,
+            password: req.session.password
+        }, {}, function(er, user){
             if (er){
                 console.log(JSON.stringify({error:"users.authenticate",er:er}, 0, 2))
                 res.send({error:"authenticate"})
@@ -177,7 +175,10 @@ var users = module.exports = (function(){
         if (!username || username == "anonymous"){
             req.session.username = "anonymous"
             next(null)
-        } else if (username) DB.get_user(username, password, function(er, user){
+        } else if (username) DB.get_user({
+            username: username,
+            password: password
+        }, {}, function(er, user){
             if (er){
                 console.log(JSON.stringify({error:"users.authenticate",er:er}, 0, 2))
                 res.send({error:"authenticate"})
@@ -205,6 +206,29 @@ var users = module.exports = (function(){
                 }
             })
         }
+    }
+
+    users.get_user_public_info_validate = function(req, res, next){
+        next(null)
+    }
+
+    // mark
+    users.get_user_public_info = function(req, res){
+        DB.get_user({
+            username: req.params.username,
+        }, {
+            password: 0,
+            notis: 0,
+        }, function(er, user){
+            if (er){
+                console.log(JSON.stringify({error:"users.get_user_public_info",er:er}, 0, 2))
+                res.send({error:"get_user_public_info"})
+            } else if (user){
+                res.send({user:user})
+            } else {
+                res.send({error:"no such user"})
+            }
+        })
     }
 
     return users
