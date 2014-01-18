@@ -889,6 +889,8 @@ var bok = function(x){
                     done(null)
                 },
                 function(done){
+                    // mark
+                    css.fit($("#click_to_reveal"), $("#click_to_reveal span"))
                     addthis.toolbox(".addthis_toolbox")
                     views.highlight_paragraphs(paragraphs)
                     edits.init(function(er){

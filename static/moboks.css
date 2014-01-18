@@ -494,13 +494,11 @@ div.popup_cancel {
     background-color: #000;
     color: #FF998A;
     padding: 20px;
-    text-align: right;
+    text-align: center;
 }
 
 #click_to_reveal span {
-    font-size: 1.5em;
-    border-bottom: 1px solid #FF998A;
-    line-height: 1.5em;
+    font-size: 6pt;
 }
 
 .draw_box {
