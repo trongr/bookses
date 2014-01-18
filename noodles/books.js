@@ -327,6 +327,7 @@ var books = module.exports = (function(){
                 var book = {
                     _id: id,
                     username: req.session.username,
+                    user_img: user.thumb,
                     class: user.class,
                     title: req.body.title,
                     description: req.body.description,

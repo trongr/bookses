@@ -65,15 +65,39 @@ body {
     font-weight: bolder;
 }
 
-.boks_book_created {
-    text-align: center;
+.boks_book_user_img_box {
+    float: right;
+    width: 100px;
+    height: auto;
+    max-height: 100px;
+    overflow: hidden;
+    margin: 5px 10px 0 0;
+}
+
+.boks_book_user_img {
+    width: 100%;
+}
+
+.boks_book_username {
+    clear: both;
+    float: right;
     font-size: 1em;
-    margin: 1em;
+    font-weight: bolder;
+    margin: 5px 10px 0 0;
     color: #666;
 }
 
+.boks_book_created {
+    clear: both;
+    float: right;
+    font-size: 1em;
+    color: #666;
+    margin: 0 10px 10px 0;
+}
+
 .boks_book_description {
-    padding: 0 40px 40px 40px;
+    clear: both;
+    padding: 40px 40px 0 40px;
     white-space: pre-wrap;
     font-size: 1.2em;
 }
@@ -649,21 +673,25 @@ div.popup_cancel {
 }
 
 .latest_comment_img_box {
-    display: table-cell;
-    width: 200px;
+    display: inline-block;
+    width: 120px;
+    max-height: 120px;
+    overflow: hidden;
     text-align: center;
     padding: 5px;
+    vertical-align: top;
 }
 
 .latest_comment_img {
-    height: 100%;
-    vertical-align: middle;
+    width: 100%;
 }
 
 .latest_comment_yt_thumb {
     display: table-cell;
     width: 120px;
-    vertical-align: middle;
+    max-height: 120px;
+    overflow: hidden;
+    vertical-align: top;
     text-align: center;
     padding: 5px;
 }
@@ -676,9 +704,24 @@ div.popup_cancel {
     padding: 5px;
 }
 
+.comment_user_img_box {
+    float: right;
+    width: 50px;
+    height: auto;
+    max-height: 50px;
+    overflow: hidden;
+    margin: 0 0 5px 0;
+}
+
+.comment_user_img {
+    width: 100%;
+}
+
 .comment_user {
+    clear: both;
     width: 100%;
     color: #666;
+    font-weight: bolder;
 }
 
 .comment_modified {

@@ -77,18 +77,18 @@ jQuery(function($){
                     imgs += "<a class='book_img_box' href='/read/" + book._id + "?c=" + comment._id + "'>" + img + youtube + "</a>"
                 }
             }
+            var user_img = (book.user_img ? "<div class='book_user_img_box'><img class='book_user_img' src='" + book.user_img + "'></div>" : "")
             var description = templates.drop_caps(book.description.slice(0, 500))
             if (book.description.length > 500) description += " . . . "
             var html = "<div id='" + book._id + "' class='book' data-id='" + book._id + "'>"
                 + "        <div class='book_left_box'>"
+                +              user_img
+                + "            <div class='book_username'>" + book.username + "</div>"
                 + "            <div class='book_pop'>" + book.pop + "<br><span>" + (book.pop > 1 ? "votes" : "vote") + "</span></div>"
-                // + "            <div class='book_votes'><i class='icon-thumbs-up-alt'></i>" + book.votes + "</div>"
-                // + "            <hr>"
-                // + "            <div class='book_num_comments'><i class='icon-comment-alt'></i>" + book.replies + "</div>"
                 + "        </div>"
                 + "        <div class='book_main_box'>"
                 + "            <div class='book_title link'>" + book.title + "</div>"
-                + "            <div class='book_created'>" + Date.create(book.created).long() + "</div>"
+                + "            <div class='book_created'>" + Date.create(book.created).short() + "</div>"
                 // + "            <div class='book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "            <div class='book_description'>" + description + "</div>"
                 + "            <div class='book_imgs'>" + imgs + "</div>"

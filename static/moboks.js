@@ -236,11 +236,15 @@ var bok = function(x){
 
         templates.book_info = function(book){
             var description = templates.drop_caps(book.description)
+            var user_img = (book.user_img ? "<div class='boks_book_user_img_box'><img class='boks_book_user_img' src='" + book.user_img + "'></div>" : "")
             var html = "<div class='boks_book_info'>"
                 + "         <div class='boks_book_title_box'><span class='boks_book_title'>" + book.title + "</span></div>"
-                + "         <div class='boks_book_created'>" + Date.create(book.created).long() + "</div>"
-                // + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "         <div class='boks_book_description'>" + description + "</div>"
+                +           user_img
+                + "         <div class='boks_book_username'>" + book.username + "</div>"
+                + "         <div class='boks_book_created'>" + Date.create(book.created).short() + "</div>"
+                // + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
+                + "         <div class='clear_both'></div>"
                 + "         <div class='boks_social_share_me'>"
                 + "             <span>Like this book?</span> Spread the word!"
                 + "         </div>"
@@ -444,9 +448,11 @@ var bok = function(x){
             if (comment.replies == 0) replies = ""
             else if (comment.replies == 1) replies = "1 reply"
             else replies = comment.replies + " replies"
+            var user_img = (comment.user_img ? "<div class='comment_user_img_box'><img class='comment_user_img' src='" + comment.user_img + "'></div>" : "")
             var html = "<div class='latest_comment_box " + is_edit + "'>"
                 + "         <div class='latest_comment data' " + dataid + " " + datap +  ">"
                 + "             <div class='comment_info'>"
+                +                   user_img
                 + "                 <div class='comment_user'>" + comment.username + "</div>"
                 + "                 <div class='comment_votes red'>" + votes + "</div>"
                 + "                 <div class='comment_replies green'>" + replies + "</div>"
