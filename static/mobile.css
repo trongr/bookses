@@ -373,8 +373,8 @@ div.popup_cancel {
 #intro #welcome_box {
     width: 40%;
     display: table-cell;
-    vertical-align: top;
     text-align: center;
+    vertical-align: middle;
 }
 
 #welcome {

@@ -145,6 +145,17 @@ var DB = (function(){
         })
     }
 
+    // mark
+    DB.get_entry = function(table, query, done){
+        db.collection(table, {safe:true}, function(er, docs){
+            if (er) done({error:"db.get_entry",query:query,er:er})
+            else docs.findOne(query, function(er, entry){
+                if (er) done({error:"db.get_entry",query:query,er:er})
+                else done(null, entry)
+            })
+        })
+    }
+
     DB.count_entries = function(table, query, aux, done){
         db.collection(table, {safe:true}, function(er, docs){
             if (er) done({error:"db.count_entries",table:table,query:query,aux:aux,er:er})
@@ -525,14 +536,25 @@ var books = module.exports = (function(){
         })
     }
 
+    // mark
     books.create_comment = function(req, res){
         async.waterfall([
             function(done){
+                DB.get_entry(k.tables.users, {
+                    username: req.session.username,
+                }, function(er, entry){
+                    if (er) done(er)
+                    else if (entry) done(null, entry)
+                    else done({error:"no such user"})
+                })
+            },
+            function(user, done){
                 try {
                     var id = new mongo.ObjectID()
                     var comment = {
                         _id: id,
                         username: req.session.username,
+                        user_img: user.thumb,
                         comment: req.body.comment,
                         book: req.body.book,
                         p: parseInt(req.body.p),

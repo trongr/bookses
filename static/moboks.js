@@ -20,7 +20,8 @@ var bok = function(x){
         sort: {
             recent: "recent",
             best: "best"
-        }
+        },
+        max_img_size: 5242880,
     }
 
     var page = (function(){
@@ -889,7 +890,6 @@ var bok = function(x){
                     done(null)
                 },
                 function(done){
-                    // mark
                     css.fit($("#click_to_reveal"), $("#click_to_reveal span"))
                     addthis.toolbox(".addthis_toolbox")
                     views.highlight_paragraphs(paragraphs)
@@ -1310,9 +1310,11 @@ var bok = function(x){
             data.append("comment", comment)
 
             var img = draw.get_file(), img_src
-            if (img){
+            if (img && img.size < k.max_img_size){
                 data.append("img", img)
                 img_src = URL.createObjectURL(img)
+            } else if (img){
+                alert("Image too big. Please choose one less than 5 MB")
             }
 
             var link = data_box.find(".boks_youtube_embed_link").val().trim()

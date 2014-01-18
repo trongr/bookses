@@ -22,6 +22,7 @@ var users = (function(){
                 + "         <button class='popup_login_cancel'><i class='icon-circle-arrow-left'></i></button>"
                 + "     </div>"
                 + "     <div id='logout_box'>"
+            // mark
                 + "         <button id='profile'>Go to my profile</button><br>"
                 + "         <button id='logout'>LOGOUT</button><br>"
                 + "         <button class='popup_login_cancel'><i class='icon-circle-arrow-left'></i></button>"

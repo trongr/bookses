@@ -15,7 +15,10 @@ var k = {
         published: "published",
         indie: "indie",
         amateur: "amateur",
-    }
+    },
+    tmp: "tmp",
+    static_public: "/static/public",
+    static_public_dir: "static/public", // local path
 }
 
 db.open(function(er, db) {
@@ -63,7 +66,6 @@ var DB = (function(){
         })
     }
 
-    // mark
     DB.update_entry = function(table, query, update, done){
         db.collection(table, {safe:true}, function(er, docs){
             if (er) done({error:"db.update_entry",table:table,query:query,update:update,er:er})
@@ -260,6 +262,7 @@ var users = module.exports = (function(){
     }
 
     users.edit_user = function(req, res){
+        var username  = req.session.username
         async.waterfall([
             function(done){
                 var update = {}
@@ -268,8 +271,8 @@ var users = module.exports = (function(){
                     var ext = req.files.img.headers["content-type"].split("/")[1]
                     if (ext != "jpeg" && ext != "png" && ext != "gif")
                         return done({error:"processing img",er:"only accepts jpg, png, gif"})
-                    update.img = k.static_public + "/" + id + "." + ext
-                    update.thumb = k.static_public + "/" + id + ".thumb." + ext
+                    update.img = k.static_public + "/" + username + "." + ext
+                    update.thumb = k.static_public + "/" + username + ".thumb." + ext
                 } else if (req.files.img){
                     return done({error:"processing img",er:"can't read img headers"})
                 }

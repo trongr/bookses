@@ -5,16 +5,26 @@ jQuery(function($){
         date_format: "D MMMM YYYY",
         username: null,
         img: null,
+        max_img_size: 5242880,
     }
 
     var dom = {
         profile: $("#profile")
     }
 
+    var msg = (function(){
+        var msg = {}
+
+        msg.show = function(mes){
+            $("#msg").html(mes).fadeIn(100).fadeOut(5000)
+        }
+
+        return msg
+    }())
+
     var imglib = (function(){
         var imglib = {}
 
-        // mark
         imglib.choose_img = function(input, imgtag, done){
             var file
             input.off().on("change", function(e){
@@ -43,6 +53,29 @@ jQuery(function($){
                 success: function(re){
                     if (re.user) done(null, re.user)
                     else done({error:re})
+                }
+            })
+        }
+
+        // todo email
+        api.edit_user = function(update, done){
+            if (!FormData) return alert("can't upload: please update your browser")
+            var data = new FormData()
+            if (update.img && update.img.size < k.max_img_size){
+                data.append("img", update.img)
+            } else if (update.img){
+                return alert("Image too big. Please choose one less than 5 MB")
+            }
+            $.ajax({
+                url: "/user/edit",
+                type: "post",
+                data: data,
+                processData: false,
+                contentType: false,
+                success: function(re){
+                    if (re.user) done(null, re.user)
+                    else if (re.loggedin == false) done({error:"not logged in"})
+                    else done({error:"update user",re:re})
                 }
             })
         }
@@ -76,12 +109,13 @@ jQuery(function($){
         templates.profile = function(user){
             var html = "<div id='herotron'>"
                 +          "<input id='user_img_input' accept='image/*' type='file'>"
-                +          "<div id='user_img_box'>" + (user.img ? templates.user_img(user.img) : "") + "</div>"
+                +          "<div id='user_img_box' style='" + (user.img ? "height:auto" : "") + "'>"
+                +               (user.img ? templates.user_img(user.img) : "")
+                +          "</div>"
                 +          "<div id='user_info_box'>"
                 +               "<div id='user_username'>" + user.username + "</div>"
                 +               "<div id='user_joined'>Joined " + Date.create(user.created).relative() + "</div>"
                 +               "<button id='user_follow'><i class='icon-rss'></i> subscribe</button>"
-                +               "<button id='user_update'>dummy update</button>"
                 +          "</div>"
                 +      "</div>"
             return html
@@ -89,6 +123,11 @@ jQuery(function($){
 
         templates.user_img = function(src){
             var html = "<img id='user_img' src='" + src + "'>"
+            return html
+        }
+
+        templates.user_edit_img = function(){
+            var html = "<button id='user_edit_img'><i class='icon-pencil'></i></button>"
             return html
         }
 
@@ -100,8 +139,8 @@ jQuery(function($){
 
         views.init = function(){
             users.init(views.load_user_edits)
-            notis.init($("#notification_menu"), $("#notification_tray"))
             views.load_profile()
+            notis.init($("#notification_menu"), $("#notification_tray"))
         }
 
         views.load_profile = function(){
@@ -115,6 +154,10 @@ jQuery(function($){
                     dom.profile.html(templates.profile(user))
                         .off()
                         .on("click", "#user_follow", bindings.click_follow)
+                    done(null)
+                },
+                function(done){
+                    views.load_user_edits()
                 }
             ], function(er){
                 if (er) console.log(JSON.stringify(er, 0, 2))
@@ -139,14 +182,13 @@ jQuery(function($){
             })
         }
 
-        // mark
         views.load_user_img_edit = function(loggedin){
             if (loggedin){
-                $("#user_update").show()
+                $("#user_img_box").prepend(templates.user_edit_img())
                     .off()
-                    .on("click", bindings.choose_img)
+                    .on("click", "#user_edit_img", bindings.choose_img)
             } else {
-                $("#user_update").hide()
+                $("#user_edit_img").hide()
             }
         }
 
@@ -159,45 +201,24 @@ jQuery(function($){
         bindings.init = function(){
             $("body").on("keydown", ".input_enter_submit input", bindings.input_enter_submit)
             $("#logins").on("click", bindings.click_logins)
-            views.load_user_edits()
         }
 
         bindings.choose_img = function(){
             var input = $("#user_img_input")
             var imgtag = $("#user_img_box img")
-            if (imgtag.length == 0) imgtag = $("#user_img_box").html(templates.user_img("")).find("img").hide()
+            if (imgtag.length == 0){
+                imgtag = $("#user_img_box").html(templates.user_img("")).find("img").hide()
+                views.load_user_img_edit(true)
+            }
             imglib.choose_img(input, imgtag, function(er, file){
                 if (er) alert("Something's wrong: I can't choose a file")
                 else {
                     imgtag.show()
                     $("#user_img_box").css({height:"auto"})
-                }
-            })
-        }
-
-        // mark
-        bindings.edit_user_img = function(){
-            if (!FormData) return alert("can't upload: please update your browser")
-            var data = new FormData()
-            data.append("img", "nahn.truong@gmail.com")
-
-            // var img = draw.get_file(), img_src
-            // if (img){
-            //     data.append("img", img)
-            //     img_src = URL.createObjectURL(img)
-            // }
-
-            $.ajax({
-                url: "/user/edit",
-                type: "post",
-                data: data,
-                processData: false,
-                contentType: false,
-                success: function(re){
-                    if (re.user){
-                        console.log(JSON.stringify(re.user, 0, 2))
-                    } else if (re.loggedin == false) alert("you have to log in")
-                    else alert(JSON.stringify({error:"update user",er:re}, 0, 2))
+                    api.edit_user({img:file}, function(er, user){
+                        if (er) msg.show("Error saving profile image")
+                        else msg.show("Saved!")
+                    })
                 }
             })
         }

@@ -130,8 +130,25 @@ button:hover {
     width: 200px;
     height: 200px;
     max-height: 200px;
-    background-color: #FFCCA8;
     overflow: hidden;
+    background-color: #FFCCA8;
+    position: relative;
+}
+
+#user_edit_img {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    margin: 5px;
+    padding: 5px;
+    font-size: 1em;
+    color: #fff;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+}
+
+#user_edit_img:hover {
+    background: rgba(0, 0, 0, 0.5);
 }
 
 #user_img_box #user_img {
@@ -168,7 +185,16 @@ button:hover {
     background-color: #D10000;
 }
 
-/* mark todo remove */
-#user_update {
+#msg {
+    position: fixed;
+    left: 0;
+    bottom: 0;
     display: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    margin: 5px;
+    padding: 10px 20px 10px 20px;
+    color: #fff;
+    font-size: 1.4em;
+    font-weight: bolder;
+    border-radius: 3px;
 }
