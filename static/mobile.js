@@ -155,9 +155,13 @@ jQuery(function($){
                 },
                 function(books, done){
                     views.render_books(dom.books, books)
-                    done(null)
+                    done(null, books)
                 },
-            ], function(er, re){
+                function(books, done){
+                    done(null)
+                    if (books.length) $("#random_book").attr("href", "/read/" + books[0]._id)
+                }
+            ], function(er){
                 if (er) alert("Oops! I can't load more books")
             })
         }

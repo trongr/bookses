@@ -435,11 +435,16 @@ var bok = function(x){
             return html
         }
 
+        templates.html_to_text = function(html){
+            return $("<div/>", {html:html}).text()
+        }
+
         templates.latest_comment = function(comment){
             var is_edit = (comment.edit ? "is_edit" : "")
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
-            var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment.slice(0, 200))) + (comment.comment.length > 200 ? " . . ." : "")
+            var text = templates.html_to_text(comment.comment)
+            text = templates.replace_text_with_p_link(templates.replace_text_with_link(text.slice(0, 200))) + (text.length > 200 ? " . . ." : "")
             var img = (comment.img ? "<div class='latest_comment_img_box'><img class='latest_comment_img' src='" + comment.thumb + "'></div>" : "")
             var youtube = (comment.youtube ? "<div class='latest_comment_yt_thumb'>" + yt.thumbnail(comment.youtube, yt.k.small) + "</div>" : "")
             if (youtube) img = ""
