@@ -194,12 +194,12 @@ button:hover {
     color: #666;
     font-weight: bolder;
     text-align: right;
-    margin: 5px 10px 0 0;
+    margin: 0 10px 0 30px;
 }
 
 .book_created {
     color: #888;
-    margin: 10px 0 10px 30px;
+    margin: 0;
 }
 
 .book_main_box {
@@ -212,12 +212,12 @@ button:hover {
     font-size: 2em;
     font-weight: bolder;
     cursor: pointer;
-    margin: 20px 0 0 20px;
+    margin: 20px 0 5px 20px;
 }
 
 .book_description {
     font-size: 1em;
-    margin: 0 30px 10px 30px;
+    margin: 10px 30px 10px 30px;
 }
 
 .book_imgs {

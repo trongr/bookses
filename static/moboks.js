@@ -241,7 +241,7 @@ var bok = function(x){
                 + "         <div class='boks_book_title_box'><span class='boks_book_title'>" + book.title + "</span></div>"
                 + "         <div class='boks_book_description'>" + description + "</div>"
                 +           user_img
-                + "         <div class='boks_book_username'>" + book.username + "</div>"
+                + "         <div class='boks_book_username'>Published by " + book.username + "</div>"
                 + "         <div class='boks_book_created'>" + Date.create(book.created).short() + "</div>"
                 // + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "         <div class='clear_both'></div>"
