@@ -241,7 +241,7 @@ var bok = function(x){
                 + "         <div class='boks_book_title_box'><span class='boks_book_title'>" + book.title + "</span></div>"
                 + "         <div class='boks_book_description'>" + description + "</div>"
                 +           user_img
-                + "         <div class='boks_book_username'>Published by " + book.username + "</div>"
+                + "         <div class='boks_book_username'><a href='/profile?u=" + book.username + "'>Published by " + book.username + "</a></div>"
                 + "         <div class='boks_book_created'>" + Date.create(book.created).short() + "</div>"
                 // + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "         <div class='clear_both'></div>"
@@ -403,7 +403,7 @@ var bok = function(x){
                 +                   youtube
                 + "             </div>"
                 +               user_img
-                + "             <div class='boks_comment_username'>" + comment.username + "</div>"
+                + "             <div class='boks_comment_username'><a href='/profile?u=" + comment.username + "'>" + comment.username + "</a></div>"
                 + "             <div class='boks_comment_created'>" + Date.create(comment.created).long() + "</div>"
                 + "             <div class='boks_comment_modifed'>last activity " + Date.create(comment.modified).relative() + "</div>"
                 + "             <div class='boks_comment_menu'>"
@@ -463,6 +463,16 @@ var bok = function(x){
                 + "             <div class='comment_text'>" + text + "</div>"
                 + "         </div>"
                 + "     </div>"
+            return html
+        }
+
+        templates.comment_user_img = function(src){
+            var html = (src ? "<div class='boks_comment_user_img_box'><img class='boks_comment_img' src='" + src + "'></div>" : "")
+            return html
+        }
+
+        templates.comment_username = function(username){
+            var html = "<a href='/profile?u=" + username + "'>" + username + "</a>"
             return html
         }
 
@@ -1355,7 +1365,8 @@ var bok = function(x){
                 success: function(re){
                     if (re.comment){
                         new_comment.attr("data-id", re.comment._id)
-                        new_comment.find(".boks_comment_username").eq(0).html(re.comment.username)
+                        new_comment.find(".boks_comment_username").eq(0).html(templates.comment_username(re.comment.username))
+                            .before(templates.comment_user_img(re.comment.user_img))
                         if (re.comment.img) new_comment.find(".boks_comment_img_box img").attr("src", re.comment.img)
                         new_comment.find(".addthis_toolbox").attr("addthis:url", "http://bookses.com/read/" + o.bID + "?c=" + re.comment._id)
                         addthis.toolbox(".addthis_toolbox")
@@ -1478,7 +1489,8 @@ var bok = function(x){
                 success: function(re){
                     if (re.comment){
                         new_comment.attr("data-id", re.comment._id)
-                        new_comment.find(".boks_comment_username").eq(0).html(re.comment.username)
+                        new_comment.find(".boks_comment_username").eq(0).html(templates.comment_username(re.comment.username))
+                            .before(templates.comment_user_img(re.comment.user_img))
                     } else if (re.loggedin == false) alert("you have to log in")
                     else alert(JSON.stringify({error:"edit paragraph",er:re}, 0, 2))
                 }
