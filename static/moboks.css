@@ -308,6 +308,7 @@ p.paragraph:hover {
 }
 
 .boks_comment_content {
+    clear: both;
     cursor: pointer;
 }
 
@@ -348,6 +349,19 @@ p.paragraph:hover {
     margin: 0 10px 10px 0;
 }
 
+.boks_comment_user_img_box {
+    float: right;
+    width: 50px;
+    height: auto;
+    max-height: 50px;
+    overflow: hidden;
+    margin: 5px 10px 0 0;
+}
+
+.boks_comment_user_img {
+    width: 100%;
+}
+
 .boks_comment_modifed,
 .boks_comment_created {
     clear: both;
@@ -358,6 +372,7 @@ p.paragraph:hover {
 }
 
 .boks_comment_username {
+    clear: both;
     float: right;
     padding: 5px 10px 0 0;
     font-size: 1em;

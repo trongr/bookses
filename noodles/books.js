@@ -145,7 +145,6 @@ var DB = (function(){
         })
     }
 
-    // mark
     DB.get_entry = function(table, query, done){
         db.collection(table, {safe:true}, function(er, docs){
             if (er) done({error:"db.get_entry",query:query,er:er})

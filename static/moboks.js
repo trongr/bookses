@@ -390,6 +390,7 @@ var bok = function(x){
             var datap = "data-p='" + comment.p + "'"
             var has_replies = (comment.replies > 0 ? "has_comments" : "")
             var has_votes = (comment.votes > 1 ? "has_likes" : "")
+            var user_img = (comment.user_img ? "<div class='boks_comment_user_img_box'><img class='boks_comment_img' src='" + comment.user_img + "'></div>" : "")
             var html = "<div class='boks_comment data' " + dataid + " " + datap + ">"
                 + "         <div class='boks_comment_text_box'>"
                 + "             <div class='boks_comment_content'>"
@@ -397,6 +398,7 @@ var bok = function(x){
                 +                   img
                 +                   youtube
                 + "             </div>"
+                +               user_img
                 + "             <div class='boks_comment_username'>" + comment.username + "</div>"
                 + "             <div class='boks_comment_created'>" + Date.create(comment.created).long() + "</div>"
                 + "             <div class='boks_comment_modifed'>last activity " + Date.create(comment.modified).relative() + "</div>"
