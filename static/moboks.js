@@ -241,7 +241,10 @@ var bok = function(x){
                 + "         <div class='boks_book_title_box'><span class='boks_book_title'>" + book.title + "</span></div>"
                 + "         <div class='boks_book_description'>" + description + "</div>"
                 +           user_img
-                + "         <div class='boks_book_username'><a href='/profile?u=" + book.username + "'>Published by " + book.username + "</a></div>"
+                + "         <div class='boks_book_username'>"
+                + "             <a href='/profile?u=" + book.username + "'>" + book.username + "</a>"
+                + "             <span class='user_kudos' data-username='" + book.username + "'></span>"
+                + "         </div>"
                 + "         <div class='boks_book_created'>" + Date.create(book.created).short() + "</div>"
                 // + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "         <div class='clear_both'></div>"
@@ -361,6 +364,7 @@ var bok = function(x){
             return html
         }
 
+        // mark
         // p and top can be null if comments have a parent, otw parentid can be null
         templates.comments_box = function(comments, p, parentid){
             var content = templates.comments(comments.slice(0, k.page_size))
@@ -403,7 +407,11 @@ var bok = function(x){
                 +                   youtube
                 + "             </div>"
                 +               user_img
-                + "             <div class='boks_comment_username'><a href='/profile?u=" + comment.username + "'>" + comment.username + "</a></div>"
+                + "             <div class='boks_comment_username'>"
+                + "                 <a href='/profile?u=" + comment.username + "'>" + comment.username + "</a>"
+            // mark
+                + "                 <span class='user_kudos' data-username='" + comment.username + "'></span>"
+                + "             </div>"
                 + "             <div class='boks_comment_created'>" + Date.create(comment.created).long() + "</div>"
                 + "             <div class='boks_comment_modifed'>last activity " + Date.create(comment.modified).relative() + "</div>"
                 + "             <div class='boks_comment_menu'>"
@@ -870,6 +878,7 @@ var bok = function(x){
                 },
                 function(done){
                     dom.box.html(templates.book_info(k.book))
+                    users.load_user_kudos()
                     css.fit($(".boks_book_info"), $(".boks_book_title"))
                     done(null)
                 },
@@ -973,6 +982,7 @@ var bok = function(x){
                 },
                 function(comments, done){
                     box.html(templates.comments_box(comments, p, parentid))
+                    users.load_user_kudos()
                     addthis.toolbox(".addthis_toolbox")
                     done(null)
                 },
@@ -993,6 +1003,7 @@ var bok = function(x){
                     var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(comment.p)
                     $("html, body").animate({scrollTop:paragraph.offset().top - 40}, 100)
                     dom.content_right.prepend(templates.comments_box([comment], comment.p, comment.parent))
+                    users.load_user_kudos()
                     addthis.toolbox(".addthis_toolbox")
                     dom.content_right.prepend(templates.p_menu(comment.p)).animate({scrollTop:0}, 100)
                     done(null)
@@ -1196,6 +1207,7 @@ var bok = function(x){
             api.get_book_comments(o.bID, p, false, 0, sort_type, function(er, comments){
                 if (comments && comments.length){
                     dom.content_right.prepend(templates.comments_box(comments, p, comments[0].parent)) // parent should be null
+                    users.load_user_kudos()
                 } else {
                     dom.content_right.prepend(templates.comments_box([], p, null))
                 }
@@ -1224,6 +1236,7 @@ var bok = function(x){
                 function(comments, done){
                     if (comments.length){
                         box.append(templates.comments(comments.slice(0, k.page_size)))
+                        users.load_user_kudos()
                         addthis.toolbox(".addthis_toolbox")
                     }
                     if (comments.length <= k.page_size) that.hide()
@@ -1422,6 +1435,7 @@ var bok = function(x){
             api.get_book_comments(o.bID, p, true, 0, k.sort.best, function(er, comments){
                 if (comments && comments.length){
                     dom.content_right.prepend(templates.comments_box(comments, p, comments[0].parent))
+                    users.load_user_kudos()
                 } else {
                     dom.content_right.prepend(templates.comments_box([], p, null))
                 }
@@ -1514,6 +1528,7 @@ var bok = function(x){
                     console.log(JSON.stringify(er, 0, 2))
                 } else if (comment){
                     dom.content_right.prepend(templates.comments_box([comment], p, comment.parent))
+                    users.load_user_kudos()
                     addthis.toolbox(".addthis_toolbox")
                     dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
                 } else {

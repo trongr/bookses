@@ -87,7 +87,8 @@ jQuery(function($){
                 + "        </div>"
                 + "        <div class='book_main_box'>"
                 + "            <div class='book_title link'>" + book.title + "</div>"
-                + "            <span class='book_username'><a href='/profile?u=" + book.username + "'>Published by " + book.username + "</a></span>"
+                + "            <span class='book_username'>Published by <a href='/profile?u=" + book.username + "'>" + book.username + "</a></span>"
+                + "            <span class='user_kudos' data-username='" + book.username + "'></span>"
                 + "            <span class='book_created'>" + Date.create(book.created).short() + "</span>"
                 // + "            <div class='book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "            <div class='book_description'>" + description + "</div>"
@@ -174,6 +175,7 @@ jQuery(function($){
             box.append(html)
                 .off()
                 .on("click", ".book_title", bindings.click_book_title)
+            users.load_user_kudos()
         }
 
         views.load_more_search_results = function(page, klass){

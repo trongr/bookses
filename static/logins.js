@@ -209,5 +209,36 @@ var users = (function(){
         })
     }
 
+    users.local = {}
+
+    users.get_user = function(username, done){
+        if (users.local[username]) done(null, users.local[username])
+        else $.ajax({
+            url: "/user/" + username + "/public",
+            type: "get",
+            data: {},
+            success: function(re){
+                if (re.user){
+                    users.local[username] = re.user
+                    done(null, re.user)
+                } else done({error:re})
+            }
+        })
+    }
+
+    users.load_user_kudos = function(){
+        var kudos = $(".user_kudos:empty")
+        async.timesSeries(kudos.length, function(i, done){
+            var username = kudos.eq(i).attr("data-username")
+            if (username == "anonymous") return done(null)
+            users.get_user(username, function(er, user){
+                if (user) kudos.eq(i).html(user.kudos + " kudos")
+                done(null)
+            })
+        }, function(er){
+            if (er) console.log(JSON.stringify(er, 0, 2))
+        })
+    }
+
     return users
 }())

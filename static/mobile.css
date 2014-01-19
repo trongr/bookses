@@ -192,9 +192,17 @@ button:hover {
 
 .book_username {
     color: #666;
-    font-weight: bolder;
     text-align: right;
-    margin: 0 10px 0 30px;
+    margin: 0 0 0 30px;
+}
+
+.book_username a {
+    font-weight: bolder;
+}
+
+.user_kudos {
+    font-weight: bolder;
+    color: #666;
 }
 
 .book_created {
