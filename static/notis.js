@@ -35,9 +35,9 @@ var notis = (function(){
 
         templates.noti = function(entry){
             var new_notis = (entry.notis ? "is_new_notis" : "")
-            var votes = (entry.votes ? "<div class='noti_votes'>" + entry.votes + " kudos</div>" : "")
+            var votes = (entry.votes > 1 ? "<div class='noti_votes'>" + entry.votes + " votes</div>" : "")
             var notes = (entry.replies ? "<div class='noti_notes'>" + entry.replies + " comment" + (entry.replies > 1 ? "s" : "") + "</div>" : "")
-            var new_notee = (entry.notee ? "<div class='noti_notee'>last comment by " + entry.notee + "</div>" : "")
+            var new_notee = (entry.notee ? "<div class='noti_notee'>latest by " + entry.notee + "</div>" : "")
             var text = templates.html_to_text(entry.comment)
             var html = "<div class='noti data " + new_notis + "' data-id='" + entry._id + "' data-book='" + entry.book + "'>"
                 +           "<div class='noti_text'>" + text.slice(0, 200) + (text.length > 200 ? " . . ." : "") + "</div>"
