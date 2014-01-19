@@ -217,9 +217,10 @@ var DB = (function(){
                 if (exclude[comment.username]) delete update.$set.notis
                 exclude[comment.username] = true
                 if (update.$set.notis) DB.update_entry(k.tables.users, {
-                    username: comment.username
+                    username: comment.username,
                 },{
-                    $set: {notis:true}
+                    $set: {notis:true},
+                    $inc: {kudos:1}
                 }, function(er, num){
                     if (er) console.log(JSON.stringify(er, 0, 2))
                 })
@@ -540,13 +541,17 @@ var books = module.exports = (function(){
     books.create_comment = function(req, res){
         async.waterfall([
             function(done){
-                DB.get_entry(k.tables.users, {
-                    username: req.session.username,
-                }, function(er, entry){
-                    if (er) done(er)
-                    else if (entry) done(null, entry)
-                    else done({error:"no such user"})
-                })
+                if (req.session.username == "anonymous"){
+                    done(null, {username:req.session.username})
+                } else {
+                    DB.get_entry(k.tables.users, {
+                        username: req.session.username,
+                    }, function(er, entry){
+                        if (er) done(er)
+                        else if (entry) done(null, entry)
+                        else done({error:"no such user",user:req.session.username})
+                    })
+                }
             },
             function(user, done){
                 try {
