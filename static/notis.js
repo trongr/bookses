@@ -10,6 +10,7 @@ var notis = (function(){
 
         templates.notis_menu = function(){
             var html = "<div id='notis_box'>"
+                + "         <span id='user_kudos'></span>"
                 + "         <button id='notis_comments'><i class='icon-comments'></i></button>"
                 // + "         <button id='notis_mails'><i class='icon-envelope-alt'></i><span></span></button>"
                 + "     </div>"
@@ -163,6 +164,7 @@ var notis = (function(){
                     function(user, done){
                         done(null)
                         if (user.notis) $("#notis_comments").addClass("new_notis")
+                        $("#user_kudos").html(user.kudos + "kds")
                     }
                 ], function(er){
                     if (er) console.log(JSON.stringify(er, 0, 2))

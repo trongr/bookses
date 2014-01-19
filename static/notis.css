@@ -3,6 +3,11 @@
     display: inline-block;
 }
 
+#user_kudos {
+    font-weight: bolder;
+    color: #666;
+}
+
 button#notis_comments,
 button#notis_mails {
     padding: 0;

@@ -115,7 +115,7 @@ jQuery(function($){
                 +          "<div id='user_info_box'>"
                 +               "<div id='user_username'>" + user.username + "</div>"
                 +               "<div id='user_joined'>Joined " + Date.create(user.created).relative() + "</div>"
-                +               "<div id='user_kudos'>" + user.kudos + " kudos</div>"
+                +               "<div id='user_profile_kudos'>" + user.kudos + " kudos</div>"
                 +               "<button id='user_follow'><i class='icon-rss'></i> subscribe</button>"
                 +          "</div>"
                 +      "</div>"

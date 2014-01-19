@@ -343,10 +343,10 @@ var books = module.exports = (function(){
                     pop: 1,
                 }
                 DB.create(k.tables.books, book, function(er, book){
-                    done(er, book)
+                    done(er, user, book)
                 })
             },
-            function(book, done){
+            function(user, book, done){
                 done(null, book)
                 var job = {
                     book: book._id.toString(),
@@ -356,6 +356,11 @@ var books = module.exports = (function(){
                 }
                 DB.create(k.tables.jobs, job, function(er, job){
                     if (er) console.log(JSON.stringify(er, 0, 2))
+                })
+                DB.update_entry_by_id(k.tables.users, user._id.toString(), {
+                    $inc: {kudos:1}
+                }, function(er, num){
+                    if (er) console.log(JSON.stringify({error:"books.create_book: kudos",username:user.username,er:er}, 0, 2))
                 })
             }
         ], function(er, new_book){
@@ -584,13 +589,13 @@ var books = module.exports = (function(){
                     }
                     if (req.body.youtube) comment.youtube = req.body.youtube
                     DB.create(k.tables.comments, comment, function(er, comment){
-                        done(er, comment)
+                        done(er, user, comment)
                     })
                 } catch (er){
                     done({er:"parse int paragraph"})
                 }
             },
-            function(comment, done){
+            function(user, comment, done){
                 if (req.files.img){
                     imglib.process_img(req.files.img, 200, comment._id.toString(), function(er){
                         if (er) console.log(JSON.stringify(er, 0, 2))
@@ -602,6 +607,11 @@ var books = module.exports = (function(){
                     $set: {modified:new Date()}
                 }, function(er, num){
                     if (er) console.log(JSON.stringify({error:"books.create_comment: updating book pop",id:req.body.book,er:er}, 0, 2))
+                })
+                DB.update_entry_by_id(k.tables.users, user._id.toString(), {
+                    $inc: {kudos:1}
+                }, function(er, num){
+                    if (er) console.log(JSON.stringify({error:"books.create_comment: kudos",username:user.username,er:er}, 0, 2))
                 })
                 if (req.body.parent) DB.update_comment_recursive(req.body.parent, {
                     notee: req.session.username

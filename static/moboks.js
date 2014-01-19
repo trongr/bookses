@@ -484,8 +484,9 @@ var bok = function(x){
             return html
         }
 
-        templates.comment_username = function(username){
+        templates.comment_username = function(username, kudos){
             var html = "<a href='/profile?u=" + username + "'>" + username + "</a>"
+                + "     <span class='user_kudos' data-username='" + username + "'>" + kudos + "</span>"
             return html
         }
 
@@ -1383,7 +1384,7 @@ var bok = function(x){
                 success: function(re){
                     if (re.comment){
                         new_comment.attr("data-id", re.comment._id)
-                        new_comment.find(".boks_comment_username").eq(0).html(templates.comment_username(re.comment.username))
+                        new_comment.find(".boks_comment_username").eq(0).html(templates.comment_username(re.comment.username, "+1 kudos"))
                             .before(templates.comment_user_img(re.comment.user_img))
                         if (re.comment.img) new_comment.find(".boks_comment_img_box img").attr("src", re.comment.img)
                         new_comment.find(".addthis_toolbox").attr("addthis:url", "http://bookses.com/read/" + o.bID + "?c=" + re.comment._id)
@@ -1508,7 +1509,7 @@ var bok = function(x){
                 success: function(re){
                     if (re.comment){
                         new_comment.attr("data-id", re.comment._id)
-                        new_comment.find(".boks_comment_username").eq(0).html(templates.comment_username(re.comment.username))
+                        new_comment.find(".boks_comment_username").eq(0).html(templates.comment_username(re.comment.username, "+1 kudos"))
                             .before(templates.comment_user_img(re.comment.user_img))
                     } else if (re.loggedin == false) alert("you have to log in")
                     else alert(JSON.stringify({error:"edit paragraph",er:re}, 0, 2))
