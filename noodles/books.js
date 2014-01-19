@@ -610,7 +610,7 @@ var books = module.exports = (function(){
                 }, function(er, num){
                     if (er) console.log(JSON.stringify({error:"books.create_comment: updating book pop",id:req.body.book,er:er}, 0, 2))
                 })
-                DB.update_entry_by_id(k.tables.users, user._id.toString(), {
+                if (user.username != "anonymous") DB.update_entry_by_id(k.tables.users, user._id.toString(), {
                     $inc: {kudos:1}
                 }, function(er, num){
                     if (er) console.log(JSON.stringify({error:"books.create_comment: kudos",username:user.username,er:er}, 0, 2))
