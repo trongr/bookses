@@ -170,6 +170,11 @@ button:hover {
 #user_joined {
     color: #666;
     font-size: 0.8em;
+    margin: 5px 0 5px 20px;
+}
+
+#user_kudos {
+    margin: 5px 0 5px 20px;
 }
 
 #user_follow {

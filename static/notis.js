@@ -28,13 +28,18 @@ var notis = (function(){
             return html
         }
 
+        templates.html_to_text = function(html){
+            return $("<div/>", {html:html}).text()
+        }
+
         templates.noti = function(entry){
             var new_notis = (entry.notis ? "is_new_notis" : "")
-            var votes = (entry.votes ? "<div class='noti_votes'>" + entry.votes + " vote" + (entry.votes > 1 ? "s" : "") + "</div>" : "")
+            var votes = (entry.votes ? "<div class='noti_votes'>" + entry.votes + " kudos</div>" : "")
             var notes = (entry.replies ? "<div class='noti_notes'>" + entry.replies + " comment" + (entry.replies > 1 ? "s" : "") + "</div>" : "")
             var new_notee = (entry.notee ? "<div class='noti_notee'>last comment by " + entry.notee + "</div>" : "")
+            var text = templates.html_to_text(entry.comment)
             var html = "<div class='noti data " + new_notis + "' data-id='" + entry._id + "' data-book='" + entry.book + "'>"
-                +           "<div class='noti_text'>" + entry.comment.slice(0, 200) + (entry.comment.length > 200 ? " . . ." : "") + "</div>"
+                +           "<div class='noti_text'>" + text.slice(0, 200) + (text.length > 200 ? " . . ." : "") + "</div>"
                 +           "<div class='noti_modified'>" + Date.create(entry.modified).relative() + "</div>"
                 +           votes
                 +           notes

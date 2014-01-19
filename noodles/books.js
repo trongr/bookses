@@ -216,14 +216,16 @@ var DB = (function(){
                 }
                 if (exclude[comment.username]) delete update.$set.notis
                 exclude[comment.username] = true
-                if (update.$set.notis) DB.update_entry(k.tables.users, {
-                    username: comment.username,
-                },{
-                    $set: {notis:true},
-                    $inc: {kudos:1}
-                }, function(er, num){
-                    if (er) console.log(JSON.stringify(er, 0, 2))
-                })
+                if (update.$set.notis && comment.username != "anonymous"){
+                    DB.update_entry(k.tables.users, {
+                        username: comment.username,
+                    },{
+                        $set: {notis:true},
+                        $inc: {kudos:1}
+                    }, function(er, num){
+                        if (er) console.log(JSON.stringify(er, 0, 2))
+                    })
+                }
                 DB.update_entry_by_id(k.tables.comments, id, update, function(er, num){
                     done(er, comment)
                 })
