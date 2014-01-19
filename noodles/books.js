@@ -213,6 +213,8 @@ var DB = (function(){
                     update.$inc.votes = 1
                     update.$set.voter = _update.voter
                     if (comment.username != update.$set.voter) update.$set.notis = true
+                } else {
+                    update.$inc.votes = 1 // but still count votes
                 }
                 if (exclude[comment.username]) delete update.$set.notis
                 exclude[comment.username] = true
