@@ -1,4 +1,4 @@
-/*  */
+
 body {
     background-color: #eee;
     font-family: helvetica, arial, sans;
@@ -402,7 +402,7 @@ div.popup_cancel {
     width: 40%;
     display: table-cell;
     text-align: center;
-    vertical-align: middle;
+    vertical-align: bottom;
 }
 
 #welcome {

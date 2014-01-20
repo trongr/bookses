@@ -1,4 +1,6 @@
-
+var k = {
+    username_maxlen: 100
+}
 
 var validate = module.exports = (function(){
     var validate = {}
@@ -12,6 +14,8 @@ var validate = module.exports = (function(){
     }
 
     validate.username = function(username, done){
+        if (!username) return done({error:"null username"})
+        else if (username.length > k.username_maxlen) return done({error:"username too long",er:"must be less than 100 characters"})
         if (/^[a-zA-Z0-9]+$/.test(username)) done(null)
         else done({error:"invalid username",username:username,er:"must be alphanumeric"})
     }

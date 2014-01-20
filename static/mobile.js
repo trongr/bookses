@@ -16,14 +16,11 @@ jQuery(function($){
     var api = (function(){
         var api = {}
 
-        api.get_all_books = function(page, klass, done){
+        api.get_all_books = function(opts, done){
             $.ajax({
                 url: "/books",
                 type: "get",
-                data: {
-                    page: page,
-                    class: klass
-                },
+                data: opts,
                 success: function(re){
                     if (re.books) done(null, re.books)
                     else done({re:re})
@@ -83,7 +80,7 @@ jQuery(function($){
             var html = "<div id='" + book._id + "' class='book' data-id='" + book._id + "'>"
                 + "        <div class='book_left_box'>"
                 +              user_img
-                + "            <div class='book_pop'>" + book.pop + "<br><span>" + (book.pop > 1 ? "votes" : "vote") + "</span></div>"
+                + "            <div class='book_pop'>" + book.pop + "<br><span>" + (book.pop > 1 ? "notes" : "note") + "</span></div>"
                 + "        </div>"
                 + "        <div class='book_main_box'>"
                 + "            <div class='book_title link'>" + book.title + "</div>"
@@ -150,7 +147,10 @@ jQuery(function($){
             k.searching = false
             async.waterfall([
                 function(done){
-                    api.get_all_books(page, klass, function(er, books){
+                    api.get_all_books({
+                        page: page,
+                        class: klass
+                    }, function(er, books){
                         done(er, books)
                     })
                 },

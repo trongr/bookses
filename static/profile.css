@@ -1,3 +1,4 @@
+/*  */
 body {
     background-color: #eee;
     font-family: helvetica, arial, sans;
@@ -165,6 +166,7 @@ button:hover {
 
 #user_username {
     font-size: 3em;
+    font-weight: lighter;
 }
 
 #user_joined {
@@ -204,4 +206,151 @@ button:hover {
     font-size: 1.4em;
     font-weight: bolder;
     border-radius: 3px;
+}
+
+#user_history {
+    margin: 10px 0 0 0;
+}
+
+#history_books_button_box {
+    background-color: #1C99FF;
+    padding: 10px;
+    margin: 5px 20px 0 20px;
+}
+
+#history_comments_button_box {
+    background-color: #00E897;
+    padding: 10px;
+    margin: 5px 20px 0 20px;
+}
+
+#history_books_button_box:hover {
+    background-color: #0079DB;
+}
+
+#history_comments_button_box:hover {
+    background-color: #00C480;
+}
+
+#history_books_button_box i,
+#history_comments_button_box i {
+    display: inline-block;
+    float: right;
+    font-size: 2em;
+    margin-right: 10px;
+    color: #fff;
+}
+
+#history_books_button,
+#history_comments_button {
+    display: inline-block;
+    color: #fff;
+    font-size: 2em;
+    font-weight: lighter;
+    background: none;
+}
+
+#history_books,
+#history_comments {
+    margin: 0 20px 0 40px;
+    border-left: 1px solid #666;
+}
+
+.book {
+    padding: 20px;
+    border-bottom: 1px solid #bbb;
+    cursor: pointer;
+}
+
+.book:hover {
+    background-color: #fff;
+}
+
+.book_title {
+    font-weight: bolder;
+    font-size: 1.5em;
+    color: #21A3FF;
+    margin-right: 10px;
+}
+
+.book_created {
+    color: #666;
+    margin-right: 10px;
+    font-weight: lighter;
+}
+
+.book_notes {
+    font-weight: lighter;
+    color: #FF5C5C;
+}
+
+.book_description {
+    margin-right: 10px;
+}
+
+.comment {
+    padding: 20px;
+    border-bottom: 1px solid #bbb;
+    cursor: pointer;
+}
+
+.comment:hover {
+    background-color: #fff;
+}
+
+.comment_created {
+    color: #666;
+    margin-right: 10px;
+    font-weight: lighter;
+}
+
+.comment_votes {
+    font-weight: lighter;
+    color: #FF5C5C;
+    margin-right: 10px;
+}
+
+.comment_replies {
+    font-weight: lighter;
+    color: #02DB81;
+}
+
+.comment_img {
+    float: left;
+    margin: 0 10px 0 0;
+    width: 120px;
+    height: auto;
+    max-height: 120px;
+    overflow: hidden;
+}
+
+.yt_thumb_box {
+    float: left;
+    margin: 0 10px 0 0;
+    width: 120px;
+    height: auto;
+    max-height: 120px;
+    overflow: hidden;
+}
+
+.youtube_thumb_box {
+    width: 100%;
+    position: relative;
+}
+
+.youtube_thumb {
+    width: 100%;
+}
+
+.youtube_thumb_caption {
+    position: absolute;
+    color: #f00;
+    font-size: 2em;
+    left: 0;
+    bottom: 0;
+    margin: 10px;
+}
+
+.comment_text {
+    margin-right: 10px;
 }

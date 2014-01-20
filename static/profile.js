@@ -80,6 +80,30 @@ jQuery(function($){
             })
         }
 
+        api.get_books = function(opts, done){
+            $.ajax({
+                url: "/books",
+                type: "get",
+                data: opts,
+                success: function(re){
+                    if (re.books) done(null, re.books)
+                    else done({re:re})
+                }
+            })
+        }
+
+        api.get_comments = function(opts, done){
+            $.ajax({
+                url: "/comments",
+                type: "get",
+                data: opts,
+                success: function(re){
+                    if (re.comments) done(null, re.comments)
+                    else done({re:re})
+                }
+            })
+        }
+
         return api
     }())
 
@@ -105,7 +129,6 @@ jQuery(function($){
     var templates = (function(){
         var templates = {}
 
-        // mark
         templates.profile = function(user){
             var html = "<div id='herotron'>"
                 +          "<input id='user_img_input' accept='image/*' type='file'>"
@@ -119,6 +142,12 @@ jQuery(function($){
                 +               "<button id='user_follow'><i class='icon-rss'></i> subscribe</button>"
                 +          "</div>"
                 +      "</div>"
+                +      "<div id='user_history' class='data' data-username='" + user.username + "'>"
+                +           "<div id='history_books_button_box'><button id='history_books_button'>Books</button><i class='icon-plus'></i></div>"
+                +           "<div id='history_books'></div>"
+                +           "<div id='history_comments_button_box'><button id='history_comments_button'>Notes</button><i class='icon-plus'></i></div>"
+                +           "<div id='history_comments'></div>"
+                +      "</div>"
             return html
         }
 
@@ -129,6 +158,61 @@ jQuery(function($){
 
         templates.user_edit_img = function(){
             var html = "<button id='user_edit_img'><i class='icon-pencil'></i></button>"
+            return html
+        }
+
+        templates.history_books = function(books){
+            var html = ""
+            for (var i = 0; i < books.length; i++){
+                html += templates.book(books[i])
+            }
+            if ( ! html) return "<div style='padding:20px'>none</div>"
+            return html
+        }
+
+        templates.html_to_text = function(html){
+            return $("<div/>", {html:html}).text()
+        }
+
+        templates.book = function(book){
+            var description = templates.html_to_text(book.description)
+            description = (description.length > 400 ? description.slice(0, 400) + " . . ." : description)
+            var html = "<div class='book data' data-id='" + book._id + "'>"
+                +           "<span class='book_title'>" + book.title + "</span>"
+                +           "<span class='book_description'>" + description + "</span>"
+                +           "<span class='book_created'>" + Date.create(book.created).short() + "</span>"
+                +           "<span class='book_notes'>" + book.pop + " note" + (book.pop > 1 ? "s" : "") + "</span>"
+                +      "</div>"
+            return html
+        }
+
+        templates.history_comments = function(comments){
+            var html = ""
+            for (var i = 0; i < comments.length; i++){
+                html += templates.comment(comments[i])
+            }
+            if ( ! html) return "<div style='padding:20px'>none</div>"
+            return html
+        }
+
+        templates.comment = function(comment){
+            var text = templates.html_to_text(comment.comment)
+            text = (text.length > 400 ? text.slice(0, 400) + " . . ." : text)
+            var img = "", votes = "", replies = "", youtube = ""
+            if (comment.thumb) img = "<img class='comment_img' src='" + comment.thumb + "'>"
+            if (comment.youtube) youtube = "<div class='yt_thumb_box'>" + yt.thumbnail(comment.youtube, yt.k.small) + "</div>"
+            if (comment.votes > 1) votes = "<span class='comment_votes'>" + comment.votes + " votes</span>"
+            if (comment.replies == 1) replies = "<span class='comment_replies'>1 reply</span>"
+            else if (comment.replies > 1) replies = "<span class='comment_replies'>" + comment.replies + " replies</span>"
+            var html = "<div class='comment data' data-id='" + comment._id + "' data-book='" + comment.book + "'>"
+                +           img
+                +           youtube
+                +           "<span class='comment_text'>" + text + "</span>"
+                +           "<span class='comment_created'>" + Date.create(comment.created).short() + "</span>"
+                +           votes
+                +           replies
+                +           "<div class='clear_both'></div>"
+                +      "</div>"
             return html
         }
 
@@ -155,11 +239,16 @@ jQuery(function($){
                     dom.profile.html(templates.profile(user))
                         .off()
                         .on("click", "#user_follow", bindings.click_follow)
+                        .on("click", "#history_books_button_box", bindings.click_load_user_book_history)
+                        .on("click", ".book", bindings.click_book)
+                        .on("click", "#history_comments_button_box", bindings.click_load_user_comment_history)
+                        .on("click", ".comment", bindings.click_comment)
                     done(null)
                 },
                 function(done){
+                    done(null)
                     views.load_user_edits()
-                }
+                },
             ], function(er){
                 if (er) console.log(JSON.stringify(er, 0, 2))
             })
@@ -236,6 +325,58 @@ jQuery(function($){
             if (e.which == 13){
                 $(this).parent().find("button").click()
             }
+        }
+
+        bindings.click_load_user_book_history = function(){
+            var username = $(this).closest(".data").attr("data-username")
+            async.waterfall([
+                function(done){
+                    api.get_books({
+                        username: username,
+                        page: 0,
+                    }, function(er, books){
+                        done(er, books)
+                    })
+                },
+                function(books, done){
+                    done(null)
+                    $("#history_books").html(templates.history_books(books))
+                }
+            ], function(er){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+            })
+        }
+
+        bindings.click_load_user_comment_history = function(){
+            var username = $(this).closest(".data").attr("data-username")
+            async.waterfall([
+                function(done){
+                    api.get_comments({
+                        username: username,
+                        page: 0,
+                        sort: "recent",
+                    }, function(er, comments){
+                        done(er, comments)
+                    })
+                },
+                function(comments, done){
+                    done(null)
+                    $("#history_comments").html(templates.history_comments(comments))
+                }
+            ], function(er){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+            })
+        }
+
+        bindings.click_book = function(){
+            var id = $(this).attr("data-id")
+            window.location = "/read/" + id
+        }
+
+        bindings.click_comment = function(){
+            var book = $(this).attr("data-book")
+            var id = $(this).attr("data-id")
+            window.location = "/read/" + book + "?c=" + id
         }
 
         return bindings

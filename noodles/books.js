@@ -213,9 +213,10 @@ var DB = (function(){
                     update.$inc.votes = 1
                     update.$set.voter = _update.voter
                     if (comment.username != update.$set.voter) update.$set.notis = true
-                } else {
-                    update.$inc.votes = 1 // but still count votes
                 }
+                // else {
+                //     update.$inc.votes = 1 // but still count votes
+                // }
                 if (exclude[comment.username]) delete update.$set.notis
                 exclude[comment.username] = true
                 if (update.$set.notis && comment.username != "anonymous"){
@@ -393,6 +394,12 @@ var books = module.exports = (function(){
                 )){
                     done(er)
                 } else done(null)
+            },
+            function(done){
+                if (req.query.username) validate.username(req.query.username, function(er){
+                    done(er)
+                })
+                else done(null)
             }
         ], function(er, re){
             if (er) res.send({error:"get all books",er:er})
@@ -404,8 +411,8 @@ var books = module.exports = (function(){
         async.waterfall([
             function(done){
                 var query = {}
-                if (req.query.class && req.query.class != k.class.all)
-                    query.class = req.query.class
+                if (req.query.class && req.query.class != k.class.all) query.class = req.query.class
+                if (req.query.username) query.username = req.query.username
                 var aux = {
                     sort: [["modified","desc"]],
                     // sort: [["pop","desc"]],
@@ -546,7 +553,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.create_comment = function(req, res){
         async.waterfall([
             function(done){
@@ -1117,6 +1123,54 @@ var books = module.exports = (function(){
                 console.log(JSON.stringify({error:"clear comment notis",er:er}, 0, 2))
                 res.send({error:"clear comment notis",info:er.info})
             } else res.send({ok:true})
+        })
+    }
+
+    // mark
+    books.get_comments_validate = function(req, res, next){
+        async.parallel([
+            function(done){
+                var page = req.query.page || 0
+                validate.integer(page, function(er){
+                    done(er)
+                })
+            },
+            function(done){
+                if (req.query.sort){
+                    if (req.query.sort == k.sort.best || req.query.sort == k.sort.recent) done(null)
+                    else done({error:"wrong sort parameter"})
+                } else done(null)
+            },
+            function(done){
+                if (req.query.username) validate.username(req.query.username, function(er){
+                    done(er)
+                })
+                else done(null)
+            }
+        ], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_comments_validate",er:er}, 0, 2))
+                res.send({error:"get comments"})
+            } else next(null)
+        })
+    }
+
+    books.get_comments = function(req, res){
+        var query = {}
+        if (req.query.username) query.username = req.query.username
+        var aux = {
+            sort: k.sort_by.best,
+            limit: k.page_size + 1,
+            skip: req.query.page * k.page_size
+        }
+        if (req.query.sort) aux.sort = k.sort_by[req.query.sort]
+        DB.get_entries(k.tables.comments, query, aux, function(er, entries){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_comments",er:er}, 0, 2))
+                res.send({error:"get book comments"})
+            } else {
+                res.send({comments:entries})
+            }
         })
     }
 

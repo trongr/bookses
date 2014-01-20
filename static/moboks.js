@@ -317,7 +317,7 @@ var bok = function(x){
                 + "             <span class='boks_p_link' data-p-link='" + p + "'>#" + p + "</span>"
                 + "             <button class='boks_sort'>" + sort + "</button>"
                 + "             <button class='boks_edit_p'>EDIT</button>"
-                + "             <button class='boks_reply'>REPLY</button>"
+                + "             <button class='boks_reply'>NOTE</button>"
                 + "         </div>"
                 + "         <div class='boks_reply_box_box'></div>"
                 + "     </div>"
@@ -364,7 +364,6 @@ var bok = function(x){
             return html
         }
 
-        // mark
         // p and top can be null if comments have a parent, otw parentid can be null
         templates.comments_box = function(comments, p, parentid){
             var content = templates.comments(comments.slice(0, k.page_size))
@@ -409,7 +408,6 @@ var bok = function(x){
                 +               user_img
                 + "             <div class='boks_comment_username'>"
                 + "                 <a href='/profile?u=" + comment.username + "'>" + comment.username + "</a>"
-            // mark
                 + "                 <span class='user_kudos' data-username='" + comment.username + "'></span>"
                 + "             </div>"
                 + "             <div class='boks_comment_created'>" + Date.create(comment.created).long() + "</div>"
@@ -491,50 +489,6 @@ var bok = function(x){
         }
 
         return templates
-    }())
-
-    var yt = (function(){
-        var yt = {}
-
-        yt.k = {
-            small: "small",
-            big: "big"
-        }
-
-        yt.embed = function(link){
-            var html = "<iframe type='text/html' width='100%' height='300' src='http://www.youtube.com/embed/"
-                + yt.extract_id(link)
-                + "?autoplay=0' frameborder='0'/>"
-            return html
-        }
-
-        yt.thumbnail = function(link, size){
-            var random_id = Math.random() // so youtube can find the right box if you have multiple copies of the same video
-            var id = yt.extract_id(link)
-            var img_size
-            if (size == yt.k.big) img_size = "0"
-            else if (size == yt.k.small) img_size = "default"
-            var html = "<div id='" + random_id + "' class='youtube_thumb_box data' data-ytid='" + id + "'>"
-                + "         <img class='youtube_thumb' src='http://img.youtube.com/vi/"
-                +               id + "/" + img_size + ".jpg' alt='youtube video'>"
-                + "         <div class='youtube_thumb_caption'><i class='icon-play-circle'></i></div>"
-                + "     </div>"
-            return html
-        }
-
-        yt.thumbnail_src = function(link, size){
-            var id = yt.extract_id(link)
-            var img_size
-            if (size == yt.k.big) img_size = "0"
-            else if (size == yt.k.small) img_size = "default"
-            return "http://img.youtube.com/vi/" + id + "/" + img_size + ".jpg"
-        }
-
-        yt.extract_id = function(link){
-            return $.url(link).param("v")
-        }
-
-        return yt
     }())
 
     var draw = (function(){

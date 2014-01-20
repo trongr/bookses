@@ -93,6 +93,7 @@ server.get("/book/:id/paragraphs", books.get_paragraphs_validate, books.get_para
 server.get("/book/:id/edits", books.get_book_edits_validate, books.get_book_edits)
 
 // authenticate_anonymous lets anonymous users through as well as logged in users
+server.get("/comments", books.get_comments_validate, books.get_comments)
 server.post("/comment", users.authenticate_anonymous, books.create_comment_validate, books.create_comment)
 server.get("/comment/:id", books.get_comment_validate, books.get_comment)
 server.get("/book/:id/comments", books.get_book_comments_validate, books.get_book_comments)
