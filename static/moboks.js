@@ -50,7 +50,7 @@ var bok = function(x){
 
         // start:result:end == 0:point:range
         color.code_point_range = function(start, end, point, range){
-            var sr = parseInt(start.substr(0, 2), 16) // substr(start, length) not (start, end)!
+            var sr = parseInt(start.substr(0, 2), 16) // substr(start, length) not (start, end)! slice(start, end)
             var sg = parseInt(start.substr(2, 2), 16)
             var sb = parseInt(start.substr(4, 2), 16)
             var er = parseInt(end.substr(0, 2), 16)
@@ -514,7 +514,8 @@ var bok = function(x){
                     + "             <button class='draw_undo_button'><i class='icon-undo'></i></button>"
                     + "             <button class='draw_pencil_tool'><i class='fontello-fat-pencil'></i></button>"
                     + "             <input class='draw_color' value='000000'>"
-                    + "             <input class='draw_brush_size' type='range' min='1' max='50' value='5'>"
+                    + "             <input class='draw_brush_size' type='range' min='0' max='70' value='25'>"
+                    + "             <input class='draw_opacity' type='range' min='0' max='70' value='70'>"
                     + "         </div>"
                     + "         <div class='draw_canvas_box'></div>"
                     + "     </div>"
@@ -642,6 +643,7 @@ var bok = function(x){
                 left: null,
                 history: [],
                 brush_size: $(".draw_brush_size"),
+                opacity: $(".draw_opacity"),
                 color: $(".draw_color").spectrum({
                     color: "#000",
                     showInput: true,
@@ -697,10 +699,16 @@ var bok = function(x){
                 mouse_down = false
             }
 
+            var big_top = Math.pow(2, 7)
             $canvas.mousedown(function(e){
                 draw.save_history()
-                draw.k.cntxt.lineWidth = draw.k.brush_size.val()
-                draw.k.cntxt.strokeStyle = draw.k.color.val()
+                draw.k.cntxt.lineWidth = Math.pow(2, draw.k.brush_size.val() / 10)
+                var rgb = draw.k.color.val().replace("#", "")
+                var r = parseInt(rgb.slice(0, 2), 16)
+                var g = parseInt(rgb.slice(2, 4), 16)
+                var b = parseInt(rgb.slice(4, 6), 16)
+                var a = Math.pow(2, draw.k.opacity.val() / 10) / big_top
+                draw.k.cntxt.strokeStyle = "rgba(" + r + "," + g + "," + b + "," + a + ")"
                 draw.k.cntxt.beginPath()
                 draw.k.cntxt.moveTo(e.pageX - draw.k.left, e.pageY - draw.k.top)
             }).mouseup(function(e){
@@ -711,6 +719,9 @@ var bok = function(x){
                 if (mouse_down == true){
                     draw.k.cntxt.lineTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
                     draw.k.cntxt.stroke()
+                    draw.k.cntxt.closePath()
+                    draw.k.cntxt.beginPath()
+                    draw.k.cntxt.moveTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
                 }
             }).on("mouseenter", function(){
                 if (mouse_down == true){
