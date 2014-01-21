@@ -5,6 +5,7 @@ body {
 
 .first_letter {
     float: left;
+    color: #FF5252;
     font-size: 4em;
     font-family: serif, times, georgia;
     height: 0.8em;
@@ -14,6 +15,7 @@ body {
 
 .first_letter_small {
     float: left;
+    color: #FF5252;
     font-size: 2.5em;
     font-family: serif, times, georgia;
     height: 0.8em;
