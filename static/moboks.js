@@ -559,7 +559,7 @@ var bok = function(x){
                     + "             <button class='draw_pencil'><i class='fontello-fat-pencil'></i></button>"
                     + "             <button class='draw_dropper'><i class='fontello-pipette'></i></button>"
                     + "             <input class='draw_color' value='000000'>"
-                    + "             <input class='draw_brush_size' type='range' min='0' max='70' value='25'>"
+                    + "             <input class='draw_brush_size' type='range' min='0' max='70' value='20'>"
                     + "             <input class='draw_opacity' type='range' min='0' max='70' value='70'>"
                     + "         </div>"
                     + "         <div class='draw_canvas_box'></div>"
