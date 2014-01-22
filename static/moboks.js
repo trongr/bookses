@@ -630,7 +630,6 @@ var bok = function(x){
                 bindings.bind_dropper()
             }
 
-            // mark
             bindings.bind_dropper = function(){
                 draw.k.$canvas.off().mousedown(function(e){
                     var rgb = draw.k.cntxt.getImageData(e.pageX - draw.k.left, e.pageY - draw.k.top, 1, 1).data
@@ -639,6 +638,8 @@ var bok = function(x){
                         + ("00" + rgb[1].toString(16)).slice(-2)
                         + ("00" + rgb[2].toString(16)).slice(-2)
                     draw.k.color.spectrum("set", hex)
+                }).mouseup(function(){
+                    bindings.bind_pencil()
                 })
             }
 
