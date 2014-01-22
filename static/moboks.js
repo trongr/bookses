@@ -508,11 +508,13 @@ var bok = function(x){
                     + "         <button class='draw_cancel'><i class='icon-trash'></i></button>"
                     + "         <div class='draw_menu'>"
                     + "             <button class='draw_save_quit'>save & quit</button>"
-                    + "             <button class='draw_draw_button'><i class='icon-file-alt'></i></button>"
+                    + "             <button class='draw_new_drawing'><i class='icon-file-alt'></i></button>"
                     + "             <input class='draw_picture_input' accept='image/*' type='file'>"
                     + "             <button class='draw_picture_button'><i class='icon-picture'></i></button>"
                     + "             <button class='draw_undo_button'><i class='icon-undo'></i></button>"
+                // mark
                     + "             <button class='draw_pencil_tool'><i class='fontello-fat-pencil'></i></button>"
+                    + "             <button class='draw_color_sample'><img style='width:5px' src='/static/eyedrop.jpg'></button>"
                     + "             <input class='draw_color' value='000000'>"
                     + "             <input class='draw_brush_size' type='range' min='0' max='70' value='25'>"
                     + "             <input class='draw_opacity' type='range' min='0' max='70' value='70'>"
@@ -528,7 +530,7 @@ var bok = function(x){
         draw.bindings = (function(){
             var bindings = {}
 
-            bindings.click_draw_button = function(){
+            bindings.click_new_drawing = function(){
                 draw.canvas_init()
             }
 
@@ -585,7 +587,8 @@ var bok = function(x){
                 .off()
                 .on("click", ".draw_cancel", draw.bindings.click_draw_cancel)
                 .on("click", ".draw_save_quit", draw.bindings.click_save_quit)
-                .on("click", ".draw_draw_button", draw.bindings.click_draw_button)
+            // mark
+                .on("click", ".draw_new_drawing", draw.bindings.click_new_drawing)
                 .on("click", ".draw_undo_button", draw.bindings.click_draw_undo_button)
                 .on("click", ".draw_picture_button", draw.bindings.click_choose_img)
                 .on("change", ".draw_picture_input", draw.bindings.change_img_input)
@@ -629,7 +632,7 @@ var bok = function(x){
         }
 
         draw.draw = function(){
-            draw.bindings.click_draw_button()
+            draw.bindings.click_new_drawing()
         }
 
         draw.clear = function(){
