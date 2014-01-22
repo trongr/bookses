@@ -1,8 +1,13 @@
 
-.icon-tall-pencil:before { content: '\e804'; } /* '' */
+.icon-spinner:before { content: '\e808'; } /* '' */
+.icon-fat-pencil:before { content: '\e803'; } /* '' */
 .icon-brush:before { content: '\e800'; } /* '' */
 .icon-pencil-alt:before { content: '\e805'; } /* '' */
 .icon-pen:before { content: '\e802'; } /* '' */
-.icon-sharp-pencil:before { content: '\e801'; } /* '' */
+.icon-pipette:before { content: '\e80c'; } /* '' */
+.icon-tall-pencil:before { content: '\e804'; } /* '' */
+.icon-brush-1:before { content: '\e807'; } /* '' */
+.icon-pilcrow:before { content: '\e809'; } /* '' */
 .icon-vector-pencil:before { content: '\e806'; } /* '' */
-.icon-fat-pencil:before { content: '\e803'; } /* '' */
+.icon-spinner2:before { content: '\e80a'; } /* '' */
+.icon-sharp-pencil:before { content: '\e801'; } /* '' */

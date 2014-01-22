@@ -494,6 +494,49 @@ var bok = function(x){
     var draw = (function(){
         var draw = {}
 
+        draw.clear = function(){
+            draw.k = {
+                drag_drop_file: null,
+                direct_input_file: null,
+                preview: null,
+                $canvas: null,
+                canvas: null,
+                cntxt: null,
+                top: null,
+                left: null,
+                history: [],
+                brush_size: $(".draw_brush_size"),
+                opacity: $(".draw_opacity"),
+                color: $(".draw_color").spectrum({
+                    color: "#000",
+                    showInput: true,
+                    className: "full-spectrum",
+                    showInitial: true,
+                    showPalette: true,
+                    showSelectionPalette: true,
+                    maxPaletteSize: 10,
+                    preferredFormat: "hex",
+                    localStorageKey: "spectrum.js",
+                    palette: [
+                        ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
+                         "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
+                        ["rgb(152, 0, 0)", "rgb(255, 0, 0)", "rgb(255, 153, 0)", "rgb(255, 255, 0)", "rgb(0, 255, 0)",
+                         "rgb(0, 255, 255)", "rgb(74, 134, 232)", "rgb(0, 0, 255)", "rgb(153, 0, 255)", "rgb(255, 0, 255)"],
+                        ["rgb(230, 184, 175)", "rgb(244, 204, 204)", "rgb(252, 229, 205)", "rgb(255, 242, 204)", "rgb(217, 234, 211)",
+                         "rgb(208, 224, 227)", "rgb(201, 218, 248)", "rgb(207, 226, 243)", "rgb(217, 210, 233)", "rgb(234, 209, 220)",
+                         "rgb(221, 126, 107)", "rgb(234, 153, 153)", "rgb(249, 203, 156)", "rgb(255, 229, 153)", "rgb(182, 215, 168)",
+                         "rgb(162, 196, 201)", "rgb(164, 194, 244)", "rgb(159, 197, 232)", "rgb(180, 167, 214)", "rgb(213, 166, 189)",
+                         "rgb(204, 65, 37)", "rgb(224, 102, 102)", "rgb(246, 178, 107)", "rgb(255, 217, 102)", "rgb(147, 196, 125)",
+                         "rgb(118, 165, 175)", "rgb(109, 158, 235)", "rgb(111, 168, 220)", "rgb(142, 124, 195)", "rgb(194, 123, 160)",
+                         "rgb(166, 28, 0)", "rgb(204, 0, 0)", "rgb(230, 145, 56)", "rgb(241, 194, 50)", "rgb(106, 168, 79)",
+                         "rgb(69, 129, 142)", "rgb(60, 120, 216)", "rgb(61, 133, 198)", "rgb(103, 78, 167)", "rgb(166, 77, 121)",
+                         "rgb(91, 15, 0)", "rgb(102, 0, 0)", "rgb(120, 63, 4)", "rgb(127, 96, 0)", "rgb(39, 78, 19)",
+                         "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]
+                    ]
+                })
+            }
+        }
+
         draw.templates = (function(){
             var templates = {}
 
@@ -513,8 +556,8 @@ var bok = function(x){
                     + "             <button class='draw_picture_button'><i class='icon-picture'></i></button>"
                     + "             <button class='draw_undo_button'><i class='icon-undo'></i></button>"
                 // mark
-                    + "             <button class='draw_pencil_tool'><i class='fontello-fat-pencil'></i></button>"
-                    + "             <button class='draw_color_sample'><img style='width:5px' src='/static/eyedrop.jpg'></button>"
+                    + "             <button class='draw_pencil'><i class='fontello-fat-pencil'></i></button>"
+                    + "             <button class='draw_dropper'><i class='fontello-pipette'></i></button>"
                     + "             <input class='draw_color' value='000000'>"
                     + "             <input class='draw_brush_size' type='range' min='0' max='70' value='25'>"
                     + "             <input class='draw_opacity' type='range' min='0' max='70' value='70'>"
@@ -579,6 +622,67 @@ var bok = function(x){
                 draw.k.preview.attr("src", URL.createObjectURL(draw.get_file())).show()
             }
 
+            bindings.click_pencil_button = function(){
+                bindings.bind_pencil()
+            }
+
+            bindings.click_dropper_button = function(){
+                bindings.bind_dropper()
+            }
+
+            // mark
+            bindings.bind_dropper = function(){
+                draw.k.$canvas.off().mousedown(function(e){
+                    var rgb = draw.k.cntxt.getImageData(e.pageX - draw.k.left, e.pageY - draw.k.top, 1, 1).data
+                    var hex = "#"
+                        + ("00" + rgb[0].toString(16)).slice(-2)
+                        + ("00" + rgb[1].toString(16)).slice(-2)
+                        + ("00" + rgb[2].toString(16)).slice(-2)
+                    draw.k.color.spectrum("set", hex)
+                })
+            }
+
+            bindings.bind_pencil = function(){
+                // this, cause the other handlers can't tell if mouse up or down outside the canvas
+                var mouse_down
+                document.body.onmousedown = function(){
+                    mouse_down = true
+                }
+                document.body.onmouseup = function(){
+                    mouse_down = false
+                }
+                var big_top = Math.pow(2, 7)
+                draw.k.$canvas.off()
+                    .mousedown(function(e){
+                        draw.save_history()
+                        draw.k.cntxt.lineWidth = Math.pow(2, draw.k.brush_size.val() / 10)
+                        var rgb = draw.k.color.val().replace("#", "")
+                        var r = parseInt(rgb.slice(0, 2), 16)
+                        var g = parseInt(rgb.slice(2, 4), 16)
+                        var b = parseInt(rgb.slice(4, 6), 16)
+                        var a = Math.pow(2, draw.k.opacity.val() / 10) / big_top
+                        draw.k.cntxt.strokeStyle = "rgba(" + r + "," + g + "," + b + "," + a + ")"
+                        draw.k.cntxt.beginPath()
+                        draw.k.cntxt.moveTo(e.pageX - draw.k.left, e.pageY - draw.k.top)
+                    }).mouseup(function(e){
+                        draw.k.cntxt.lineTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
+                        draw.k.cntxt.stroke()
+                        draw.k.cntxt.closePath()
+                    }).mousemove(function(e){
+                        if (mouse_down == true){
+                            draw.k.cntxt.lineTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
+                            draw.k.cntxt.stroke()
+                            draw.k.cntxt.closePath()
+                            draw.k.cntxt.beginPath()
+                            draw.k.cntxt.moveTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
+                        }
+                    }).on("mouseenter", function(){
+                        if (mouse_down == true){
+                            draw.k.cntxt.beginPath()
+                        }
+                    })
+            }
+
             return bindings
         }())
 
@@ -590,6 +694,8 @@ var bok = function(x){
             // mark
                 .on("click", ".draw_new_drawing", draw.bindings.click_new_drawing)
                 .on("click", ".draw_undo_button", draw.bindings.click_draw_undo_button)
+                .on("click", ".draw_pencil", draw.bindings.click_pencil_button)
+                .on("click", ".draw_dropper", draw.bindings.click_dropper_button)
                 .on("click", ".draw_picture_button", draw.bindings.click_choose_img)
                 .on("change", ".draw_picture_input", draw.bindings.change_img_input)
             draw.clear()
@@ -635,55 +741,14 @@ var bok = function(x){
             draw.bindings.click_new_drawing()
         }
 
-        draw.clear = function(){
-            draw.k = {
-                drag_drop_file: null,
-                direct_input_file: null,
-                preview: null,
-                canvas: null,
-                cntxt: null,
-                top: null,
-                left: null,
-                history: [],
-                brush_size: $(".draw_brush_size"),
-                opacity: $(".draw_opacity"),
-                color: $(".draw_color").spectrum({
-                    color: "#000",
-                    showInput: true,
-                    className: "full-spectrum",
-                    showInitial: true,
-                    showPalette: true,
-                    showSelectionPalette: true,
-                    maxPaletteSize: 10,
-                    preferredFormat: "hex",
-                    localStorageKey: "spectrum.js",
-                    palette: [
-                        ["rgb(0, 0, 0)", "rgb(67, 67, 67)", "rgb(102, 102, 102)",
-                         "rgb(204, 204, 204)", "rgb(217, 217, 217)","rgb(255, 255, 255)"],
-                        ["rgb(152, 0, 0)", "rgb(255, 0, 0)", "rgb(255, 153, 0)", "rgb(255, 255, 0)", "rgb(0, 255, 0)",
-                         "rgb(0, 255, 255)", "rgb(74, 134, 232)", "rgb(0, 0, 255)", "rgb(153, 0, 255)", "rgb(255, 0, 255)"],
-                        ["rgb(230, 184, 175)", "rgb(244, 204, 204)", "rgb(252, 229, 205)", "rgb(255, 242, 204)", "rgb(217, 234, 211)",
-                         "rgb(208, 224, 227)", "rgb(201, 218, 248)", "rgb(207, 226, 243)", "rgb(217, 210, 233)", "rgb(234, 209, 220)",
-                         "rgb(221, 126, 107)", "rgb(234, 153, 153)", "rgb(249, 203, 156)", "rgb(255, 229, 153)", "rgb(182, 215, 168)",
-                         "rgb(162, 196, 201)", "rgb(164, 194, 244)", "rgb(159, 197, 232)", "rgb(180, 167, 214)", "rgb(213, 166, 189)",
-                         "rgb(204, 65, 37)", "rgb(224, 102, 102)", "rgb(246, 178, 107)", "rgb(255, 217, 102)", "rgb(147, 196, 125)",
-                         "rgb(118, 165, 175)", "rgb(109, 158, 235)", "rgb(111, 168, 220)", "rgb(142, 124, 195)", "rgb(194, 123, 160)",
-                         "rgb(166, 28, 0)", "rgb(204, 0, 0)", "rgb(230, 145, 56)", "rgb(241, 194, 50)", "rgb(106, 168, 79)",
-                         "rgb(69, 129, 142)", "rgb(60, 120, 216)", "rgb(61, 133, 198)", "rgb(103, 78, 167)", "rgb(166, 77, 121)",
-                         "rgb(91, 15, 0)", "rgb(102, 0, 0)", "rgb(120, 63, 4)", "rgb(127, 96, 0)", "rgb(39, 78, 19)",
-                         "rgb(12, 52, 61)", "rgb(28, 69, 135)", "rgb(7, 55, 99)", "rgb(32, 18, 77)", "rgb(76, 17, 48)"]
-                    ]
-                })
-            }
-        }
-
+        // mark
         draw.canvas_init = function(width, height){
-            $canvas = $(".draw_canvas_box").html(draw.templates.canvas()).find("canvas")
-            $canvas.attr("width", width || $canvas.parent().width() - 30).attr("height", height || $canvas.parent().height() - 60)
-            draw.k.top = $canvas.offset().top
-            draw.k.left = $canvas.offset().left
+            draw.k.$canvas = $(".draw_canvas_box").html(draw.templates.canvas()).find("canvas")
+            draw.k.$canvas.attr("width", width || draw.k.$canvas.parent().width() - 30).attr("height", height || draw.k.$canvas.parent().height() - 60)
+            draw.k.top = draw.k.$canvas.offset().top
+            draw.k.left = draw.k.$canvas.offset().left
 
-            draw.k.canvas = $canvas.get(0)
+            draw.k.canvas = draw.k.$canvas.get(0)
             draw.k.cntxt = draw.k.canvas.getContext("2d")
 
             draw.k.cntxt.lineJoin = "round"
@@ -693,44 +758,7 @@ var bok = function(x){
             draw.k.cntxt.fillRect(0, 0, draw.k.cntxt.canvas.width, draw.k.cntxt.canvas.height)
             draw.k.cntxt.restore()
 
-            // this, cause the other handlers can't tell if mouse up or down outside the canvas
-            var mouse_down
-            document.body.onmousedown = function(){
-                mouse_down = true
-            }
-            document.body.onmouseup = function(){
-                mouse_down = false
-            }
-
-            var big_top = Math.pow(2, 7)
-            $canvas.mousedown(function(e){
-                draw.save_history()
-                draw.k.cntxt.lineWidth = Math.pow(2, draw.k.brush_size.val() / 10)
-                var rgb = draw.k.color.val().replace("#", "")
-                var r = parseInt(rgb.slice(0, 2), 16)
-                var g = parseInt(rgb.slice(2, 4), 16)
-                var b = parseInt(rgb.slice(4, 6), 16)
-                var a = Math.pow(2, draw.k.opacity.val() / 10) / big_top
-                draw.k.cntxt.strokeStyle = "rgba(" + r + "," + g + "," + b + "," + a + ")"
-                draw.k.cntxt.beginPath()
-                draw.k.cntxt.moveTo(e.pageX - draw.k.left, e.pageY - draw.k.top)
-            }).mouseup(function(e){
-                draw.k.cntxt.lineTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
-                draw.k.cntxt.stroke()
-                draw.k.cntxt.closePath()
-            }).mousemove(function(e){
-                if (mouse_down == true){
-                    draw.k.cntxt.lineTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
-                    draw.k.cntxt.stroke()
-                    draw.k.cntxt.closePath()
-                    draw.k.cntxt.beginPath()
-                    draw.k.cntxt.moveTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
-                }
-            }).on("mouseenter", function(){
-                if (mouse_down == true){
-                    draw.k.cntxt.beginPath()
-                }
-            })
+            draw.bindings.bind_pencil()
         }
 
         draw.get_file = function(){

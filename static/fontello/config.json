@@ -7,6 +7,12 @@
   "ascent": 850,
   "glyphs": [
     {
+      "uid": "5d2d07f112b8de19f2c0dbfec3e42c05",
+      "css": "spinner",
+      "code": 59400,
+      "src": "fontelico"
+    },
+    {
       "uid": "c77fd2fd065b5fe16d6f2b41e190b266",
       "css": "tall-pencil",
       "code": 59396,
@@ -31,15 +37,39 @@
       "src": "typicons"
     },
     {
+      "uid": "287ee2cac4ded1712253c7b03ff4a5db",
+      "css": "pipette",
+      "code": 59404,
+      "src": "typicons"
+    },
+    {
       "uid": "eedb189bc6326c685d83627f78e1c9de",
       "css": "sharp-pencil",
       "code": 59393,
       "src": "iconic"
     },
     {
+      "uid": "b3a9e2dab4d19ea3b2f628242c926bfe",
+      "css": "brush-1",
+      "code": 59399,
+      "src": "iconic"
+    },
+    {
+      "uid": "0e43f93967e6db58cc44dfbc1fe7f516",
+      "css": "pilcrow",
+      "code": 59401,
+      "src": "iconic"
+    },
+    {
       "uid": "134af7f39e491515cc1a6d1eb94d9d8a",
       "css": "vector-pencil",
       "code": 59398,
+      "src": "mfglabs"
+    },
+    {
+      "uid": "9b0229b620364d8704940e408dde73fb",
+      "css": "spinner2",
+      "code": 59402,
       "src": "mfglabs"
     },
     {
