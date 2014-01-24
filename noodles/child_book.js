@@ -2,21 +2,11 @@ var async = require("async")
 var child = require("child_process")
 var lazy = require("lazy")
 var fs = require("fs")
-
-var k = {
-    tmp: "tmp",
-    static_public_dir: "static/public",
-}
+var configs = require("./configs.js")
+var s3 = require("./s3.js")
 
 var u = (function(){
     var u = {}
-
-    u.rm = function(file, done){
-        child.exec("rm " + file, function(er, stdout, stder){
-            if (er) done({error:"rm",file:file})
-            else done(null)
-        })
-    }
 
     u.wget = function(src, dst, done){
         child.spawn("wget", [src, "-O", dst]) // CAP O not no cap o
@@ -60,16 +50,33 @@ var u = (function(){
 var child_book = (function(){
     var child_book = {}
 
-    child_book.process_book = function(id, src){
+    child_book.process_book = function(id, src, bucket){
         console.log("processing new book: " + id)
-        var dst = k.static_public_dir + "/" + id
-        u.write_book(src, dst, function(er){
+        var tmp = configs.tmp + "/" + id + ".html"
+        var dst = configs.static_public_dir + "/" + id + ".html"
+        async.waterfall([
+            function(done){
+                u.write_book(src, tmp, function(er){
+                    done(er)
+                })
+            },
+            function(done){
+                if (bucket){
+                    s3.put([tmp], bucket, function(er){
+                        done(er)
+                    })
+                } else {
+                    child.exec("mv " + tmp + " " + dst, function(er, stdout, stder){
+                        done(er)
+                    })
+                }
+            }
+        ], function(er){
             console.log("done processing new book: " + id)
             if (er){
                 console.log(JSON.stringify({error:"child_book.process_book",id:id,src:src,er:er}, 0, 2))
-                u.rm(dst, function(er){if (er) console.log(JSON.stringify(er, 0, 2))})
-            }
-            u.rm(src, function(er){if (er) console.log(JSON.stringify(er, 0, 2))})
+                child.exec("rm " + src + " " + tmp + " " + dst, function(er, stdout, stder){})
+            } else child.exec("rm " + src + " " + tmp, function(er, stdout, stder){})
         })
     }
 
@@ -82,7 +89,8 @@ var test = (function(){
     test.run = function(){
         var id = process.argv[2]
         var src = process.argv[3]
-        child_book.process_book(id, src)
+        var bucket = process.argv[4]
+        child_book.process_book(id, src, bucket)
     }
 
     test.wget = function(){

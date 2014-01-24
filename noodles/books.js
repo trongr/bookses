@@ -13,11 +13,10 @@ var server = new mongo.Server('localhost', 27017, {auto_reconnect:true})
 var db = new mongo.Db(process.env.DB || "bookses", server)
 var validate = require("./validate.js")
 var imglib = require("./img.js")
+var configs = require("./configs.js")
 
 var k = {
     tmp: "tmp",
-    static_public: "/static/public",
-    static_public_dir: "static/public", // local path
     localhost: "http://localhost:8080",
     tables: {
         books: "books",
@@ -266,7 +265,9 @@ var press = (function(){
                         console.log(JSON.stringify(jobs, 0, 2))
                     }
                     async.eachSeries(jobs, function(job, done){
-                        child.fork("noodles/child_book.js", [job.book, job.src])
+                        if (process.env.ENV == "local") var bucket = "" // can't set bucket = null cause that becomes "null"
+                        else var bucket = configs.bucket.book
+                        child.fork("noodles/child_book.js", [job.book, job.src, bucket])
                             .on("exit", function(code, signal){
                                 if (code == 0) var update = {$set:{done:true}}
                                 else var update = {$set:{done:null}}
@@ -338,12 +339,16 @@ var books = module.exports = (function(){
                     title: req.body.title,
                     description: req.body.description,
                     poetry: (req.body.poetry == "true"),
-                    url: k.static_public + "/" + id,
                     created: new Date(),
                     modified: new Date(),
                     votes: 1,
                     replies: 0,
                     pop: 1,
+                }
+                if (process.env.ENV == "local"){
+                    book.url = configs.static_public + "/" + id + ".html"
+                } else {
+                    book.url = configs.bucket_url.book + "/" + id + ".html"
                 }
                 DB.create(k.tables.books, book, function(er, book){
                     done(er, user, book)
@@ -590,8 +595,13 @@ var books = module.exports = (function(){
                         var ext = req.files.img.headers["content-type"].split("/")[1]
                         if (ext != "jpeg" && ext != "png" && ext != "gif")
                             return done({error:"processing img",er:"only accepts jpg, png, gif"})
-                        comment.img = k.static_public + "/" + id + "." + ext
-                        comment.thumb = k.static_public + "/" + id + ".thumb." + ext
+                        if (process.env.ENV == "local"){
+                            comment.img = configs.static_public + "/" + id + "." + ext
+                            comment.thumb = configs.static_public + "/" + id + ".thumb." + ext
+                        } else {
+                            comment.img = configs.bucket_url.img + "/" + id + "." + ext
+                            comment.thumb = configs.bucket_url.img + "/" + id + ".thumb." + ext
+                        }
                     } else if (req.files.img){
                         return done({error:"processing img",er:"can't read img headers"})
                     }
@@ -605,7 +615,9 @@ var books = module.exports = (function(){
             },
             function(user, comment, done){
                 if (req.files.img){
-                    imglib.process_img(req.files.img, 200, comment._id.toString(), function(er){
+                    if (process.env.ENV == "local") var bucket = null
+                    else var bucket = configs.bucket.img
+                    imglib.process_img(req.files.img, 200, comment._id.toString(), bucket, function(er){
                         if (er) console.log(JSON.stringify(er, 0, 2))
                         done(null, comment)
                     })
@@ -1126,7 +1138,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.get_comments_validate = function(req, res, next){
         async.parallel([
             function(done){

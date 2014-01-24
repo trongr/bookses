@@ -5,6 +5,7 @@ var async = require("async")
 var request = require("request")
 var validate = require("./validate.js")
 var imglib = require("./img.js")
+var configs = require("./configs.js")
 
 var k = {
     tables: {
@@ -16,9 +17,6 @@ var k = {
         indie: "indie",
         amateur: "amateur",
     },
-    tmp: "tmp",
-    static_public: "/static/public",
-    static_public_dir: "static/public", // local path
 }
 
 db.open(function(er, db) {
@@ -272,8 +270,13 @@ var users = module.exports = (function(){
                     var ext = req.files.img.headers["content-type"].split("/")[1]
                     if (ext != "jpeg" && ext != "png" && ext != "gif")
                         return done({error:"processing img",er:"only accepts jpg, png, gif"})
-                    update.img = k.static_public + "/" + username + "." + ext
-                    update.thumb = k.static_public + "/" + username + ".thumb." + ext
+                    if (process.env.ENV == "local"){
+                        update.img = configs.static_public + "/" + username + "." + ext
+                        update.thumb = configs.static_public + "/" + username + ".thumb." + ext
+                    } else {
+                        update.img = configs.bucket_url.user + "/" + username + "." + ext
+                        update.thumb = configs.bucket_url.user + "/" + username + ".thumb." + ext
+                    }
                 } else if (req.files.img){
                     return done({error:"processing img",er:"can't read img headers"})
                 }
@@ -294,7 +297,9 @@ var users = module.exports = (function(){
             },
             function(user, done){
                 if (req.files.img){
-                    imglib.process_img(req.files.img, 100, user.username, function(er){
+                    if (process.env.ENV == "local") var bucket = null
+                    else var bucket = configs.bucket.user
+                    imglib.process_img(req.files.img, 100, user.username, bucket, function(er){
                         if (er) console.log(JSON.stringify(er, 0, 2))
                         done(null, user)
                     })

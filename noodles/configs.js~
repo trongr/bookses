@@ -1,0 +1,6 @@
+var configs = module.exports = {
+    bucket: {
+        bookses_user: "bookses.user",
+        bookses_img: "bookses.img"
+    },
+}
