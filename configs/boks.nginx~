@@ -1,6 +1,6 @@
 server {
     listen 80;
-    root /home/ubuntu/nt/boks;
+    root /home/nahn/boks;
 
     location /static/ {
         # access_log off;
