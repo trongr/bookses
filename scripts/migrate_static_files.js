@@ -14,7 +14,7 @@ var migrate = (function(){
     migrate.init = function(){
         async.waterfall([
             function(done){
-                var table = "books" // mark
+                var table = "users" // mark
                 var query = {}
                 var aux = {}
                 db.collection(table, {safe:true}, function(er, docs){
@@ -27,15 +27,16 @@ var migrate = (function(){
             },
             function(entries, done){
                 async.eachSeries(entries, function(entry, done){
-                    if (entry.url){ // mark
-                        var src = "http://bookses.com" + entry.url
-                        var x = child.spawn("wget", [src, "-P", "tmp/"]) // mark todo change to static/public/
+                    if (entry.img && entry.thumb){ // mark
+                        var img = "http://bookses.com" + entry.img
+                        var thumb = "http://bookses.com" + entry.thumb
+                        var x = child.spawn("wget", [img, thumb, "-P", "static/public/"])
                         x.stderr.on("data", function(data){
                             console.log(data.toString())
                         })
                         x.on("close", function(code){
                             if (code == 1) console.log("wget error")
-                            // done(null) // mark
+                            done(null)
                         })
                     } else {
                         console.log(JSON.stringify(entry, 0, 2))
