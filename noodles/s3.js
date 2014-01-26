@@ -3,7 +3,7 @@ var child = require("child_process")
 var configs = require("./configs.js")
 
 exports.put = function(sources, bucket, done){
-    var opts = ["put", "--acl-public"]
+    var opts = ["put"]
     opts.push.apply(opts, sources)
     opts.push(bucket)
     var x = child.spawn(configs.bin.s3cmd, opts)
