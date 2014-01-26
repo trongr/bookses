@@ -111,8 +111,15 @@ body {
 }
 
 .boks_book_para_graph_header {
-    margin: 10px;
-    border-bottom: 1px solid #bbb;
+    padding: 15px;
+    margin-bottom: 5px;
+    background-color: #1ADB8B;
+    color: #fff;
+    cursor: pointer;
+}
+
+.boks_book_para_graph_header:hover {
+    background-color: #0EAB69;
 }
 
 .boks_book_para_graph_header span {
@@ -124,6 +131,7 @@ body {
 .boks_book_para_graph {
     margin: 20px 40px 40px 40px;
     height: 100px;
+    display: none;
 }
 
 .boks_para_box {
@@ -146,8 +154,15 @@ body {
 }
 
 .boks_social_share_me {
-    margin: 10px;
-    border-bottom: 1px solid #bbb;
+    padding: 15px;
+    margin-bottom: 5px;
+    background-color: #529AFF;
+    color: #fff;
+    cursor: pointer;
+}
+
+.boks_social_share_me:hover {
+    background-color: #217EFF;
 }
 
 .boks_social_share_me span {
@@ -158,6 +173,7 @@ body {
 
 .boks_social {
     margin: 20px 0 20px 40px;
+    display: none;
 }
 
 .boks_spinner {

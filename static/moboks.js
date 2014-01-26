@@ -22,6 +22,7 @@ var bok = function(x){
             best: "best"
         },
         max_img_size: 5242880,
+        paragraphs: null
     }
 
     var page = (function(){
@@ -234,6 +235,7 @@ var bok = function(x){
             return html
         }
 
+        // mark
         templates.book_info = function(book){
             var description = templates.drop_caps(book.description)
             var user_img = (book.user_img ? "<div class='boks_book_user_img_box'><img class='boks_book_user_img' src='" + book.user_img + "'></div>" : "")
@@ -249,7 +251,7 @@ var bok = function(x){
                 // + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "         <div class='clear_both'></div>"
                 + "         <div class='boks_social_share_me'>"
-                + "             <span>Like this book?</span> Spread the word!"
+                + "             <span>Like this book?</span> Tell at least two of your friends"
                 + "         </div>"
                 + "         <div class='boks_social'>"
                 + "             <div class='addthis_toolbox addthis_default_style addthis_32x32_style'>"
@@ -270,10 +272,6 @@ var bok = function(x){
                 + "         <div class='boks_latest_comments_header'>"
                 + "             <span>Latest Activity.</span> Click to refresh"
                 + "         </div>"
-                // + "         <div class='latest_comments_menu'>"
-                // // + "             <button class='hide_latest_edits'>Hide book edits</button>"
-                // // + "             <button class='watch_this_book'><i class='icon-eye-open'></i></button>"
-                // + "         </div>"
                 + "         <div class='clear_both'></div>"
                 + "         <div class='boks_latest_comments'></div>"
                 + "         <button class='boks_latest_comments_more' data-page='0'>MORE</button>"
@@ -863,7 +861,6 @@ var bok = function(x){
         }
 
         views.load_book = function(done){
-            var paragraphs
             async.waterfall([
                 function(done){
                     api.get_book(o.bID, function(er, _book){
@@ -878,13 +875,6 @@ var bok = function(x){
                     done(null)
                 },
                 function(done){
-                    api.get_paragraphs(function(er, _paragraphs){
-                        paragraphs = _paragraphs
-                        views.draw_para_graph(paragraphs)
-                        done(er)
-                    })
-                },
-                function(done){
                     setTimeout(function(){
                         api.get_text(k.book, function(er, text){
                             done(er, text)
@@ -896,6 +886,8 @@ var bok = function(x){
                         .off()
                         .on("click", ".boks_text p.paragraph", bindings.click_p)
                         .on("click", ".boks_latest_comments_header", bindings.click_refresh_latest_comments)
+                        .on("click", ".boks_book_para_graph_header", bindings.click_load_para_graph)
+                        .on("click", ".boks_social_share_me", bindings.click_load_social_buttons)
                     dom.content_right = dom.box.find(".boks_content_right")
                         .off()
                         .on("click", ".boks_more_comments_button", bindings.click_more_comments)
@@ -919,8 +911,10 @@ var bok = function(x){
                 },
                 function(done){
                     css.fit($("#click_to_reveal"), $("#click_to_reveal span"))
-                    addthis.toolbox(".addthis_toolbox")
-                    views.highlight_paragraphs(paragraphs)
+                    api.get_paragraphs(function(er, _paragraphs){
+                        k.paragraphs = _paragraphs
+                        views.highlight_paragraphs(_paragraphs)
+                    })
                     edits.init(function(er){
                         done(null)
                     })
@@ -952,7 +946,7 @@ var bok = function(x){
 
         views.draw_para_graph = function(paragraphs){
             $(".boks_book_para_graph").html(templates.para_graph(paragraphs))
-                .on("click", ".boks_para_box", bindings.click_para_box)
+                .show().off().on("click", ".boks_para_box", bindings.click_para_box)
         }
 
         views.highlight_paragraphs = function(paragraphs){
@@ -1033,8 +1027,6 @@ var bok = function(x){
         }
 
         views.render_latest_comments = function(page, comments){
-            console.log(page)
-            console.log(comments)
             if (page == 0){
                 $(".boks_latest_comments").html(templates.latest_comments(comments))
                     .off()
@@ -1044,9 +1036,6 @@ var bok = function(x){
                     .off().on("click", bindings.click_more_latest_comments)
             } else {
                 $(".boks_latest_comments").append(templates.latest_comments(comments))
-                // $(".hide_latest_edits").off().on("click", function(){
-                //     $(".latest_comment_box.is_edit").css("display", "none")
-                // })
             }
         }
 
@@ -1577,6 +1566,15 @@ var bok = function(x){
                     }
                 }
             })(id, pos))
+        }
+
+        bindings.click_load_para_graph = function(){
+            views.draw_para_graph(k.paragraphs)
+        }
+
+        bindings.click_load_social_buttons = function(){
+            $(".boks_social").show()
+            addthis.toolbox(".addthis_toolbox")
         }
 
         return bindings
