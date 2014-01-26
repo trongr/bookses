@@ -1,4 +1,3 @@
-/*  */
 body {
     background-color: #eee;
     font-family: helvetica, arial, sans;
@@ -120,11 +119,11 @@ button:hover {
     font-size: 12pt;
     font-weight: bolder;
     font-family: serif, times, georgia;
-    color: #666;
+    color: #FF4545;
 }
 
 #tagline:hover {
-    color: #70ACFF;
+    color: #f00;
 }
 
 #error {
