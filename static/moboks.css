@@ -619,8 +619,14 @@ div.popup_cancel {
 }
 
 .boks_latest_comments_header {
-    margin: 30px 10px 0 10px;
-    border-bottom: 1px solid #bbb;
+    padding: 15px;
+    background-color: #FF3333;
+    color: #fff;
+    cursor: pointer;
+}
+
+.boks_latest_comments_header:hover {
+    background-color: #DB1A1A;
 }
 
 .boks_latest_comments_header span {
@@ -747,6 +753,7 @@ div.popup_cancel {
 }
 
 .boks_latest_comments_more {
+    display: none;
     width: 100%;
     font-size: 2em;
     padding: 30px 0 30px 0;

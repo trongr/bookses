@@ -268,12 +268,12 @@ var bok = function(x){
                 + "         </div>"
                 + "         <div class='boks_book_para_graph'></div><div class='clear_both'></div>"
                 + "         <div class='boks_latest_comments_header'>"
-                + "             <span>Latest Activity</span>"
+                + "             <span>Latest Activity.</span> Click to refresh"
                 + "         </div>"
-                + "         <div class='latest_comments_menu'>"
-                // + "             <button class='hide_latest_edits'>Hide book edits</button>"
-                // + "             <button class='watch_this_book'><i class='icon-eye-open'></i></button>"
-                + "         </div>"
+                // + "         <div class='latest_comments_menu'>"
+                // // + "             <button class='hide_latest_edits'>Hide book edits</button>"
+                // // + "             <button class='watch_this_book'><i class='icon-eye-open'></i></button>"
+                // + "         </div>"
                 + "         <div class='clear_both'></div>"
                 + "         <div class='boks_latest_comments'></div>"
                 + "         <button class='boks_latest_comments_more' data-page='0'>MORE</button>"
@@ -555,7 +555,6 @@ var bok = function(x){
                     + "             <input class='draw_picture_input' accept='image/*' type='file'>"
                     + "             <button class='draw_picture_button'><i class='icon-picture'></i></button>"
                     + "             <button class='draw_undo_button'><i class='icon-undo'></i></button>"
-                // mark
                     + "             <button class='draw_pencil'><i class='fontello-fat-pencil'></i></button>"
                     + "             <button class='draw_dropper'><i class='fontello-pipette'></i></button>"
                     + "             <input class='draw_color' value='000000'>"
@@ -692,7 +691,6 @@ var bok = function(x){
                 .off()
                 .on("click", ".draw_cancel", draw.bindings.click_draw_cancel)
                 .on("click", ".draw_save_quit", draw.bindings.click_save_quit)
-            // mark
                 .on("click", ".draw_new_drawing", draw.bindings.click_new_drawing)
                 .on("click", ".draw_undo_button", draw.bindings.click_draw_undo_button)
                 .on("click", ".draw_pencil", draw.bindings.click_pencil_button)
@@ -742,7 +740,6 @@ var bok = function(x){
             draw.bindings.click_new_drawing()
         }
 
-        // mark
         draw.canvas_init = function(width, height){
             draw.k.$canvas = $(".draw_canvas_box").html(draw.templates.canvas()).find("canvas")
             draw.k.$canvas.attr("width", width || draw.k.$canvas.parent().width() - 30).attr("height", height || draw.k.$canvas.parent().height() - 60)
@@ -898,6 +895,7 @@ var bok = function(x){
                     dom.box.append(templates.reader(text))
                         .off()
                         .on("click", ".boks_text p.paragraph", bindings.click_p)
+                        .on("click", ".boks_latest_comments_header", bindings.click_refresh_latest_comments)
                     dom.content_right = dom.box.find(".boks_content_right")
                         .off()
                         .on("click", ".boks_more_comments_button", bindings.click_more_comments)
@@ -929,11 +927,6 @@ var bok = function(x){
                 },
                 function(done){
                     views.format_poetry(k.book)
-                    views.load_latest_comments(0, function(er){
-                        done(null)
-                    })
-                },
-                function(done){
                     $(".boks_spinner").html("").hide()
                     var comment_id = $.url(window.location).param("c")
                     if (comment_id){
@@ -1031,7 +1024,7 @@ var bok = function(x){
                     })
                 },
                 function(comments, done){
-                    views.render_latest_comments(comments)
+                    views.render_latest_comments(page, comments)
                     done(null)
                 }
             ], function(er){
@@ -1039,14 +1032,22 @@ var bok = function(x){
             })
         }
 
-        views.render_latest_comments = function(comments){
-            $(".boks_latest_comments").append(templates.latest_comments(comments))
-                .off()
-                .on("click", ".latest_comment", bindings.click_latest_comment)
-            // $(".hide_latest_edits").off().on("click", function(){
-            //     $(".latest_comment_box.is_edit").css("display", "none")
-            // })
-            $(".boks_latest_comments_more").off().on("click", bindings.click_more_latest_comments)
+        views.render_latest_comments = function(page, comments){
+            console.log(page)
+            console.log(comments)
+            if (page == 0){
+                $(".boks_latest_comments").html(templates.latest_comments(comments))
+                    .off()
+                    .on("click", ".latest_comment", bindings.click_latest_comment)
+                $(".boks_latest_comments_more").show()
+                    .attr("data-page", 0)
+                    .off().on("click", bindings.click_more_latest_comments)
+            } else {
+                $(".boks_latest_comments").append(templates.latest_comments(comments))
+                // $(".hide_latest_edits").off().on("click", function(){
+                //     $(".latest_comment_box.is_edit").css("display", "none")
+                // })
+            }
         }
 
         return views
@@ -1533,6 +1534,10 @@ var bok = function(x){
                     console.log(JSON.stringify({error:"click latest comment: can't find comment"}, 0, 2))
                 }
             })
+        }
+
+        bindings.click_refresh_latest_comments = function(){
+            views.load_latest_comments(0, function(er){})
         }
 
         bindings.click_more_latest_comments = function(){
