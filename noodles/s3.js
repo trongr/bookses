@@ -10,6 +10,9 @@ exports.put = function(sources, bucket, done){
     x.stderr.on("data", function(data){
         console.log(data.toString())
     })
+    x.stdout.on("data", function(data){
+        console.log(data.toString())
+    })
     x.on("close", function(code){
         if (code == 1) console.log(JSON.stringify({error:"s3cmd put"}, 0, 2))
         done(null)

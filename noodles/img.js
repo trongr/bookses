@@ -11,6 +11,9 @@ var imglib = module.exports = (function(){
         x.stderr.on("data", function(data){
             console.log(data.toString())
         })
+        x.stdout.on("data", function(data){
+            console.log(data.toString())
+        })
         x.on("close", function(code){
             done(null)
         })
