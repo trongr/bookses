@@ -230,6 +230,20 @@ var bok = function(x){
             })
         }
 
+        api.get_book_tags = function(page, done){
+            $.ajax({
+                url: "/book/" + o.bID + "/tags",
+                type: "get",
+                data: {
+                    page: page,
+                },
+                success: function(re){
+                    if (re.tags) done(null, re.tags)
+                    else done(re)
+                }
+            })
+        }
+
         return api
     }())
 
@@ -266,7 +280,7 @@ var bok = function(x){
                 // + "         <div class='boks_book_created'>" + moment(book.created).format(k.date_format) + "</div>"
                 + "         <div class='clear_both'></div>"
                 + "         <div class='boks_social_share_me'>"
-                + "             <span>Like this book?</span> Tell at least two of your friends"
+                + "             <span>Like this book?</span> Spread the word!"
                 + "         </div>"
                 + "         <div class='boks_social'>"
                 + "             <div class='addthis_toolbox addthis_default_style addthis_32x32_style'>"
@@ -284,14 +298,34 @@ var bok = function(x){
                 + "             <span>ParaGraph.</span> Click on the graph to skip to the good parts"
                 + "         </div>"
                 + "         <div class='boks_book_para_graph'></div><div class='clear_both'></div>"
+            // mark
+                + "         <div class='boks_tags_header'><span>Tags.</span> Jump to important ideas</div>"
+                + "         <div class='boks_tags_box'></div>"
+                + "         <button class='boks_tags_more'>MORE TAGS</button>"
+                + "         <div class='boks_tags_comments_box'></div>"
+                + "         <button class='boks_tags_comments_more'>MORE COMMENTS</button>"
+                + "         <div class='boks_spinner'><i class='icon-spin icon-globe'></i><br><span>working<br>real<br>hard<br>. . .</span></div>"
                 + "         <div class='boks_latest_comments_header'>"
                 + "             <span>Latest Activity.</span> Click to refresh"
                 + "         </div>"
                 + "         <div class='clear_both'></div>"
                 + "         <div class='boks_latest_comments'></div>"
                 + "         <button class='boks_latest_comments_more' data-page='0'>MORE</button>"
-                + "         <div class='boks_spinner'><i class='icon-spin icon-globe'></i><br><span>working<br>real<br>hard<br>. . .</span></div>"
                 + "     </div>"
+            return html
+        }
+
+        templates.tags = function(tags){
+            var html = ""
+            for (var i = 0; i < tags.length; i++){
+                html += templates.tag(tags[i])
+            }
+            return html
+        }
+
+        // mark
+        templates.tag = function(tag){
+            var html = "<span class='tag'>" + tag.tag + "</span>"
             return html
         }
 
@@ -903,6 +937,8 @@ var bok = function(x){
                         .on("click", ".boks_latest_comments_header", bindings.click_refresh_latest_comments)
                         .on("click", ".boks_book_para_graph_header", bindings.click_load_para_graph)
                         .on("click", ".boks_social_share_me", bindings.click_load_social_buttons)
+                        .on("click", ".boks_tags_header", bindings.click_load_tags)
+                    // mark
                     dom.content_right = dom.box.find(".boks_content_right")
                         .off()
                         .on("click", ".boks_more_comments_button", bindings.click_more_comments)
@@ -983,7 +1019,7 @@ var bok = function(x){
                 function(comments, done){
                     box.html(templates.comments_box(comments, p, parentid))
                     users.load_user_kudos()
-                    addthis.toolbox(".addthis_toolbox")
+                    try {addthis.toolbox(".addthis_toolbox")} catch (e){}
                     done(null)
                 },
             ], function(er, re){
@@ -1004,7 +1040,7 @@ var bok = function(x){
                     $("html, body").animate({scrollTop:paragraph.offset().top - 40}, 100)
                     dom.content_right.prepend(templates.comments_box([comment], comment.p, comment.parent))
                     users.load_user_kudos()
-                    addthis.toolbox(".addthis_toolbox")
+                    try {addthis.toolbox(".addthis_toolbox")} catch (e){}
                     dom.content_right.prepend(templates.p_menu(comment.p)).animate({scrollTop:0}, 100)
                     done(null)
                 }
@@ -1021,7 +1057,7 @@ var bok = function(x){
                 dom.content_right.find(".boks_comments_box[data-p='" + comment.p + "']").first()
                     .find(".boks_comments").eq(0).prepend(elmt)
             }
-            addthis.toolbox(".addthis_toolbox")
+            try {addthis.toolbox(".addthis_toolbox")} catch (e){}
             return elmt
         }
 
@@ -1041,6 +1077,7 @@ var bok = function(x){
             })
         }
 
+        // mark
         views.render_latest_comments = function(page, comments){
             if (page == 0){
                 $(".boks_latest_comments").html(templates.latest_comments(comments))
@@ -1214,7 +1251,7 @@ var bok = function(x){
                 } else {
                     dom.content_right.prepend(templates.comments_box([], p, null))
                 }
-                addthis.toolbox(".addthis_toolbox")
+                try {addthis.toolbox(".addthis_toolbox")} catch (e){}
                 dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
                 // $(document).trigger(events.k.comments_loaded)
             })
@@ -1240,7 +1277,7 @@ var bok = function(x){
                     if (comments.length){
                         box.append(templates.comments(comments.slice(0, k.page_size)))
                         users.load_user_kudos()
-                        addthis.toolbox(".addthis_toolbox")
+                        try {addthis.toolbox(".addthis_toolbox")} catch (e){}
                     }
                     if (comments.length <= k.page_size) that.hide()
                     else that.attr("data-page", page)
@@ -1392,7 +1429,7 @@ var bok = function(x){
                             .before(templates.comment_user_img(re.comment.user_img))
                         if (re.comment.img) new_comment.find(".boks_comment_img_box img").attr("src", re.comment.img)
                         new_comment.find(".addthis_toolbox").attr("addthis:url", "http://bookses.com/read/" + o.bID + "?c=" + re.comment._id)
-                        addthis.toolbox(".addthis_toolbox")
+                        try {addthis.toolbox(".addthis_toolbox")} catch (e){}
                     } else if (re.loggedin == false) alert("you have to log in")
                     else alert(JSON.stringify({error:"create comment",er:re}, 0, 2))
                 }
@@ -1444,7 +1481,7 @@ var bok = function(x){
                 } else {
                     dom.content_right.prepend(templates.comments_box([], p, null))
                 }
-                addthis.toolbox(".addthis_toolbox")
+                try {addthis.toolbox(".addthis_toolbox")} catch (e){}
                 dom.content_right.prepend(templates.edit_p_box(p))
                 dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
                 var editor = dom.content_right.find(".edit_p_text").eq(0).hallo({
@@ -1534,7 +1571,7 @@ var bok = function(x){
                 } else if (comment){
                     dom.content_right.prepend(templates.comments_box([comment], p, comment.parent))
                     users.load_user_kudos()
-                    addthis.toolbox(".addthis_toolbox")
+                    try {addthis.toolbox(".addthis_toolbox")} catch (e){}
                     dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
                 } else {
                     console.log(JSON.stringify({error:"click latest comment: can't find comment"}, 0, 2))
@@ -1591,7 +1628,31 @@ var bok = function(x){
 
         bindings.click_load_social_buttons = function(){
             $(".boks_social").show()
-            addthis.toolbox(".addthis_toolbox")
+            try {addthis.toolbox(".addthis_toolbox")} catch (e){}
+        }
+
+        // mark
+        bindings.click_load_tags = function(){
+            async.waterfall([
+                function(done){
+                    api.get_book_tags(0, function(er, tags){
+                        done(er, tags)
+                    })
+                },
+                function(tags, done){
+                    $(".boks_tags_box").html(templates.tags(tags))
+                        .show()
+                        .off()
+                        .on("click", ".tag", bindings.click_tag)
+                    $(".boks_tags_more").show()
+                }
+            ], function(er){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+            })
+        }
+
+        bindings.click_tag = function(){
+
         }
 
         return bindings

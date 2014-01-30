@@ -427,6 +427,7 @@ p.paragraph:hover {
     width: 100%;
     font-size: 2em;
     padding: 20px;
+    text-align: left;
 }
 
 .boks_more_comments_button:hover {
@@ -799,4 +800,69 @@ div.popup_cancel {
 #playlist_menu button {
     padding-left: 0;
     padding-right: 0;
+}
+
+.boks_tags_header {
+    padding: 15px;
+    margin-bottom: 5px;
+    background-color: #DF61FF;
+    color: #fff;
+    cursor: pointer;
+}
+
+.boks_tags_header:hover {
+    background-color: #D324FF;
+}
+
+.boks_tags_header span {
+    font-size: 2em;
+    font-weight: bolder;
+    font-variant: small-caps;
+}
+
+.boks_tags_box {
+    margin: 20px 40px 40px 40px;
+    display: none;
+}
+
+.boks_tags_more {
+    display: none;
+    width: 100%;
+    font-size: 1.5em;
+    text-align: right;
+    padding: 20px 20px 20px 0;
+    color: #666;
+    background-color: #eee;
+}
+
+.boks_tags_more:hover {
+    color: #0f0;
+}
+
+.tag {
+    margin: 0 5px 0 0;
+    background-color: #fff;
+    padding: 10px 15px 10px 15px;
+    font-size: 1.5em;
+    font-weight: lighter;
+    color: #333;
+}
+
+.tag:hover {
+    color: #fff;
+    background-color: #D324FF;
+}
+
+.boks_tags_comments_more {
+    display: none;
+    width: 100%;
+    font-size: 2em;
+    text-align: right;
+    padding: 30px 30px 30px 0;
+    color: #666;
+    background-color: #eee;
+}
+
+.boks_tags_comments_more:hover {
+    color: #0f0;
 }

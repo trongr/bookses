@@ -113,6 +113,9 @@ server.post("/user/clear_notis", users.authenticate, books.clear_user_notis_vali
 server.get("/user/comments/notis", users.authenticate, books.get_comment_notis_validate, books.get_comment_notis)
 server.post("/comment/:id/clear_notis", users.authenticate, books.clear_comment_notis_validate, books.clear_comment_notis)
 
+// mark
+server.get("/book/:id/tags", books.get_book_tags_validate, books.get_book_tags)
+
 var port = process.env.PORT || 8080
 app.listen(port, "127.0.0.1", function(){
     console.log("open for business on port " + port)

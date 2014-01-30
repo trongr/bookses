@@ -1246,6 +1246,53 @@ var books = module.exports = (function(){
         })
     }
 
+    books.get_book_tags_validate = function(req, res, next){
+        async.parallel([
+            function(done){
+                validate.id(req.params.id, function(er){
+                    done(er)
+                })
+            },
+            function(done){
+                var page = req.query.page || 0
+                validate.integer(page, function(er){
+                    done(er)
+                })
+            },
+            function(done){
+                if (req.query.sort){
+                    if (req.query.sort == k.sort.best || req.query.sort == k.sort.recent) done(null)
+                    else done({error:"wrong sort parameter"})
+                } else done(null)
+            }
+        ], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_book_tags_validate",er:er}, 0, 2))
+                res.send({error:"get book tags"})
+            } else next(null)
+        })
+    }
+
+    books.get_book_tags = function(req, res){
+        var query = {
+            book: req.params.id,
+        }
+        var aux = {
+            sort: k.sort_by.best,
+            limit: k.page_size + 1,
+            skip: req.query.page * k.page_size
+        }
+        if (req.query.sort) aux.sort = k.sort_by[req.query.sort]
+        DB.get_entries(k.tables.tags, query, aux, function(er, entries){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_book_tags",er:er}, 0, 2))
+                res.send({error:"get book tags"})
+            } else {
+                res.send({tags:entries})
+            }
+        })
+    }
+
     return books
 }())
 
