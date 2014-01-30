@@ -24,6 +24,7 @@ var k = {
         likes: "likes",
         jobs: "jobs",
         users: "users",
+        tags: "tags",
     },
     page_size: 10,
     milliseconds_in_a_day: 24 * 60 * 60 * 1000,
@@ -66,6 +67,12 @@ db.open(function(er, db) {
     db.collection(k.tables.likes, {safe:true}, function(er, docs){
         if (er) throw er
         else docs.ensureIndex({like:1,ip:1}, function(er, re){
+            if (er) throw er
+        })
+    })
+    db.collection(k.tables.tags, {safe:true}, function(er, docs){
+        if (er) throw er
+        else docs.ensureIndex({tag:1}, function(er, re){
             if (er) throw er
         })
     })
@@ -235,6 +242,43 @@ var DB = (function(){
         ], function(er, comment){
             if (er) console.log(JSON.stringify({error:"update comment mod time",id:id,recursion:recursion,er:er}, 0, 2))
             else if (comment.parent) DB.update_comment_recursive(comment.parent, _update, --recursion, exclude)
+        })
+    }
+
+    DB.update_tags = function(book_id, tags, done){
+        async.eachSeries(tags, function(tag, done){
+            async.waterfall([
+                function(done){
+                    DB.update_entry(k.tables.tags, {
+                        book: book_id,
+                        tag: tag
+                    },{
+                        $set: {modified:new Date()},
+                        $inc: {pop:1}
+                    }, function(er, num){
+                        done(er, num)
+                    })
+                },
+                function(num, done){
+                    if (num == 0){
+                        var newtag = {
+                            book: book_id,
+                            tag: tag,
+                            created: new Date(),
+                            modified: new Date(),
+                            pop: 1,
+                        }
+                        DB.create(k.tables.tags, newtag, function(er, entry){
+                            done(er)
+                        })
+                    } else done(null)
+                }
+            ], function(er){
+                done(er)
+            })
+        }, function(er){
+            if (er) done({error:"update tags",info:er})
+            else done(null)
         })
     }
 
@@ -549,6 +593,19 @@ var books = module.exports = (function(){
                 if (req.body.youtube && req.body.youtube > 500){
                     done({error:"youtube link too long"})
                 } else done(null)
+            },
+            function(done){
+                if (req.body.tags){
+                    try {
+                        if (typeof req.body.tags === "string") req.body.tags = JSON.parse(req.body.tags)
+                        validate.tags(req.body.tags, function(er){
+                            if (er) done({error:"invalid tags",info:er})
+                            else done(null)
+                        })
+                    } catch (e){
+                        done({error:"can't parse tags"})
+                    }
+                } else done(null)
             }
         ], function(er, re){
             if (er){
@@ -581,6 +638,7 @@ var books = module.exports = (function(){
                         username: req.session.username,
                         user_img: user.thumb,
                         comment: req.body.comment,
+                        tags: req.body.tags,
                         book: req.body.book,
                         p: parseInt(req.body.p),
                         edit: (req.body.edit == "true"),
@@ -636,6 +694,9 @@ var books = module.exports = (function(){
                 if (req.body.parent) DB.update_comment_recursive(req.body.parent, {
                     notee: req.session.username
                 }, k.recursion_limit, {})
+                if (req.body.tags) DB.update_tags(req.body.book, req.body.tags, function(er){
+                    if (er) console.log(JSON.stringify(er, 0, 2))
+                })
             }
         ], function(er, comment){
             if (er){

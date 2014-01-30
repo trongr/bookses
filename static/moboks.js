@@ -25,6 +25,22 @@ var bok = function(x){
         paragraphs: null
     }
 
+    var u = (function(){
+        var u = {}
+
+        u.get_tags = function(text){
+            var tags = text.match(/(^#\w{1,20})|(\s#\w{1,20})/g) || []
+            var result = []
+            var limit = Math.min(tags.length, 5)
+            for (var i = 0; i < limit; i++){
+                result.push(tags[i].replace(/\s*#/, ""))
+            }
+            return result
+        }
+
+        return u
+    }())
+
     var page = (function(){
         var page = {}
 
@@ -235,7 +251,6 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.book_info = function(book){
             var description = templates.drop_caps(book.description)
             var user_img = (book.user_img ? "<div class='boks_book_user_img_box'><img class='boks_book_user_img' src='" + book.user_img + "'></div>" : "")
@@ -1325,6 +1340,7 @@ var bok = function(x){
             var parentid = data_box.attr("data-parent")
             var comment = data_box.find(".boks_reply_text").html().trim()
             if (!comment) comment = "<br><br>" // blank blank looks better than a period
+            var tags = u.get_tags(comment)
 
             if (!FormData) return alert("can't upload: please update your browser")
             var data = new FormData()
@@ -1332,6 +1348,7 @@ var bok = function(x){
             data.append("p", p)
             if (parentid) data.append("parent", parentid)
             data.append("comment", comment)
+            data.append("tags", JSON.stringify(tags))
 
             var img = draw.get_file(), img_src
             if (img && img.size < k.max_img_size){

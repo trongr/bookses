@@ -48,6 +48,15 @@ var validate = module.exports = (function(){
         else done(null)
     }
 
+    validate.tags = function(tags, done){
+        if (tags.length > 5) return done({error:"too many tags, must be fewer than 5"})
+        for (var i = 0; i < tags.length; i++){
+            if (!tags[i].match(/^\w{1,20}$/))
+                return done({error:"tag must be made of letters or numbers, and fewer than 20 chars"})
+        }
+        done(null)
+    }
+
     return validate
 }())
 
