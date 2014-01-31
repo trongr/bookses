@@ -1,4 +1,3 @@
-/*  */
 body {
     background-color: #eee;
     font-family: helvetica, arial, sans;
@@ -118,11 +117,11 @@ button:hover {
 #tagline {
     font-size: 6pt;
     font-weight: bolder;
-    color: #FF6E6E;
+    color: #999;
 }
 
 #tagline:hover {
-    color: #FF4545;
+    color: #70ACFF;
 }
 
 #upload_progress_box {
@@ -235,7 +234,6 @@ button:hover {
 }
 
 .book_img_box {
-    /* display: table-cell; */
     display: inline-block;
     width: 20%;
     max-height: 200px;
@@ -411,11 +409,11 @@ div.popup_cancel {
     font-size: 6pt;
     font-weight: bolder;
     font-family: serif, times, georgia;
-    color: #FF4545;
+    color: #666;
 }
 
 #welcome:hover {
-    color: #f00;
+    color: #70ACFF;
 }
 
 #intro_right {

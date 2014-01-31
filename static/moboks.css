@@ -1,4 +1,3 @@
-/*  */
 body {
 
 }
@@ -241,7 +240,7 @@ p.paragraph:hover {
 }
 
 .boks_p_menu_toolbar {
-    background-color: #FF7300;
+    background-color: #f87431;
     color: #fff;
     padding: 10px 0 10px 0;
     border-bottom: 1px solid #bbb;
@@ -255,6 +254,10 @@ p.paragraph:hover {
     color: #fff;
 }
 
+.boks_p_menu_toolbar > button:hover {
+    color: #addfff;
+}
+
 .boks_p_menu_toolbar .boks_p_link {
     margin: 0 10px 0 10px;
     cursor: pointer;
@@ -263,7 +266,7 @@ p.paragraph:hover {
 }
 
 .boks_p_menu_toolbar .boks_p_link:hover {
-    color: #0f0;
+    color: #ADFFBD;
 }
 
 .boks_p_menu_toolbar .boks_sort {
@@ -551,9 +554,10 @@ div.popup_cancel {
 #click_to_reveal {
     font-size: 1.5em;
     background-color: #000;
-    color: #FFE680;
+    color: #fff;
     padding: 20px;
     text-align: center;
+    font-weight: lighter;
 }
 
 #click_to_reveal span {
