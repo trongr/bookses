@@ -115,6 +115,7 @@ server.post("/comment/:id/clear_notis", users.authenticate, books.clear_comment_
 
 // mark
 server.get("/book/:id/tags", books.get_book_tags_validate, books.get_book_tags)
+server.get("/book/:id/tag_comments", books.get_book_tag_comments_validate, books.get_book_tag_comments)
 
 var port = process.env.PORT || 8080
 app.listen(port, "127.0.0.1", function(){

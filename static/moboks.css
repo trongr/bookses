@@ -672,14 +672,14 @@ div.popup_cancel {
     padding: 5px;
 }
 
-.latest_comment_box {
+.short_comment_box {
     clear: both;
     font-size: 0.8em;
     width: 100%;
     margin: 5px 0 5px 0;
 }
 
-.latest_comment {
+.short_comment {
     background-color: #fff;
     cursor: pointer;
     display: table;
@@ -688,7 +688,7 @@ div.popup_cancel {
     border: 1px solid #bbb;
 }
 
-.latest_comment:hover {
+.short_comment:hover {
     background-color: #e4e4e4;
 }
 
@@ -698,7 +698,7 @@ div.popup_cancel {
     padding: 5px;
 }
 
-.latest_comment_img_box {
+.short_comment_img_box {
     display: inline-block;
     width: 120px;
     max-height: 120px;
@@ -708,11 +708,11 @@ div.popup_cancel {
     vertical-align: top;
 }
 
-.latest_comment_img {
+.short_comment_img {
     width: 100%;
 }
 
-.latest_comment_yt_thumb {
+.short_comment_yt_thumb {
     display: table-cell;
     width: 120px;
     max-height: 120px;
@@ -765,7 +765,7 @@ div.popup_cancel {
 
 }
 
-.is_edit .latest_comment {
+.is_edit .short_comment {
     background-color: #C4DDFF;
 }
 

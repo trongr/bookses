@@ -244,6 +244,22 @@ var bok = function(x){
             })
         }
 
+        // mark
+        api.get_book_tag_comments = function(tag, page, done){
+            $.ajax({
+                url: "/book/" + o.bID + "/tag_comments",
+                type: "get",
+                data: {
+                    tag: tag,
+                    page: page,
+                },
+                success: function(re){
+                    if (re.tags) done(null, re.tags)
+                    else done(re)
+                }
+            })
+        }
+
         return api
     }())
 
@@ -480,10 +496,10 @@ var bok = function(x){
             return html
         }
 
-        templates.latest_comments = function(comments){
+        templates.short_comments = function(comments){
             var html = ""
             for (var i = 0; i < comments.length; i++){
-                html += templates.latest_comment(comments[i])
+                html += templates.short_comment(comments[i])
             }
             return html
         }
@@ -492,14 +508,14 @@ var bok = function(x){
             return $("<div/>", {html:html}).text()
         }
 
-        templates.latest_comment = function(comment){
+        templates.short_comment = function(comment){
             var is_edit = (comment.edit ? "is_edit" : "")
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
             var text = templates.html_to_text(comment.comment)
             text = templates.replace_text_with_p_link(templates.replace_text_with_link(text.slice(0, 200))) + (text.length > 200 ? " . . ." : "")
-            var img = (comment.img ? "<div class='latest_comment_img_box'><img class='latest_comment_img' src='" + comment.thumb + "'></div>" : "")
-            var youtube = (comment.youtube ? "<div class='latest_comment_yt_thumb'>" + yt.thumbnail(comment.youtube, yt.k.small) + "</div>" : "")
+            var img = (comment.img ? "<div class='short_comment_img_box'><img class='short_comment_img' src='" + comment.thumb + "'></div>" : "")
+            var youtube = (comment.youtube ? "<div class='short_comment_yt_thumb'>" + yt.thumbnail(comment.youtube, yt.k.small) + "</div>" : "")
             if (youtube) img = ""
             var votes = (comment.votes == 1 ? "1 vote" : comment.votes + " votes")
             var replies
@@ -507,8 +523,8 @@ var bok = function(x){
             else if (comment.replies == 1) replies = "1 reply"
             else replies = comment.replies + " replies"
             var user_img = (comment.user_img ? "<div class='comment_user_img_box'><img class='comment_user_img' src='" + comment.user_img + "'></div>" : "")
-            var html = "<div class='latest_comment_box " + is_edit + "'>"
-                + "         <div class='latest_comment data' " + dataid + " " + datap +  ">"
+            var html = "<div class='short_comment_box " + is_edit + "'>"
+                + "         <div class='short_comment data' " + dataid + " " + datap +  ">"
                 + "             <div class='comment_info'>"
                 +                   user_img
                 + "                 <div class='comment_user'>" + comment.username + "</div>"
@@ -1080,14 +1096,14 @@ var bok = function(x){
         // mark
         views.render_latest_comments = function(page, comments){
             if (page == 0){
-                $(".boks_latest_comments").html(templates.latest_comments(comments))
+                $(".boks_latest_comments").html(templates.short_comments(comments))
                     .off()
-                    .on("click", ".latest_comment", bindings.click_latest_comment)
+                    .on("click", ".short_comment", bindings.click_short_comment)
                 $(".boks_latest_comments_more").show()
                     .attr("data-page", 0)
                     .off().on("click", bindings.click_more_latest_comments)
             } else {
-                $(".boks_latest_comments").append(templates.latest_comments(comments))
+                $(".boks_latest_comments").append(templates.short_comments(comments))
             }
         }
 
@@ -1559,7 +1575,7 @@ var bok = function(x){
 
         }
 
-        bindings.click_latest_comment = function(){
+        bindings.click_short_comment = function(){
             var that = $(this)
             var p = that.attr("data-p")
             var id = that.attr("data-id")
@@ -1631,7 +1647,6 @@ var bok = function(x){
             try {addthis.toolbox(".addthis_toolbox")} catch (e){}
         }
 
-        // mark
         bindings.click_load_tags = function(){
             async.waterfall([
                 function(done){
@@ -1645,14 +1660,28 @@ var bok = function(x){
                         .off()
                         .on("click", ".tag", bindings.click_tag)
                     $(".boks_tags_more").show()
+                    // mark
                 }
             ], function(er){
                 if (er) console.log(JSON.stringify(er, 0, 2))
             })
         }
 
+        // mark
         bindings.click_tag = function(){
-
+            var tag = $(this).html()
+            async.waterfall([
+                function(done){
+                    api.get_book_tag_comments(tag, 0, function(er, comments){
+                        done(er, comments)
+                    })
+                },
+                function(comments, done){
+                    console.log(JSON.stringify(comments, 0, 2))
+                }
+            ], function(er){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+            })
         }
 
         return bindings
