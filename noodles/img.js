@@ -8,10 +8,10 @@ var imglib = module.exports = (function(){
 
     imglib.resize = function(src, width, dst, done){
         var x = child.spawn(configs.bin.convert, [src, "-strip", "-resize", width, dst])
-        x.stderr.on("data", function(data){
+        x.stdout.on("data", function(data){
             console.log(data.toString())
         })
-        x.stdout.on("data", function(data){
+        x.stderr.on("data", function(data){
             console.log(data.toString())
         })
         x.on("close", function(code){
@@ -47,13 +47,10 @@ var imglib = module.exports = (function(){
                     })
                 } else {
                     child.exec("mv " + tmp_regular + " " + local_regular, function(er, stdout, stder){
-                        done(er)
-                    })
-                    child.exec("mv " + tmp_thumb + " " + local_thumb, function(er, stdout, stder){
-                        if (er){
-                            console.log(stder)
-                            console.log(JSON.stringify({error:"moving tmp img thumb to local",er:er}, 0, 2))
-                        }
+                        if (er) done(er)
+                        else child.exec("mv " + tmp_thumb + " " + local_thumb, function(er, stdout, stder){
+                            done(er)
+                        })
                     })
                 }
             },
@@ -65,7 +62,7 @@ var imglib = module.exports = (function(){
                            + local_thumb + " "
                            + local_regular, function(er, stdout, stder){})
             } else done(null)
-            child.exec("rm " + img.path, function(er, stdout, stder){})
+            child.exec("rm " + img.path + " " + tmp_thumb + " " + tmp_regular, function(er, stdout, stder){})
         })
     }
 
