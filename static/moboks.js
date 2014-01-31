@@ -254,7 +254,7 @@ var bok = function(x){
                     page: page,
                 },
                 success: function(re){
-                    if (re.tags) done(null, re.tags)
+                    if (re.comments) done(null, re.comments)
                     else done(re)
                 }
             })
@@ -317,9 +317,9 @@ var bok = function(x){
             // mark
                 + "         <div class='boks_tags_header'><span>Tags.</span> Jump to important ideas</div>"
                 + "         <div class='boks_tags_box'></div>"
-                + "         <button class='boks_tags_more'>MORE TAGS</button>"
+                + "         <button class='boks_tags_more' data-page='0'>MORE TAGS</button>"
                 + "         <div class='boks_tags_comments_box'></div>"
-                + "         <button class='boks_tags_comments_more'>MORE COMMENTS</button>"
+                + "         <button class='boks_tags_comments_more' data-page='0' data-tag=''>MORE COMMENTS</button>"
                 + "         <div class='boks_spinner'><i class='icon-spin icon-globe'></i><br><span>working<br>real<br>hard<br>. . .</span></div>"
                 + "         <div class='boks_latest_comments_header'>"
                 + "             <span>Latest Activity.</span> Click to refresh"
@@ -339,7 +339,6 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.tag = function(tag){
             var html = "<span class='tag'>" + tag.tag + "</span>"
             return html
@@ -1107,6 +1106,64 @@ var bok = function(x){
             }
         }
 
+        // mark
+        views.load_tag_comments = function(tag, page, done){
+            async.waterfall([
+                function(done){
+                    api.get_book_tag_comments(tag, page, function(er, comments){
+                        done(er, comments)
+                    })
+                },
+                function(comments, done){
+                    if (page == 0){
+                        $(".boks_tags_comments_box").html(templates.short_comments(comments))
+                            .show()
+                            .off()
+                            .on("click", ".short_comment", bindings.click_short_comment)
+                        $(".boks_tags_comments_more")
+                            .show()
+                            .attr("data-page", 0)
+                            .attr("data-tag", tag)
+                            .off().on("click", bindings.click_more_tag_comments)
+                    } else {
+                        $(".boks_tags_comments_box").append(templates.short_comments(comments))
+                    }
+                    done(null)
+                }
+            ], function(er){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+            })
+        }
+
+        // mark
+        views.load_tags = function(page){
+            async.waterfall([
+                function(done){
+                    api.get_book_tags(page, function(er, tags){
+                        done(er, tags)
+                    })
+                },
+                function(tags, done){
+                    if (page == 0){
+                        $(".boks_tags_box").html(templates.tags(tags))
+                            .show()
+                            .off()
+                            .on("click", ".tag", bindings.click_tag)
+                        $(".boks_tags_more")
+                            .show()
+                            .attr("data-page", 0)
+                            .off()
+                            .on("click", bindings.click_more_tags)
+                    } else {
+                        $(".boks_tags_box").append(templates.tags(tags))
+                    }
+                    done(null)
+                }
+            ], function(er){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+            })
+        }
+
         return views
     }())
 
@@ -1648,40 +1705,28 @@ var bok = function(x){
         }
 
         bindings.click_load_tags = function(){
-            async.waterfall([
-                function(done){
-                    api.get_book_tags(0, function(er, tags){
-                        done(er, tags)
-                    })
-                },
-                function(tags, done){
-                    $(".boks_tags_box").html(templates.tags(tags))
-                        .show()
-                        .off()
-                        .on("click", ".tag", bindings.click_tag)
-                    $(".boks_tags_more").show()
-                    // mark
-                }
-            ], function(er){
-                if (er) console.log(JSON.stringify(er, 0, 2))
-            })
+            views.load_tags(0)
+        }
+
+        bindings.click_more_tags = function(){
+            var that = $(this)
+            var page = parseInt(that.attr("data-page")) + 1
+            that.attr("data-page", page)
+            views.load_tags(page)
         }
 
         // mark
         bindings.click_tag = function(){
             var tag = $(this).html()
-            async.waterfall([
-                function(done){
-                    api.get_book_tag_comments(tag, 0, function(er, comments){
-                        done(er, comments)
-                    })
-                },
-                function(comments, done){
-                    console.log(JSON.stringify(comments, 0, 2))
-                }
-            ], function(er){
-                if (er) console.log(JSON.stringify(er, 0, 2))
-            })
+            views.load_tag_comments(tag, 0, function(er){})
+        }
+
+        bindings.click_more_tag_comments = function(){
+            var that = $(this)
+            var tag = that.attr("data-tag")
+            var page = parseInt(that.attr("data-page")) + 1
+            that.attr("data-page", page)
+            views.load_tag_comments(tag, page, function(er){})
         }
 
         return bindings

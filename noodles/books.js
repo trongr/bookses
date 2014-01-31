@@ -1279,7 +1279,7 @@ var books = module.exports = (function(){
         }
         var aux = {
             sort: k.sort_by.best,
-            limit: k.page_size + 1,
+            limit: k.page_size,
             skip: req.query.page * k.page_size
         }
         if (req.query.sort) aux.sort = k.sort_by[req.query.sort]
@@ -1327,7 +1327,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.get_book_tag_comments = function(req, res){
         var query = {
             book: req.params.id,
@@ -1335,7 +1334,7 @@ var books = module.exports = (function(){
         }
         var aux = {
             sort: k.sort_by.best,
-            limit: k.page_size + 1,
+            limit: k.page_size,
             skip: req.query.page * k.page_size
         }
         if (req.query.sort) aux.sort = k.sort_by[req.query.sort]

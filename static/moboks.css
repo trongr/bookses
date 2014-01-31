@@ -821,7 +821,7 @@ div.popup_cancel {
 }
 
 .boks_tags_box {
-    margin: 20px 40px 40px 40px;
+    margin: 20px 0 0 40px;
     display: none;
 }
 
@@ -840,12 +840,14 @@ div.popup_cancel {
 }
 
 .tag {
-    margin: 0 5px 0 0;
+    display: inline-block;
+    margin: 0 5px 5px 0;
     background-color: #fff;
     padding: 10px 15px 10px 15px;
     font-size: 1.5em;
     font-weight: lighter;
     color: #333;
+    cursor: pointer;
 }
 
 .tag:hover {
@@ -853,12 +855,17 @@ div.popup_cancel {
     background-color: #D324FF;
 }
 
+.boks_tags_comments_box {
+    padding: 5px;
+    display: none;
+}
+
 .boks_tags_comments_more {
     display: none;
     width: 100%;
-    font-size: 2em;
+    font-size: 1.5em;
     text-align: right;
-    padding: 30px 30px 30px 0;
+    padding: 20px 20px 20px 0;
     color: #666;
     background-color: #eee;
 }

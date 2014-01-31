@@ -113,7 +113,6 @@ server.post("/user/clear_notis", users.authenticate, books.clear_user_notis_vali
 server.get("/user/comments/notis", users.authenticate, books.get_comment_notis_validate, books.get_comment_notis)
 server.post("/comment/:id/clear_notis", users.authenticate, books.clear_comment_notis_validate, books.clear_comment_notis)
 
-// mark
 server.get("/book/:id/tags", books.get_book_tags_validate, books.get_book_tags)
 server.get("/book/:id/tag_comments", books.get_book_tag_comments_validate, books.get_book_tag_comments)
 
