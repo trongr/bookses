@@ -621,6 +621,10 @@ div.popup_cancel {
     margin: 0 40px 0 0;
 }
 
+.draw_save_download {
+    display: none;
+}
+
 .draw_picture_input {
     display: none;
 }
