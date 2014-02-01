@@ -29,11 +29,11 @@ var bok = function(x){
         var u = {}
 
         u.get_tags = function(text){
-            var tags = text.match(/#\w{1,20}/g) || []
+            var tags = text.match(/(^#\w{1,20})|(\s#\w{1,20})/g) || []
             var result = []
             var limit = Math.min(tags.length, 5)
             for (var i = 0; i < limit; i++){
-                result.push(tags[i].replace(/#/, ""))
+                result.push(tags[i].replace(/\s*#/, ""))
             }
             return result
         }
@@ -581,6 +581,8 @@ var bok = function(x){
 
         draw.clear = function(){
             draw.k = {
+                drawing: false,
+                version: 0,
                 drag_drop_file: null,
                 direct_input_file: null,
                 preview: null,
@@ -636,6 +638,7 @@ var bok = function(x){
                     + "         <button class='draw_cancel'><i class='icon-trash'></i></button>"
                     + "         <div class='draw_menu'>"
                     + "             <button class='draw_save_quit'>save & quit</button>"
+                    + "             <a class='draw_save_download' download></a>"
                     + "             <button class='draw_new_drawing'><i class='icon-file-alt'></i></button>"
                     + "             <input class='draw_picture_input' accept='image/*' type='file'>"
                     + "             <button class='draw_picture_button'><i class='icon-picture'></i></button>"
@@ -704,6 +707,12 @@ var bok = function(x){
             bindings.click_save_quit = function(){
                 $("#popup").hide()
                 draw.k.preview.attr("src", URL.createObjectURL(draw.get_file())).show()
+            }
+
+            bindings.click_save = function(){
+                $(".draw_save_download")
+                    .attr("download", ("00000" + draw.k.version++).slice(-5) + ".png")
+                    .attr("href", URL.createObjectURL(draw.get_file()))[0].click()
             }
 
             bindings.click_pencil_button = function(){
@@ -783,6 +792,12 @@ var bok = function(x){
                 .on("click", ".draw_picture_button", draw.bindings.click_choose_img)
                 .on("change", ".draw_picture_input", draw.bindings.change_img_input)
             draw.clear()
+            draw.k.drawing = true
+            document.body.onkeydown = function(e){
+                if (draw.k.drawing && (e.keyCode || e.which) == 83 && e.ctrlKey){
+                    draw.bindings.click_save()
+                }
+            }
             draw.k.preview = img
             if (img.attr("src")) draw.bindings.load_img(img.attr("src"))
             else draw.draw()
