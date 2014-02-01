@@ -165,6 +165,17 @@ var bok = function(x){
             })
         }
 
+        api.get_comment_parents = function(id, done){
+            $.ajax({
+                url: "/comment/" + id + "/parents",
+                type: "get",
+                success: function(re){
+                    if (re.comments) done(null, re.comments)
+                    else done({error:"api getting comment parents",re:re})
+                }
+            })
+        }
+
         api.get_comment_comments = function(id, page, sort, done){
             $.ajax({
                 url: "/comment/" + id + "/comments",
@@ -244,7 +255,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         api.get_book_tag_comments = function(tag, page, done){
             $.ajax({
                 url: "/book/" + o.bID + "/tag_comments",
@@ -314,7 +324,6 @@ var bok = function(x){
                 + "             <span>ParaGraph.</span> Click on the graph to skip to the good parts"
                 + "         </div>"
                 + "         <div class='boks_book_para_graph'></div><div class='clear_both'></div>"
-            // mark
                 + "         <div class='boks_tags_header'><span>Tags.</span> Jump to important ideas</div>"
                 + "         <div class='boks_tags_box'></div>"
                 + "         <button class='boks_tags_more' data-page='0'>MORE TAGS</button>"
@@ -426,7 +435,21 @@ var bok = function(x){
             return html
         }
 
-        // p and top can be null if comments have a parent, otw parentid can be null
+        templates.comment_parents = function(comments){
+            return templates.comment_parents_recursive(comments)
+        }
+
+        templates.comment_parents_recursive = function(comments){
+            if (comments.length){
+                var c = comments[0]
+                var children = $(templates.comments_box([c], c.p, c.parent))
+                var child = $(templates.comment_parents_recursive(comments.slice(1)))
+                children.find(".boks_comments_box_box").html(child)
+                return children
+            } else return ""
+        }
+
+        // p can be null if comments have a parent, otw parentid can be null
         templates.comments_box = function(comments, p, parentid){
             var content = templates.comments(comments.slice(0, k.page_size))
             var datap = ((p || p == 0) ? "data-p='" + p + "'" : "")
@@ -953,7 +976,6 @@ var bok = function(x){
                         .on("click", ".boks_book_para_graph_header", bindings.click_load_para_graph)
                         .on("click", ".boks_social_share_me", bindings.click_load_social_buttons)
                         .on("click", ".boks_tags_header", bindings.click_load_tags)
-                    // mark
                     dom.content_right = dom.box.find(".boks_content_right")
                         .off()
                         .on("click", ".boks_more_comments_button", bindings.click_more_comments)
@@ -1046,17 +1068,19 @@ var bok = function(x){
         views.load_comment = function(id, done){
             async.waterfall([
                 function(done){
-                    api.get_comment(id, function(er, comment){
-                        done(er, comment)
+                    api.get_comment_parents(id, function(er, comments){
+                        done(er, comments)
                     })
                 },
-                function(comment, done){
-                    var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(comment.p)
+                function(comments, done){
+                    if (comments.length) var p = comments[0].p
+                    else var p = 0
+                    var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(p)
                     $("html, body").animate({scrollTop:paragraph.offset().top - 40}, 100)
-                    dom.content_right.prepend(templates.comments_box([comment], comment.p, comment.parent))
+                    dom.content_right.prepend(templates.comment_parents(comments))
                     users.load_user_kudos()
                     try {addthis.toolbox(".addthis_toolbox")} catch (e){}
-                    dom.content_right.prepend(templates.p_menu(comment.p)).animate({scrollTop:0}, 100)
+                    dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
                     done(null)
                 }
             ], function(er){
@@ -1092,7 +1116,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         views.render_latest_comments = function(page, comments){
             if (page == 0){
                 $(".boks_latest_comments").html(templates.short_comments(comments))
@@ -1106,7 +1129,6 @@ var bok = function(x){
             }
         }
 
-        // mark
         views.load_tag_comments = function(tag, page, done){
             async.waterfall([
                 function(done){
@@ -1135,7 +1157,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         views.load_tags = function(page){
             async.waterfall([
                 function(done){
@@ -1638,16 +1659,16 @@ var bok = function(x){
             var id = that.attr("data-id")
             var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(p)
             $("html, body").animate({scrollTop:paragraph.offset().top - 40}, 100)
-            api.get_comment(id, function(er, comment){
+            api.get_comment_parents(id, function(er, comments){
                 if (er){
                     console.log(JSON.stringify(er, 0, 2))
-                } else if (comment){
-                    dom.content_right.prepend(templates.comments_box([comment], p, comment.parent))
+                } else if (comments){
+                    dom.content_right.prepend(templates.comment_parents(comments))
                     users.load_user_kudos()
                     try {addthis.toolbox(".addthis_toolbox")} catch (e){}
                     dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
                 } else {
-                    console.log(JSON.stringify({error:"click latest comment: can't find comment"}, 0, 2))
+                    console.log(JSON.stringify({error:"click short comment: can't find comment"}, 0, 2))
                 }
             })
         }
@@ -1715,7 +1736,6 @@ var bok = function(x){
             views.load_tags(page)
         }
 
-        // mark
         bindings.click_tag = function(){
             var tag = $(this).html()
             views.load_tag_comments(tag, 0, function(er){})

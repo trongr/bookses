@@ -282,6 +282,23 @@ var DB = (function(){
         })
     }
 
+    // mark
+    DB.get_comment_parents = function(id, recursion, result, done){
+        console.log("get comment parents", id, recursion)
+        if (recursion < 0) return done(null, result)
+        DB.get_entry_by_id(k.tables.comments, id, function(er, comment){
+            if (er) done({error:"get comment parents",er:er})
+            else if (comment){
+                result.unshift(comment)
+                if (comment.parent){
+                    DB.get_comment_parents(comment.parent, --recursion, result, done)
+                } else {
+                    done(null, result)
+                }
+            } else done({error:"get comment parents",info:"comment doesn't exist"})
+        })
+    }
+
     return DB
 }())
 
@@ -1342,6 +1359,27 @@ var books = module.exports = (function(){
             if (er){
                 console.log(JSON.stringify({error:"books.get_book_tag_comments",er:er}, 0, 2))
                 res.send({error:"get book comments"})
+            } else {
+                res.send({comments:entries})
+            }
+        })
+    }
+
+    // mark
+    books.get_comment_parents_validate = function(req, res, next){
+        validate.id(req.params.id, function(er){
+            if (er){
+                console.log(JSON.stringify({error:"books.get_comment_parents_validate",er:er}, 0, 2))
+                res.send({error:"get comment_parents validate",er:er})
+            } else next(null)
+        })
+    }
+
+    books.get_comment_parents = function(req, res){
+        DB.get_comment_parents(req.params.id, k.recursion_limit, [], function(er, entries){
+            if (er){
+                console.log(JSON.stringify(er, 0, 2))
+                res.send({error:"get comment parents"})
             } else {
                 res.send({comments:entries})
             }

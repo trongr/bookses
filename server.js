@@ -96,6 +96,7 @@ server.get("/book/:id/edits", books.get_book_edits_validate, books.get_book_edit
 server.get("/comments", books.get_comments_validate, books.get_comments)
 server.post("/comment", users.authenticate_anonymous, books.create_comment_validate, books.create_comment)
 server.get("/comment/:id", books.get_comment_validate, books.get_comment)
+server.get("/comment/:id/parents", books.get_comment_parents_validate, books.get_comment_parents)
 server.get("/book/:id/comments", books.get_book_comments_validate, books.get_book_comments)
 server.get("/book/:id/latest_comments", books.get_book_latest_comments_validate, books.get_book_latest_comments)
 server.get("/comment/:id/comments", books.get_comment_comments_validate, books.get_comment_comments)
