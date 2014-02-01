@@ -1,4 +1,4 @@
-/home/nahn/boks/logs/o.log /home/nahn/boks/logs/e.log {
+/home/ubuntu/nt/boks/logs/o.log /home/ubuntu/nt/boks/logs/e.log {
     copytruncate
     daily
     rotate 7
