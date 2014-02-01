@@ -29,11 +29,11 @@ var bok = function(x){
         var u = {}
 
         u.get_tags = function(text){
-            var tags = text.match(/(^#\w{1,20})|(\s#\w{1,20})/g) || []
+            var tags = text.match(/#\w{1,20}/g) || []
             var result = []
             var limit = Math.min(tags.length, 5)
             for (var i = 0; i < limit; i++){
-                result.push(tags[i].replace(/\s*#/, ""))
+                result.push(tags[i].replace(/#/, ""))
             }
             return result
         }
