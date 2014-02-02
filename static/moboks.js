@@ -348,6 +348,7 @@ var bok = function(x){
             return html
         }
 
+        // mark
         templates.tag = function(tag){
             var html = "<span class='tag'>" + tag.tag + "</span>"
             return html
@@ -475,7 +476,9 @@ var bok = function(x){
         }
 
         templates.comment = function(comment){
-            var text = templates.replace_text_with_p_link(templates.replace_text_with_link(comment.comment))
+            var text = templates.replace_text_with_link(comment.comment)
+            text = templates.replace_text_with_p_link(text)
+            text = templates.replace_text_with_tags(text, comment.tags)
             var img = (comment.img ? "<div class='boks_comment_img_box'><img class='boks_comment_img' src='" + comment.img + "'></div>" : "")
             var youtube = (comment.youtube ? yt.thumbnail(comment.youtube, yt.k.big) : "")
             var dataid = "data-id='" + comment._id + "'"
@@ -518,6 +521,18 @@ var bok = function(x){
             return html
         }
 
+        // mark
+        templates.replace_text_with_tags = function(text, tags){
+            if (tags && tags.length){
+                var limit = Math.min(tags.length, 10)
+                for (var i = 0; i < limit; i++){
+                    var regex = new RegExp("#" + tags[i], "g")
+                    text = text.replace(regex, "<a class='tag_link' data-tag='" + tags[i] + "'>#" + tags[i] + "</a>")
+                }
+            }
+            return text
+        }
+
         templates.short_comments = function(comments){
             var html = ""
             for (var i = 0; i < comments.length; i++){
@@ -535,7 +550,7 @@ var bok = function(x){
             var dataid = "data-id='" + comment._id + "'"
             var datap = "data-p='" + comment.p + "'"
             var text = templates.html_to_text(comment.comment)
-            text = templates.replace_text_with_p_link(templates.replace_text_with_link(text.slice(0, 200))) + (text.length > 200 ? " . . ." : "")
+            text = text.slice(0, 200) + (text.length > 200 ? " . . ." : "")
             var img = (comment.img ? "<div class='short_comment_img_box'><img class='short_comment_img' src='" + comment.thumb + "'></div>" : "")
             var youtube = (comment.youtube ? "<div class='short_comment_yt_thumb'>" + yt.thumbnail(comment.youtube, yt.k.small) + "</div>" : "")
             if (youtube) img = ""
@@ -994,7 +1009,9 @@ var bok = function(x){
                     dom.content_right = dom.box.find(".boks_content_right")
                         .off()
                         .on("click", ".boks_more_comments_button", bindings.click_more_comments)
-                        .on("click", ".boks_comment_content", bindings.click_comment_reply)
+                    // mark
+                        .on("click", ".tag_link", bindings.click_tag_link)
+                        .on("click", ".boks_comment_content", bindings.click_comment_reply) // bad naming. should be comment_replies
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
                         .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
                         .on("click", ".boks_edit_p", bindings.click_edit_p)
@@ -1172,7 +1189,7 @@ var bok = function(x){
             })
         }
 
-        views.load_tags = function(page){
+        views.load_tags = function(page, done){
             async.waterfall([
                 function(done){
                     api.get_book_tags(page, function(er, tags){
@@ -1196,7 +1213,7 @@ var bok = function(x){
                     done(null)
                 }
             ], function(er){
-                if (er) console.log(JSON.stringify(er, 0, 2))
+                done(er)
             })
         }
 
@@ -1395,6 +1412,28 @@ var bok = function(x){
             ], function(er, re){
                 if (er) console.log(JSON.stringify(({error:"bindings.click_more_comments",er:er}), 0, 2))
             })
+        }
+
+        // mark
+        bindings.click_tag_link = function(){
+            var tag = $(this).attr("data-tag")
+            var newtag = $(templates.tag({tag:tag})) // lol tag tag tag
+            async.waterfall([
+                function(done){
+                    views.load_tags(0, function(er){
+                        done(er)
+                    })
+                },
+                function(done){
+                    $(".boks_tags_box").append(newtag)
+                    newtag.click()
+                    $("html, body").animate({scrollTop:newtag.offset().top - 40}, 100)
+                    done(null)
+                }
+            ], function(er){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+            })
+            return false // to stop event bubbling up to parent
         }
 
         bindings.click_comment_reply = function(){
@@ -1741,14 +1780,14 @@ var bok = function(x){
         }
 
         bindings.click_load_tags = function(){
-            views.load_tags(0)
+            views.load_tags(0, function(er){})
         }
 
         bindings.click_more_tags = function(){
             var that = $(this)
             var page = parseInt(that.attr("data-page")) + 1
             that.attr("data-page", page)
-            views.load_tags(page)
+            views.load_tags(page, function(er){})
         }
 
         bindings.click_tag = function(){

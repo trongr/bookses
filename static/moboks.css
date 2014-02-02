@@ -25,6 +25,7 @@ body {
 .boks_p_link {
     color: #0b0;
     font-size: 1em;
+    font-weight: bolder;
 }
 
 .boks_hide {
@@ -880,4 +881,8 @@ div.popup_cancel {
 
 .boks_tags_comments_more:hover {
     color: #0f0;
+}
+
+.tag_link {
+    font-weight: bolder;
 }
