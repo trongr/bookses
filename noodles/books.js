@@ -648,8 +648,34 @@ var books = module.exports = (function(){
                 }
             },
             function(user, done){
+                var id = new mongo.ObjectID()
+                if (req.files.img){
+                    if (process.env.ENV == "local") var bucket = null
+                    else var bucket = configs.bucket.img
+                    imglib.process_img(req.files.img, 200, id.toString(), bucket, function(er){
+                        done(er, user, id)
+                    })
+                } else done(null, user, id)
+                if (req.body.book) DB.update_entry_by_id(k.tables.books, req.body.book, {
+                    $inc: {replies:1, pop:1},
+                    $set: {modified:new Date()}
+                }, function(er, num){
+                    if (er) console.log(JSON.stringify({error:"books.create_comment: updating book pop",id:req.body.book,er:er}, 0, 2))
+                })
+                if (user.username != "anonymous") DB.update_entry_by_id(k.tables.users, user._id.toString(), {
+                    $inc: {kudos:1}
+                }, function(er, num){
+                    if (er) console.log(JSON.stringify({error:"books.create_comment: kudos",username:user.username,er:er}, 0, 2))
+                })
+                if (req.body.parent) DB.update_comment_recursive(req.body.parent, {
+                    notee: req.session.username
+                }, k.recursion_limit, {})
+                if (req.body.tags) DB.update_tags(req.body.book, req.body.tags, function(er){
+                    if (er) console.log(JSON.stringify(er, 0, 2))
+                })
+            },
+            function(user, id, done){
                 try {
-                    var id = new mongo.ObjectID()
                     var comment = {
                         _id: id,
                         username: req.session.username,
@@ -682,39 +708,12 @@ var books = module.exports = (function(){
                     }
                     if (req.body.youtube) comment.youtube = req.body.youtube
                     DB.create(k.tables.comments, comment, function(er, comment){
-                        done(er, user, comment)
+                        done(er, comment)
                     })
                 } catch (er){
                     done({er:"parse int paragraph"})
                 }
             },
-            function(user, comment, done){
-                if (req.files.img){
-                    if (process.env.ENV == "local") var bucket = null
-                    else var bucket = configs.bucket.img
-                    imglib.process_img(req.files.img, 200, comment._id.toString(), bucket, function(er){
-                        if (er) console.log(JSON.stringify(er, 0, 2))
-                        done(null, comment)
-                    })
-                } else done(null, comment)
-                if (req.body.book) DB.update_entry_by_id(k.tables.books, req.body.book, {
-                    $inc: {replies:1, pop:1},
-                    $set: {modified:new Date()}
-                }, function(er, num){
-                    if (er) console.log(JSON.stringify({error:"books.create_comment: updating book pop",id:req.body.book,er:er}, 0, 2))
-                })
-                if (user.username != "anonymous") DB.update_entry_by_id(k.tables.users, user._id.toString(), {
-                    $inc: {kudos:1}
-                }, function(er, num){
-                    if (er) console.log(JSON.stringify({error:"books.create_comment: kudos",username:user.username,er:er}, 0, 2))
-                })
-                if (req.body.parent) DB.update_comment_recursive(req.body.parent, {
-                    notee: req.session.username
-                }, k.recursion_limit, {})
-                if (req.body.tags) DB.update_tags(req.body.book, req.body.tags, function(er){
-                    if (er) console.log(JSON.stringify(er, 0, 2))
-                })
-            }
         ], function(er, comment){
             if (er){
                 console.log(JSON.stringify({error:"books.create_comment",params:req.params.id,body:req.body,er:er}, 0, 2))

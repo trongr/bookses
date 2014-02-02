@@ -15,7 +15,10 @@ var imglib = module.exports = (function(){
             console.log(data.toString())
         })
         x.on("close", function(code){
-            done(null)
+            if (code == 0) done(null) // sometimes convert fails to resize gifs
+            else child.exec("cp " + src + " " + dst, function(er, stdout, stder){
+                done(er)
+            })
         })
     }
 
