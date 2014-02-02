@@ -1555,6 +1555,7 @@ var bok = function(x){
                 username: "you",
                 comment: comment,
                 img: img_src,
+                tags: tags,
                 youtube: link,
                 created: new Date(),
                 votes: 1,
