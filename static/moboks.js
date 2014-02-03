@@ -262,6 +262,7 @@ var bok = function(x){
                 data: {
                     tag: tag,
                     page: page,
+                    sort: k.sort.recent
                 },
                 success: function(re){
                     if (re.comments) done(null, re.comments)
