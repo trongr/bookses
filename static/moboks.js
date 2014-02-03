@@ -348,7 +348,6 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.tag = function(tag){
             var html = "<span class='tag'>" + tag.tag + "</span>"
             return html
@@ -521,7 +520,6 @@ var bok = function(x){
             return html
         }
 
-        // mark
         templates.replace_text_with_tags = function(text, tags){
             if (tags && tags.length){
                 var limit = Math.min(tags.length, 10)
@@ -1009,7 +1007,6 @@ var bok = function(x){
                     dom.content_right = dom.box.find(".boks_content_right")
                         .off()
                         .on("click", ".boks_more_comments_button", bindings.click_more_comments)
-                    // mark
                         .on("click", ".tag_link", bindings.click_tag_link)
                         .on("click", ".boks_comment_content", bindings.click_comment_reply) // bad naming. should be comment_replies
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
@@ -1414,7 +1411,6 @@ var bok = function(x){
             })
         }
 
-        // mark
         bindings.click_tag_link = function(){
             var tag = $(this).attr("data-tag")
             var newtag = $(templates.tag({tag:tag})) // lol tag tag tag
@@ -1427,7 +1423,8 @@ var bok = function(x){
                 function(done){
                     $(".boks_tags_box").append(newtag)
                     newtag.click()
-                    $("html, body").animate({scrollTop:newtag.offset().top - 40}, 100)
+                    var top = $(".boks_tags_header").offset().top - 40
+                    $("html, body").animate({scrollTop:top}, 100)
                     done(null)
                 }
             ], function(er){
