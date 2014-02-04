@@ -68,6 +68,10 @@ body {
     font-weight: bolder;
 }
 
+.boks_book_title {
+    font-size: 2em;
+}
+
 .boks_book_user_img_box {
     float: right;
     width: 100px;
