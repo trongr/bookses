@@ -2,7 +2,7 @@
 
 # installing configs, assuming all programs installed
 
-# crontab configs/boks.crontab
+crontab configs/boks.crontab
 
 forever stopall
 forever start -o logs/o.log -e logs/e.log server.js

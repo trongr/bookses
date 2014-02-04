@@ -1,0 +1,3 @@
+VDGAMI=/home/ubuntu/nt/vdgami/
+
+@daily /usr/bin/node $VDGAMI/scripts/dbgamibak.js

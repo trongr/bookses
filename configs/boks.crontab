@@ -1,0 +1,3 @@
+BOKS=/home/ubuntu/nt/boks/
+
+@daily /usr/bin/node $BOKS/bin/dbbk.js
