@@ -17,7 +17,8 @@ var imglib = module.exports = (function(){
         x.on("close", function(code){
             if (code == 0) done(null) // sometimes convert fails to resize gifs
             else child.exec("cp " + src + " " + dst, function(er, stdout, stder){
-                done(er)
+                if (er) done({error:"can't resize or move image",er:er})
+                else done(null)
             })
         })
     }
@@ -40,19 +41,22 @@ var imglib = module.exports = (function(){
             },
             function(done){
                 child.exec("mv " + img.path + " " + tmp_regular, function(er, stdout, stder){
-                    done(er)
+                    if (er) done({error:"can't move regular image"})
+                    else done(null)
                 })
             },
             function(done){
                 if (bucket){
                     s3.put([tmp_regular, tmp_thumb], bucket, function(er){
-                        done(er)
+                        if (er) done({error:"can't put image on s3",er:er})
+                        else done(null)
                     })
                 } else {
                     child.exec("mv " + tmp_regular + " " + local_regular, function(er, stdout, stder){
-                        if (er) done(er)
+                        if (er) done({error:"can't move local regular image",er:er})
                         else child.exec("mv " + tmp_thumb + " " + local_thumb, function(er, stdout, stder){
-                            done(er)
+                            if (er) done({error:"can't move local thumb image",er:er})
+                            else done(null)
                         })
                     })
                 }
