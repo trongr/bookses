@@ -1,3 +1,4 @@
+/*  */
 body {
 
 }
@@ -388,7 +389,7 @@ p.paragraph:hover {
 }
 
 .boks_comment_menu button {
-    font-size: 1.2em;
+    font-size: 1.5em;
     font-weight: lighter;
     background: none;
     font-family: helvetica, arial, sans;
