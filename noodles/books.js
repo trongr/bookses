@@ -282,7 +282,6 @@ var DB = (function(){
         })
     }
 
-    // mark
     DB.get_comment_parents = function(id, recursion, result, done){
         console.log("get comment parents", id, recursion)
         if (recursion < 0) return done(null, result)
@@ -433,11 +432,15 @@ var books = module.exports = (function(){
                 })
             }
         ], function(er, new_book){
-            if (er){
-                console.log(JSON.stringify({error:"books.create_book",body:req.body,er:er}, 0, 2))
-                res.send({error:"create book"})
-            } else {
-                res.send({book:new_book})
+            try {
+                if (er){
+                    console.log(JSON.stringify({error:"books.create_book",body:req.body,er:er}, 0, 2))
+                    res.send({error:"create book"})
+                } else {
+                    res.send({book:new_book})
+                }
+            } catch (e){
+                // in case client disconnects before image upload finishes, crashing the server
             }
         })
     }
@@ -715,11 +718,15 @@ var books = module.exports = (function(){
                 }
             },
         ], function(er, comment){
-            if (er){
-                console.log(JSON.stringify({error:"books.create_comment",params:req.params.id,body:req.body,er:er}, 0, 2))
-                res.send({error:"create comment"})
-            } else {
-                res.send({comment:comment})
+            try {
+                if (er){
+                    console.log(JSON.stringify({error:"books.create_comment",params:req.params.id,body:req.body,er:er}, 0, 2))
+                    res.send({error:"create comment"})
+                } else {
+                    res.send({comment:comment})
+                }
+            } catch (e){
+                // in case client disconnects before image upload finishes, crashing the server
             }
         })
     }
@@ -1364,7 +1371,6 @@ var books = module.exports = (function(){
         })
     }
 
-    // mark
     books.get_comment_parents_validate = function(req, res, next){
         validate.id(req.params.id, function(er){
             if (er){
