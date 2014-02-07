@@ -1538,7 +1538,7 @@ var bok = function(x){
                 data.append("img", img)
                 img_src = URL.createObjectURL(img)
             } else if (img){
-                alert("Image too big. Please choose one less than 5 MB")
+                return alert("Image too big. Please choose one less than 5 MB")
             }
 
             var link = data_box.find(".boks_youtube_embed_link").val().trim()
