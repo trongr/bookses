@@ -1003,7 +1003,7 @@ var bok = function(x){
                         .on("click", ".boks_text p.paragraph", bindings.click_p)
                         .on("click", ".boks_latest_comments_header", bindings.click_refresh_latest_comments)
                         .on("click", ".boks_book_para_graph_header", bindings.click_load_para_graph)
-                        .on("click", ".boks_social_share_me", bindings.click_load_social_buttons)
+                        // .on("click", ".boks_social_share_me", bindings.click_load_social_buttons)
                         .on("click", ".boks_tags_header", bindings.click_load_tags)
                     dom.content_right = dom.box.find(".boks_content_right")
                         .off()
@@ -1049,6 +1049,7 @@ var bok = function(x){
                 },
                 function(done){
                     notis.init($("#notification_menu"), $("#notification_tray"))
+                    try {addthis.toolbox(".addthis_toolbox")} catch (e){}
                     done(null)
                 }
             ], function(er, re){
