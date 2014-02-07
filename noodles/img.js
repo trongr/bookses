@@ -66,6 +66,7 @@ var imglib = module.exports = (function(){
                 done({error:"processing img",er:er})
                 child.exec("rm " + img.path + " "
                            + tmp_thumb + " "
+                           + tmp_regular + " "
                            + local_thumb + " "
                            + local_regular, function(er, stdout, stder){})
             } else done(null)
