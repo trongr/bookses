@@ -441,6 +441,7 @@ var books = module.exports = (function(){
                 }
             } catch (e){
                 // in case client disconnects before image upload finishes, crashing the server
+                console.log({error:"create book",er:"responding to client request"})
             }
         })
     }
@@ -727,6 +728,7 @@ var books = module.exports = (function(){
                 }
             } catch (e){
                 // in case client disconnects before image upload finishes, crashing the server
+                console.log({error:"create comment",er:"responding to client request"})
             }
         })
     }
