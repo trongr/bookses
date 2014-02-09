@@ -810,10 +810,10 @@ var bok = function(x){
             draw.clear()
             draw.k.drawing = true
             document.body.onkeydown = function(e){
-                if (draw.k.drawing && e.ctrlKey && (e.keyCode || e.which) == 83){ // s
-                    draw.bindings.click_save()
-                } else if (draw.k.drawing && e.ctrlKey && (e.keyCode || e.which) == 71){ // g
+                if (draw.k.drawing && e.ctrlKey && (e.keyCode || e.which) == 65){ // a
                     draw.k.save_on_brush = true
+                } else if (draw.k.drawing && e.ctrlKey && (e.keyCode || e.which) == 83){ // s
+                    draw.bindings.click_save()
                 } else if (draw.k.drawing && e.ctrlKey && (e.keyCode || e.which) == 68){ // d
                     draw.bindings.bind_dropper()
                 }
