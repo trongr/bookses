@@ -595,6 +595,7 @@ var bok = function(x){
 
         draw.clear = function(){
             draw.k = {
+                save_on_brush: false,
                 drawing: false,
                 version: 0,
                 drag_drop_file: null,
@@ -776,6 +777,7 @@ var bok = function(x){
                         draw.k.cntxt.lineTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
                         draw.k.cntxt.stroke()
                         draw.k.cntxt.closePath()
+                        if (draw.k.save_on_brush) bindings.click_save()
                     }).mousemove(function(e){
                         if (mouse_down == true){
                             draw.k.cntxt.lineTo(e.pageX - draw.k.left + 1, e.pageY - draw.k.top + 1)
@@ -808,8 +810,12 @@ var bok = function(x){
             draw.clear()
             draw.k.drawing = true
             document.body.onkeydown = function(e){
-                if (draw.k.drawing && (e.keyCode || e.which) == 83 && e.ctrlKey){
+                if (draw.k.drawing && e.ctrlKey && (e.keyCode || e.which) == 83){ // s
                     draw.bindings.click_save()
+                } else if (draw.k.drawing && e.ctrlKey && (e.keyCode || e.which) == 71){ // g
+                    draw.k.save_on_brush = true
+                } else if (draw.k.drawing && e.ctrlKey && (e.keyCode || e.which) == 68){ // d
+                    draw.bindings.bind_dropper()
                 }
             }
             draw.k.preview = img
