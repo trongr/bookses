@@ -432,6 +432,8 @@ var bok = function(x){
                 + "         <button class='boks_reply_img_input_button'><i class='icon-picture'></i></button>"
                 + "         <button class='boks_reply_img_button'><i class='fontello-brush'></i></button>"
                 + "         <div class='clear_both'></div>"
+                + "         <div class='boks_reply_progress_box'><div class='boks_reply_progress'></div></div>"
+                + "         <div class='boks_reply_processing'>processing . . . </div>"
                 + "     </div>"
             return html
         }
@@ -1551,24 +1553,7 @@ var bok = function(x){
             var link = data_box.find(".boks_youtube_embed_link").val().trim()
             if (link) data.append("youtube", link)
 
-            data_box.remove()
-
-            var fake_comment = {
-                book: o.bID,
-                p: p,
-                parent: parentid,
-                username: "you",
-                comment: comment,
-                img: img_src,
-                tags: tags,
-                youtube: link,
-                created: new Date(),
-                votes: 1,
-                replies: 0,
-                pop: 1
-            }
-            var new_comment = views.load_new_comment(fake_comment)
-            $("#" + o.bID + " .boks_text p.paragraph").eq(fake_comment.p).addClass("p_margin")
+            var progress = data_box.find(".boks_reply_progress").show()
 
             $.ajax({
                 url: "/comment",
@@ -1578,14 +1563,30 @@ var bok = function(x){
                 contentType: false,
                 success: function(re){
                     if (re.comment){
-                        new_comment.attr("data-id", re.comment._id)
-                        new_comment.find(".boks_comment_username").eq(0).html(templates.comment_username(re.comment.username, "+1 kudos"))
-                            .before(templates.comment_user_img(re.comment.user_img))
-                        if (re.comment.img) new_comment.find(".boks_comment_img_box img").attr("src", re.comment.img)
-                        new_comment.find(".addthis_toolbox").attr("addthis:url", "http://bookses.com/read/" + o.bID + "?c=" + re.comment._id)
-                        try {addthis.toolbox(".addthis_toolbox")} catch (e){}
+                        data_box.remove()
+                        $("#" + o.bID + " .boks_text p.paragraph").eq(re.comment.p).addClass("p_margin")
+                        views.load_new_comment(re.comment)
                     } else if (re.loggedin == false) alert("you have to log in")
                     else alert(JSON.stringify({error:"create comment",er:re}, 0, 2))
+                },
+                error: function(xhr, status, er){
+                    alert("couldn't post comment")
+                },
+                complete: function(){
+                    progress.css("width", "100%")
+                    data_box.find(".boks_reply_processing").show()
+                },
+                xhr: function(){
+                    var xhr = $.ajaxSettings.xhr()
+                    if (xhr && xhr.upload){
+                        xhr.upload.addEventListener('progress', function(event) {
+                            if (event.lengthComputable) {
+                                var percent = event.loaded / img.size * 100
+                                progress.css("width", percent + "%")
+                            }
+                        }, false)
+                    }
+                    return xhr
                 }
             })
         }

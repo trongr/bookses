@@ -518,6 +518,25 @@ p.paragraph:hover {
     margin: 10px;
 }
 
+.boks_reply_progress_box {
+    width: 100%;
+    height: 5px;
+    margin: 0 0 10px 0;
+}
+
+.boks_reply_progress {
+    display: none;
+    width: 0;
+    height: 100%;
+    background-color: #73E8FF;
+}
+
+.boks_reply_processing {
+    display: none;
+    text-align: right;
+    margin: 10px;
+}
+
 .boks_reply_cancel {
     float: right;
     padding: 15px;
