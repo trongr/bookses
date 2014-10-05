@@ -426,7 +426,7 @@ var bok = function(x){
                 +          "<button class='boks_reply_post'>POST</button>"
                 +          "<button class='boks_reply_cancel'>cancel</button>"
                 +          "<button class='boks_reply_img_input_button'><i class='icon-picture'></i></button>"
-                // +          "<button class='boks_reply_img_button'><i class='fontello-brush'></i></button>"
+                +          "<button class='boks_reply_img_button'><i class='fontello-brush'></i></button>"
                 +          "<div class='clear_both'></div>"
                 +          "<div class='boks_reply_progress_box'><div class='boks_reply_progress'></div></div>"
                 +          "<div class='boks_reply_processing'>processing . . . </div>"
