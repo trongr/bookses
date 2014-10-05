@@ -1,0 +1,154 @@
+/*  */
+body {
+    background-color: #eee;
+    font-family: helvetica, arial, sans;
+}
+
+hr {
+    height: 1px;
+}
+
+a {
+    text-decoration: none;
+    color: #70ACFF;
+}
+
+i {
+    font-size: 1.2em;
+    margin: 2px;
+}
+
+input {
+    border: none;
+}
+
+button {
+    background-color: #eee;
+    color: #555;
+    border: none;
+    font-family: helvetica, arial, sans;
+}
+
+button:hover {
+    color: #70ACFF;
+}
+
+.link {
+    color: #70ACFF;
+}
+
+.clear_both {
+    clear: both;
+}
+
+#click_colors {
+    width: 60%;
+    background-color: #000;
+    color: #fff;
+    padding: 20px 10px 20px 0;
+    margin-top: -10px;
+    margin-left: -10px;
+    margin-bottom: 10px;
+    z-index: -1;
+    font-size: 12pt;
+    text-align: center;
+}
+
+#banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 60%;
+    background-color: rgba(239, 239, 239, 0.9);
+    border-bottom: 1px solid #ddd;
+    display: table;
+}
+
+#banner button {
+    font-size: 1em;
+    background: none;
+    padding: 0;
+}
+
+#banner button:hover {
+    color: #70ACFF;
+}
+
+#banner input {
+    font-size: 1em;
+    padding-left: 5px;
+}
+
+#banner_left {
+    display: table-cell;
+    padding: 5px;
+}
+
+#banner_left #search_bar {
+    width: 200px;
+}
+
+#banner_right {
+    display: table-cell;
+    text-align: right;
+}
+
+#logins {
+    font-weight: bolder;
+}
+
+#logo {
+    font-size: 1.5em;
+    padding: 0 5px 0 5px;
+    color: #000;
+    font-weight: bolder;
+}
+
+#logo:hover {
+    color: #70ACFF;
+}
+
+#tagline_box {
+    text-align: center;
+    margin: 40px 0 0 0;
+    padding: 20px 0 20px 0;
+    width: 60%;
+    border-bottom: 1px solid #999;
+}
+
+#tagline {
+    font-size: 12pt;
+    font-weight: bolder;
+    font-family: serif, times, georgia;
+    color: #666;
+}
+
+#tagline:hover {
+    color: #70ACFF;
+}
+
+#error {
+    display: none;
+    padding: 10%;
+    font-size: 1.5em;
+}
+
+#popup {
+    display: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+#logins_box {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #eee;
+}

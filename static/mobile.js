@@ -28,6 +28,18 @@ jQuery(function($){
             })
         }
 
+        api.editbook = function(id, data, done){
+            $.ajax({
+                url: "/book/" + id + "/edit",
+                type: "post",
+                data: data,
+                success: function(re){
+                    if (re.num) done(null, re.num)
+                    else done({re:re})
+                }
+            })
+        }
+
         return api
     }())
 
@@ -71,7 +83,7 @@ jQuery(function($){
                     var youtube = (comment.youtube ? "<div class='latest_comment_yt_thumb'>"
                                    + yt.thumbnail(comment.youtube, yt.k.small) + "</div>" : "")
                     if (youtube) img = ""
-                    imgs += "<a class='book_img_box' href='/read/" + book._id + "?c=" + comment._id + "'>" + img + youtube + "</a>"
+                    imgs += "<a class='book_img_box' href='/mobook/" + book._id + "?c=" + comment._id + "'>" + img + youtube + "</a>"
                 }
             }
             var user_img = (book.user_img ? "<div class='book_user_img_box'><img class='book_user_img' src='" + book.user_img + "'></div>" : "")
@@ -88,6 +100,9 @@ jQuery(function($){
                 + "            <span class='user_kudos' data-username='" + book.username + "'></span>"
                 + "            <span class='book_created'>" + Date.create(book.created).short() + "</span>"
                 // + "            <div class='book_created'>" + moment(book.created).format(k.date_format) + "</div>"
+                + "            <button class='bookpreview " + (book.preview ? "preview" : "") + "'>preview</button>"
+                + "            <button class='bookready " + (book.ready ? "ready" : "") + "'>ready</button>"
+            // mk
                 + "            <div class='book_description'>" + description + "</div>"
                 + "            <div class='book_imgs'>" + imgs + "</div>"
                 + "        </div>"
@@ -149,7 +164,8 @@ jQuery(function($){
                 function(done){
                     api.get_all_books({
                         page: page,
-                        class: klass
+                        class: klass,
+                        latest: true,
                     }, function(er, books){
                         done(er, books)
                     })
@@ -160,7 +176,7 @@ jQuery(function($){
                 },
                 function(books, done){
                     done(null)
-                    if (books.length) $("#random_book").attr("href", "/read/" + books[0]._id)
+                    if (books.length) $("#random_book").attr("href", "/mobook/" + books[0]._id)
                 }
             ], function(er){
                 if (er) alert("Oops! I can't load more books")
@@ -175,6 +191,9 @@ jQuery(function($){
             box.append(html)
                 .off()
                 .on("click", ".book_title", bindings.click_book_title)
+                .on("click", ".bookready", bindings.clickbookready)
+                .on("click", ".bookpreview", bindings.clickbookpreview)
+            // mk
             users.load_user_kudos()
         }
 
@@ -294,8 +313,39 @@ jQuery(function($){
         }
 
         bindings.click_book_title = function(){
-            // window.open("/read/" + $(this).closest(".book").attr("data-id"))
-            window.location = "/read/" + $(this).closest(".book").attr("data-id")
+            // window.open("/mobook/" + $(this).closest(".book").attr("data-id"))
+            window.location = "/mobook/" + $(this).closest(".book").attr("data-id")
+        }
+
+        bindings.clickbookready = function(){
+            var that = $(this)
+            var id = that.closest(".book").attr("data-id")
+            var ready = that.hasClass("ready")
+            var data = {}
+            if (ready) data.ready = false
+            else data.ready = true
+            api.editbook(id, data, function(er, num){
+                if (er) msg.error(JSON.stringify(er, 0, 2))
+                else if (num && ready) that.removeClass("ready")
+                else if (num) that.addClass("ready")
+                else msg.error("no item updated")
+            })
+        }
+
+        // mk
+        bindings.clickbookpreview = function(){
+            var that = $(this)
+            var id = that.closest(".book").attr("data-id")
+            var preview = that.hasClass("preview")
+            var data = {}
+            if (preview) data.preview = false
+            else data.preview = true
+            api.editbook(id, data, function(er, num){
+                if (er) msg.error(JSON.stringify(er, 0, 2))
+                else if (num && preview) that.removeClass("preview")
+                else if (num) that.addClass("preview")
+                else msg.error("no item updated")
+            })
         }
 
         return bindings

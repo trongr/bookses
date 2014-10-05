@@ -1,0 +1,22 @@
+body {
+    margin: 1em;
+}
+
+img {
+    margin: 20px;
+}
+
+ul,
+p {
+    max-width: 640px;
+    margin-left: 1em;
+    font-size: 1.2em;
+}
+
+li {
+    margin: 1em;
+}
+
+li p {
+    margin-left: 0;
+}

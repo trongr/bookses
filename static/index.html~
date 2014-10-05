@@ -1,0 +1,75 @@
+<!--  -->
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width" initial-scale="1">
+
+    <script src="/static/jquery-2.0.3.js"></script>
+    <script src="/static/purl.js"></script>
+    <script src="/static/async.js"></script>
+    <!-- <script src="/static/moment.min.js"></script> -->
+    <script src="/static/sugar.min.js"></script>
+    <link rel="stylesheet" href="/static/font-awesome/css/font-awesome.min.css"/>
+    <script src="/static/flowtype.js"></script>
+    <link rel="stylesheet" href="/static/logins.css"/>
+    <script src="/static/logins.js"></script>
+    <link rel="stylesheet" href="/static/notis.css"/>
+    <script src="/static/notis.js"></script>
+    <script src="/static/yt.js"></script>
+    <link rel="stylesheet" href="/static/home.css"/>
+    <script src="/static/home.js"></script>
+
+    <title>Bookses</title>
+
+</head>
+<body>
+
+    <div id="banner">
+        <div id="banner_left">
+            <a id="logo" href="/">Bookses</a>
+            <span class="input_enter_submit">
+                <input id="search_bar" placeholder="search books">
+                <button id="search_button"><i class="icon-search"></i></button>
+            </span>
+            <button id="logins">LOGIN</button>
+            <span id="notification_menu"></span>
+        </div>
+        <div id="banner_right">
+        </div>
+    </div>
+    <div class="clear_both"></div>
+
+    <div id="notification_tray"></div>
+
+    <div id="tagline_box">
+        <a id="tagline" href="/">Bookses: more fun than reading</a>
+        <span id="projectdesc">Bookses is a collaborative project that brings artists together to create and bring stories to life</span>
+    </div>
+
+    <div id="books_box" class="books_list">
+        <div id="books"></div>
+        <button id="more_books_button">MORE</button>
+    </div>
+
+    <div id="results_box" class="books_list">
+        <div id="results"></div>
+        <button id="more_search_results_button">MORE</button>
+    </div>
+
+    <div id="popup"></div>
+    <div id="logins_box"></div>
+
+    <img id="hiringbanner" src="http://bookses.asset.s3.amazonaws.com/hiring.png">
+
+    <div id="footer">
+        <div id="footer_links">
+            <!-- todo -->
+            <a id="my_twitter" href="https://twitter.com/nahnturong" target="_blank"><i class="icon-twitter"></i></a>
+            <br><br>
+            <a id="feedback" href="http://bookses.com/read/52d0923d016f2e951d000014" target="_blank">Questions + Feedback</a><br><br>
+            <a id="terms">User content belong to their respective creators.</a><br><br>
+        </div>
+    </div>
+
+</body>
+</html>

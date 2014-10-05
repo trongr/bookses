@@ -7,14 +7,15 @@ db.open(function(er, db) {
     if (er) throw er
     console.log(module.filename + " connecting to " + (process.env.DB || "bookses"))
 })
+var s3 = require("../noodles/s3.js")
 
 var migrate = (function(){
     var migrate = {}
 
     migrate.init = function(){
+        var table = "comments" // mark
         async.waterfall([
             function(done){
-                var table = "users" // mark
                 var query = {}
                 var aux = {}
                 db.collection(table, {safe:true}, function(er, docs){
@@ -27,19 +28,38 @@ var migrate = (function(){
             },
             function(entries, done){
                 async.eachSeries(entries, function(entry, done){
-                    if (entry.img && entry.thumb){ // mark
-                        var img = "http://bookses.com" + entry.img
-                        var thumb = "http://bookses.com" + entry.thumb
-                        var x = child.spawn("wget", [img, thumb, "-P", "static/public/"])
-                        x.stderr.on("data", function(data){
-                            console.log(data.toString())
-                        })
-                        x.on("close", function(code){
-                            if (code == 1) console.log("wget error")
+                    if (entry.img && entry.thumb && entry.img.slice(0, 1) == "h"){ // mark
+                        // var path_img = entry.img.slice(1)
+                        // var path_thumb = entry.thumb.slice(1)
+                        // var bucket = "s3://bookses.img/"
+                        // s3.put([path_img, path_thumb], bucket, function(er){
+                        //     done(null)
+                        // })
+                        var root = "s3://bookses.img/"
+                        var path_img = root + entry.img.match(/http:\/\/bookses.img.s3.amazonaws.com\/(.*)/)[1]
+                        var path_thumb = root + entry.thumb.match(/http:\/\/bookses.img.s3.amazonaws.com\/(.*)/)[1]
+                        child.exec("s3cmd setacl --acl-public " + path_img + " " + path_thumb, function(er, stder, stdout){
+                            console.log(stder)
+                            console.log(stdout)
+                            if (er) console.log(JSON.stringify(er, 0, 2))
                             done(null)
                         })
+                        // var query = {
+                        //     _id: entry._id
+                        // }
+                        // var update = {
+                        //     $set: {
+                        //         img: path_img,
+                        //         thumb: path_thumb
+                        //     }
+                        // }
+                        // db.collection(table, {safe:true}, function(er, docs){
+                        //     if (er) done({error:"db.update_entry",table:table,query:query,update:update,er:er})
+                        //     else docs.update(query, update, {safe:true}, function(er, num){
+                        //         done(null)
+                        //     })
+                        // })
                     } else {
-                        console.log(JSON.stringify(entry, 0, 2))
                         done(null)
                     }
                 }, function(er){

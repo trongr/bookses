@@ -1,0 +1,132 @@
+jQuery(function($){
+
+    var k = {
+
+    }
+
+    var views = (function(){
+        var views = {}
+
+        views.init = function(){
+            var id = $.url(window.location).param("id")
+            views.loadbook(id)
+        }
+
+        views.loadbook = function(id){
+            async.waterfall([
+                function(done){
+                    api.getbook(id, function(er, book){
+                        done(er, book)
+                    })
+                },
+                function(book, done){
+                    $("#bookses a").html(book.title)
+                    $("#tagline a").html(book.author)
+                    $("#description").html(templates.description(book.description))
+                    setTimeout(function(){ // this should help keep the page responsive while loading a long book
+                        api.gettext(book.url, function(er, text){
+                            done(er, text)
+                        })
+                    }, 0)
+                },
+                function(text, done){
+                    $("#book").html(text)
+                    done(null)
+                },
+                function(done){
+                    views.loadillos(id)
+                    views.loadedits(id)
+                    done(null)
+                },
+                // function(done){
+                //     // views.format_poetry(k.book)
+                //     // $(".boks_spinner").html("").hide()
+                //     // try {addthis.toolbox(".addthis_toolbox")} catch (e){}
+                // },
+            ], function(er){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+            })
+        }
+
+        views.loadedits = function(id){
+            async.waterfall([
+                function(done){
+                    api.getedits(id, function(er, entries){
+                        done(er, entries)
+                    })
+                },
+                function(entries, done){
+                    async.eachSeries(entries, function(entry, done){
+                        $("#book p.paragraph[data-p='" + entry.p + "']").html(entry.comment)
+                        done(null)
+                    }, function(er){
+                        done(er)
+                    })
+                },
+            ], function(er, re){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+            })
+        }
+
+        views.loadillos = function(id){
+            async.waterfall([
+                function(done){
+                    api.getillos(id, function(er, entries){
+                        done(er, entries)
+                    })
+                },
+                function(entries, done){
+                    entries.sort(function(a, b){
+                        if (parseInt(a.p) < parseInt(b.p)) return -1
+                        if (parseInt(a.p) == parseInt(b.p) && new Date(a.approvedon) == new Date(b.approvedon)) return 0
+                        if (parseInt(a.p) == parseInt(b.p) && new Date(a.approvedon) < new Date(b.approvedon)) return 1 // sort time in reverse because of the order we'll insert them
+                        if (parseInt(a.p) > parseInt(b.p)) return 1
+                    })
+                    async.eachSeries(entries, function(entry, done){
+                        setTimeout(function(){ // try this in case browser overloads trying too many images
+                            $("#book p.paragraph[data-p='" + entry.p + "']").after(templates.illos(entry))
+                            done(null)
+                        }, 500) // try 1000 if browsers can't handle 500
+                    }, function(er){
+                        done(er)
+                    })
+                },
+            ], function(er, re){
+                if (er) console.log(JSON.stringify(er, 0, 2))
+            })
+        }
+
+        return views
+    }())
+
+    var bindings = (function(){
+        var bindings = {}
+
+        bindings.init = function(){
+
+        }
+
+        return bindings
+    }())
+
+    var app = (function(){
+        var app = {}
+
+        app.init = function(){
+            views.init()
+            bindings.init()
+        }
+
+        app.init()
+        return app
+    }())
+
+    ;(function(){
+        (function(i,s,o,g,r,a,m){
+            i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();
+            a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+        ga('create', 'UA-45942817-1', 'bookses.com');
+        ga('send', 'pageview');
+    }())
+});

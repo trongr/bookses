@@ -1,0 +1,98 @@
+var validate = require("./validate.js")
+var db = require("./db.js")
+var configs = require("./configs.js")
+
+var vote = module.exports = (function(){
+    var vote = {}
+
+    vote.createvotevalidate = function(req, res, next){
+        async.parallel([
+            function(done){
+                validate.text_length(req.body.text, function(er){
+                    done(er)
+                })
+            }
+        ], function(er){
+            if (er){
+                console.log(JSON.stringify({error:"create vote validate",er:er}, 0, 2))
+                res.send({error:"create vote validate",er:er})
+            } else next(null)
+        })
+    }
+
+    vote.createvote = function(req, res){
+        async.waterfall([
+            function(done){
+                var entry = {
+                    text: req.body.text,
+                    created: new Date(),
+                    modified: new Date(),
+                    votes: 1,
+                }
+                db.create(k.tables.comments, entry, function(er, entry){
+                    done(er, entry)
+                })
+            },
+        ], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"create vote",er:er}, 0, 2))
+                res.send({error:"create vote"})
+            } else {
+                res.send({vote:re})
+            }
+        })
+    }
+
+    vote.getvotesvalidate = function(req, res, next){
+        async.parallel([
+            function(done){
+                var page = req.query.page || 0
+                validate.integer(page, function(er){
+                    done(er)
+                })
+            },
+        ], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"get votes validate",er:er}, 0, 2))
+                res.send({error:"get votes validate"})
+            } else next(null)
+        })
+    }
+
+    vote.getvotes = function(req, res){
+        var query = {
+            del: {$exists:false}
+        }
+        var aux = {
+            sort: [["votes","desc"],["modified","desc"]],
+            limit: configs.pagesize,
+            skip: req.query.page * configs.pagesize
+        }
+        async.waterfall([
+            function(done){
+                db.get(configs.table.votes, query, aux, function(er, entries){
+                    done(er, entries)
+                })
+            },
+            function(entries, done){
+                db.count(configs.table.votes, query, function(er, count){
+                    done(er, entries, count)
+                })
+            }
+        ], function(er, entries, count){
+            if (er){
+                console.log(JSON.stringify({error:"get votes",er:er}, 0, 2))
+                res.send({error:"get votes"})
+            } else {
+                res.send({
+                    votes: entries,
+                    total: count,
+                    page: req.query.page,
+                    pagesize: configs.pagesize
+                })
+            }
+        })
+    }
+
+    return vote
+}())

@@ -15,5 +15,16 @@ var configs = module.exports = {
     bin: {
         convert: "/usr/local/bin/convert",
         s3cmd: "/usr/local/bin/s3cmd",
-    }
+    },
+    db: "bookses",
+    table: {
+        likes: "likes",
+        comments: "comments",
+        books: "books",
+        votes: "votes",
+        voters: "voters",
+        subs: "subs",
+    },
+    pagesize: 10,
+    bigpagesize: 50,
 }

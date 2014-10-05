@@ -13,12 +13,12 @@ var users = (function(){
 
         templates.logins = function(){
             var html = "<div id='login_box'>"
+                + "         <button id='signup'>sign me up</button><br>"
                 + "         <span class='input_enter_submit'>"
                 + "             <input id='username' placeholder='username'><br>"
                 + "             <input id='password' type='password' placeholder='password'><br>"
                 + "             <button id='login'>LOGIN</button><br>"
                 + "         </span>"
-                + "         <button id='signup'>sign me up</button><br>"
                 + "         <button class='popup_login_cancel'><i class='icon-circle-arrow-left'></i></button>"
                 + "     </div>"
                 + "     <div id='logout_box'>"
@@ -91,8 +91,8 @@ var users = (function(){
         var username = $("#username").val().trim()
         var password = $("#password").val().trim()
         if (!username || !password){
-            alert("Invalid logins")
-            e.stopImmediatePropagation()
+            return alert("Invalid logins")
+            // e.stopImmediatePropagation()
         }
         users.login(username, password, function(er, user){
             if (er){

@@ -26,6 +26,7 @@ var k = {
         users: "users",
         tags: "tags",
     },
+    bigpagesize: 50,
     page_size: 10,
     milliseconds_in_a_day: 24 * 60 * 60 * 1000,
     recursion_limit: 10,
@@ -42,7 +43,7 @@ var k = {
     },
     sort_by: {
         best: [["pop","desc"],["modified","desc"]],
-        recent: [["modified","desc"]],
+        recent: [["created","desc"]],
     }
 }
 
@@ -362,13 +363,40 @@ var books = module.exports = (function(){
                 })
             },
             function(done){
+                validate.html(req.body.title, function(er, re){
+                    req.body.title = re
+                    done(er)
+                })
+            },
+            function(done){
+                validate.text_length(req.body.author, function(er){
+                    done(er)
+                })
+            },
+            function(done){
+                validate.html(req.body.author, function(er, re){
+                    req.body.author = re
+                    done(er)
+                })
+            },
+            function(done){
                 validate.text_length(req.body.description, function(er){
+                    done(er)
+                })
+            },
+            function(done){
+                validate.html(req.body.description, function(er, re){
+                    req.body.description = re
                     done(er)
                 })
             },
             function(done){
                 if (!req.files) done({error:"no file"})
                 else done(null)
+            },
+            function(done){
+                if (Date.parse(req.body.readyon)) done(null)
+                else done({error:"invalid publish date"})
             }
         ], function(er, re){
             if (er){
@@ -397,10 +425,13 @@ var books = module.exports = (function(){
                     user_img: user.thumb,
                     class: user.class,
                     title: req.body.title,
+                    author: req.body.author,
                     description: req.body.description,
                     poetry: (req.body.poetry == "true"),
                     created: new Date(),
                     modified: new Date(),
+                    readyon: new Date(req.body.readyon),
+                    ready: false,
                     votes: 1,
                     replies: 0,
                     pop: 1,
@@ -478,38 +509,54 @@ var books = module.exports = (function(){
     }
 
     books.get_all_books = function(req, res){
+        var query = {
+            del: {$exists:false}
+        }
+        if (req.query.class && req.query.class != k.class.all) query.class = req.query.class
+        if (req.query.username) query.username = req.query.username
+        var aux = {
+            sort: [["created","desc"]],
+            // sort: [["pop","desc"]],
+            limit: k.page_size,
+            skip: req.query.page * k.page_size
+        }
+        if (req.query.latest == "true") aux.sort = [["modified", "desc"]]
         async.waterfall([
             function(done){
-                var query = {}
-                if (req.query.class && req.query.class != k.class.all) query.class = req.query.class
-                if (req.query.username) query.username = req.query.username
-                var aux = {
-                    sort: [["modified","desc"]],
-                    // sort: [["pop","desc"]],
-                    limit: k.page_size,
-                    skip: req.query.page * k.page_size
-                }
                 DB.get_entries(k.tables.books, query, aux, function(er, entries){
                     done(er, entries)
                 })
             },
             function(entries, done){
+                var opts = {}
+                if (req.query.latestcomments == "true") opts.latest = true
+                if (req.query.imgs == "true") opts.imgs = true
                 async.each(entries, function(entry, done){
-                    books.get_book_img_comments(entry._id.toString(), function(er, comments){
+                    books.get_book_img_comments(entry._id.toString(), opts, function(er, comments){
                         if (er) entry.img_comments = []
                         else entry.img_comments = comments
                         done(null)
                     })
                 }, function(er){
                     done(null, entries)
+                });
+            },
+            function(entries, done){
+                DB.count_entries(k.tables.books, query, {}, function(er, count){
+                    done(er, entries, count)
                 })
             }
-        ], function(er, re){
+        ], function(er, entries, count){
             if (er){
                 console.log(JSON.stringify({error:"books.get_all_books",er:er}, 0, 2))
                 res.send({error:"get all books"})
             } else {
-                res.send({books:re})
+                res.send({
+                    books: entries,
+                    total: count,
+                    page: req.query.page,
+                    pagesize: k.page_size,
+                })
             }
         })
     }
@@ -610,6 +657,27 @@ var books = module.exports = (function(){
                     done(er)
                 })
             },
+            function(done){ // edits can contain html code
+                if (req.body.edit != "true") validate.html(req.body.comment, function(er, re){
+                    req.body.comment = re
+                    done(er)
+                })
+                else done(null)
+            },
+            function(done){
+                if (req.body.artists) validate.text_length_zero_ok(req.body.artists, function(er){
+                    if (er) done({error:"invalid artists string"})
+                    else done(null)
+                })
+                else done(null)
+            },
+            function(done){
+                if (req.body.artists) validate.html(req.body.artists, function(er, re){
+                    req.body.artists = re
+                    done(er)
+                })
+                else done(null)
+            },
             function(done){
                 if (req.body.youtube && req.body.youtube > 500){
                     done({error:"youtube link too long"})
@@ -627,7 +695,7 @@ var books = module.exports = (function(){
                         done({error:"can't parse tags"})
                     }
                 } else done(null)
-            }
+            },
         ], function(er, re){
             if (er){
                 console.log(JSON.stringify({error:"books.create_comment_validate",er:er}, 0, 2))
@@ -711,6 +779,7 @@ var books = module.exports = (function(){
                         return done({error:"processing img",er:"can't read img headers"})
                     }
                     if (req.body.youtube) comment.youtube = req.body.youtube
+                    if (req.body.artists) comment.artists = req.body.artists
                     DB.create(k.tables.comments, comment, function(er, comment){
                         done(er, comment)
                     })
@@ -726,9 +795,8 @@ var books = module.exports = (function(){
                 } else {
                     res.send({comment:comment})
                 }
-            } catch (e){
-                // in case client disconnects before image upload finishes, crashing the server
-                console.log({error:"create comment",er:"responding to client request"})
+            } catch (e){ // in case client disconnects before image upload finishes, crashing the server
+                console.log({error:"create comment try catch"})
             }
         })
     }
@@ -741,18 +809,30 @@ var books = module.exports = (function(){
                 })
             },
             function(done){
-                try {
-                    req.query.p = parseInt(req.query.p)
-                    done(null)
-                } catch (er){
-                    done({error:"cannot parse p"})
-                }
+                if (req.query.p) validate.integer(req.query.p, function(er){
+                    if (er) done({error:"p not an integer"})
+                    else {
+                        req.query.p = parseInt(req.query.p)
+                        done(null)
+                    }
+                })
+                else done(null)
             },
             function(done){
                 var page = req.query.page || 0
                 validate.integer(page, function(er){
                     done(er)
                 })
+            },
+            function(done){
+                if (req.query.limit) validate.integer(req.query.limit, function(er){
+                    if (er) done({error:"limit not an integer"})
+                    else {
+                        req.query.limit = parseInt(req.query.limit)
+                        done(null)
+                    }
+                })
+                else done(null)
             },
             function(done){
                 if (req.query.sort){
@@ -771,16 +851,18 @@ var books = module.exports = (function(){
     books.get_book_comments = function(req, res){
         var query = {
             book: req.params.id,
-            p: req.query.p,
-            parent: null,
-            edit: (req.query.edit == "true")
+            edit: (req.query.edit == "true"),
+            del: {$exists:false},
         }
         var aux = {
-            sort: k.sort_by.best,
+            sort: k.sort_by.recent,
             limit: k.page_size + 1,
             skip: req.query.page * k.page_size
         }
+        if (req.query.p >= 0) query.p = req.query.p
+        if (req.query.img == "true") query.img = {$exists:true}
         if (req.query.sort) aux.sort = k.sort_by[req.query.sort]
+        if (req.query.limit && req.query.limit < k.bigpagesize) aux.limit = req.query.limit
         DB.get_entries(k.tables.comments, query, aux, function(er, entries){
             if (er){
                 console.log(JSON.stringify({error:"books.get_book_comments",er:er}, 0, 2))
@@ -815,11 +897,12 @@ var books = module.exports = (function(){
     books.get_book_latest_comments = function(req, res){
         var query = {
             book: req.params.id,
+            del: {$exists:false}
             // parent: null,
             // edit: false // let people choose to show edits on front end
         }
         var aux = {
-            sort: [["modified","desc"]],
+            sort: [["created","desc"]],
             // sort: [["pop","desc"]],
             limit: k.page_size, // + 1 if you want client to know whether there're more results
             skip: req.query.page * k.page_size
@@ -863,7 +946,8 @@ var books = module.exports = (function(){
 
     books.get_comment_comments = function(req, res){
         var query = {
-            parent: req.params.id
+            parent: req.params.id,
+            del: {$exists:false}
         }
         var aux = {
             sort: k.sort_by.best,
@@ -905,6 +989,7 @@ var books = module.exports = (function(){
             },
             function(entries, done){
                 if (process.env.ENV == "local") done(null)
+                else if (req.session.username == "trong") done(null)
                 else if (entries.length) done({info:"you already liked this"})
                 else DB.create(k.tables.likes, {
                     ip: ip,
@@ -998,7 +1083,8 @@ var books = module.exports = (function(){
             $match: {
                 book: req.params.id,
                 parent: null,
-                edit: false
+                edit: false,
+                del: {$exists:false}
             }
         },{
             $group: {_id:"$p", count:{$sum:"$pop"}}
@@ -1035,7 +1121,8 @@ var books = module.exports = (function(){
                     $match: {
                         book: req.params.id,
                         parent: null,
-                        edit: true
+                        edit: true,
+                        del: {$exists:false}
                     }
                 },{
                     $sort: {pop:-1, modified:-1}
@@ -1073,20 +1160,23 @@ var books = module.exports = (function(){
         })
     }
 
-    books.get_book_img_comments = function(id, done){
+    books.get_book_img_comments = function(id, opts, done){
         var query = {
             book: id,
-            $or: [{
-                img: {$exists:true}
-            },{
-                youtube: {$exists:true}
-            }]
+            del: {$exists:false}
+            // $or: [{
+            //     img: {$exists:true}
+            // },{
+            //     youtube: {$exists:true}
+            // }]
         }
+        if (opts.imgs) query.img = {$exists:true}
         var aux = {
-            sort: [["modified","desc"]],
-            // sort: [["pop","desc"],["modified","desc"]],
+            // sort: [["modified","desc"]],
+            sort: [["pop","desc"],["modified","desc"]],
             limit: 5,
         }
+        if (opts.latest) aux.sort = [["created","desc"]]
         DB.get_entries(k.tables.comments, query, aux, function(er, entries){
             done(er, entries)
         })
@@ -1125,6 +1215,7 @@ var books = module.exports = (function(){
     }
 
     books.get_user_notis = function(req, res){
+        console.log(req.session.username)
         async.waterfall([
             function(done){
                 var query = {
@@ -1177,7 +1268,8 @@ var books = module.exports = (function(){
             function(done){
                 var query = {
                     username: req.session.username,
-                    notis: {$exists:true}
+                    notis: {$exists:true},
+                    del: {$exists:false}
                 }
                 var aux = {
                     sort: [["modified","desc"]],
@@ -1253,7 +1345,9 @@ var books = module.exports = (function(){
     }
 
     books.get_comments = function(req, res){
-        var query = {}
+        var query = {
+            del: {$exists:false}
+        }
         if (req.query.username) query.username = req.query.username
         var aux = {
             sort: k.sort_by.best,
@@ -1355,7 +1449,8 @@ var books = module.exports = (function(){
     books.get_book_tag_comments = function(req, res){
         var query = {
             book: req.params.id,
-            tags: {$in:[req.query.tag]}
+            tags: {$in:[req.query.tag]},
+            del: {$exists:false}
         }
         var aux = {
             sort: k.sort_by.best,
@@ -1390,6 +1485,153 @@ var books = module.exports = (function(){
             } else {
                 res.send({comments:entries})
             }
+        })
+    }
+
+    books.lockcommentvalidate = function(req, res, next){
+        validate.id(req.params.id, function(er){
+            if (er){
+                console.log(JSON.stringify({error:"books lock comment",er:er}, 0, 2))
+                res.send({error:"lock comment"})
+            } else next(null)
+        })
+    }
+
+    books.lockcomment = function(req, res){
+        DB.update_entry(k.tables.comments, {
+            _id: new mongo.ObjectID(req.params.id)
+        },{
+            $set: {
+                locked: true,
+                locker: req.session.username,
+                modified: new Date()
+            }
+        }, function(er, num){
+            if (er) res.send({error:"locking comment",er:er})
+            else res.send({num:num})
+        })
+    }
+
+    books.getillosvalidate = function(req, res, next){
+        async.parallel([
+            function(done){
+                validate.id(req.params.id, function(er){
+                    done(er)
+                })
+            },
+        ], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"books.getillosvalidate",er:er}, 0, 2))
+                res.send({error:"get book edits",er:er})
+            } else next(null)
+        })
+    }
+
+    books.getillos = function(req, res){
+        var query = {
+            book: req.params.id,
+            approved: true,
+            img: {$exists:true},
+            del: {$exists:false}
+        }
+        var aux = {
+            // sort: [["approvedon","desc"]], // don't need to sort here: doing it on client
+        }
+        DB.get_entries(k.tables.comments, query, aux, function(er, entries){
+            if (er){
+                console.log(JSON.stringify({error:"books get book illos",id:req.params.id,er:er}, 0, 2))
+                res.send({error:"get book illos"})
+            } else res.send({illos:entries})
+        })
+    }
+
+    books.editcommentvalidate = function(req, res, next){
+        async.parallel([
+            function(done){
+                validate.id(req.params.id, function(er){
+                    done(er)
+                })
+            },
+            function(done){
+                if (req.body.p) validate.integer(req.body.p, function(er){
+                    if (er) done({error:"p not an integer"})
+                    else done(null)
+                })
+                else done(null)
+            },
+            function(done){
+                if (req.body.artists) validate.text_length_zero_ok(req.body.artists, function(er){
+                    if (er) done({error:"invalid artists string"})
+                    else done(null)
+                })
+                else done(null)
+            },
+            function(done){
+                if (req.body.artists) validate.html(req.body.artists, function(er, re){
+                    req.body.artists = re
+                    done(er)
+                })
+                else done(null)
+            }
+        ], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"books.editcommentvalidate",er:er}, 0, 2))
+                res.send({error:"edit comment validate",er:er})
+            } else next(null)
+        })
+    }
+
+    books.editcomment = function(req, res){
+        var update = {
+            modified: new Date(),
+        }
+        if (req.body.p) update.p = parseInt(req.body.p)
+        if (req.body.approved == "true"){
+            update.approved = true
+            update.approvedon = new Date()
+        } else if (req.body.approved == "false") update.approved = false
+        if (req.body.artists) update.artists = req.body.artists
+        if (req.body.del == "true") update.del = true
+        DB.update_entry(k.tables.comments, {
+            _id: new mongo.ObjectID(req.params.id)
+        },{
+            $set: update
+        }, function(er, num){
+            if (er) res.send({error:"edit comment",er:er})
+            else res.send({num:num})
+        })
+    }
+
+    books.editbookvalidate = function(req, res, next){
+        async.parallel([
+            function(done){
+                validate.id(req.params.id, function(er){
+                    done(er)
+                })
+            },
+        ], function(er, re){
+            if (er){
+                console.log(JSON.stringify({error:"books.editbookvalidate",er:er}, 0, 2))
+                res.send({error:"edit book validate",er:er})
+            } else next(null)
+        })
+    }
+
+    books.editbook = function(req, res){
+        var update = {
+            modified: new Date(),
+        }
+        if (req.body.ready == "true") update.ready = true
+        else if (req.body.ready == "false") update.ready = false
+        if (req.body.preview == "true") update.preview = true // so that artists can see and read the book before readers
+        else if (req.body.preview == "false") update.preview = false
+        DB.update_entry(k.tables.books, {
+            _id: new mongo.ObjectID(req.params.id)
+        },{
+            $set: update
+        }, function(er, num){
+            if (er) res.send({error:"edit book",er:er})
+            else res.send({num:num})
         })
     }
 

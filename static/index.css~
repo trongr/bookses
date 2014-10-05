@@ -1,0 +1,431 @@
+body {
+    background-color: #eee;
+    font-family: helvetica, arial, sans;
+    padding: 50px 0 0 0;
+}
+
+hr {
+    height: 1px;
+    background-color: #000;
+    border: none;
+}
+
+a {
+    text-decoration: none;
+    color: #70ACFF;
+}
+
+i {
+    font-size: 1.2em;
+    margin: 2px;
+}
+
+input {
+    border: none;
+}
+
+button {
+    background-color: #eee;
+    color: #555;
+    border: none;
+    font-family: helvetica, arial, sans;
+}
+
+button:hover {
+    color: #70ACFF;
+}
+
+.link {
+    color: #70ACFF;
+}
+
+.link:hover {
+    color: #2E86FF;
+}
+
+.clear_both {
+    clear: both;
+}
+
+#click_colors {
+    background-color: #000;
+    color: #fff;
+    padding: 20px 10px 20px 0;
+    margin-top: -10px;
+    margin-left: -10px;
+    margin-bottom: 10px;
+    margin-right: -10px;
+    z-index: -1;
+    font-size: 12pt;
+    text-align: center;
+}
+
+#banner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 5px;
+    background-color: rgba(239, 239, 239, 0.9);
+    border-bottom: 1px solid #ddd;
+    display: table;
+    width: 100%;
+}
+
+#banner button {
+    font-size: 1em;
+    padding: 0;
+    background: none;
+}
+
+#banner input {
+    font-size: 1em;
+    padding-left: 5px;
+}
+
+#banner_left {
+    display: table-cell;
+}
+
+#banner_left #search_bar {
+    width: 200px;
+}
+
+#banner_right {
+    display: table-cell;
+    text-align: right;
+}
+
+#logins, #upload_button {
+    font-weight: bolder;
+}
+
+#logo {
+    font-size: 1.5em;
+    color: #333;
+    font-weight: bolder;
+    color: #000;
+}
+
+#logo:hover {
+    color: #70ACFF;
+}
+
+#tagline_box {
+    text-align: center;
+    padding: 20px 0 20px 0;
+}
+
+#projectdesc,
+#tagline {
+    font-size: 6pt;
+    font-weight: bolder;
+    color: #999;
+}
+
+#tagline:hover {
+    color: #70ACFF;
+}
+
+#upload_progress_box {
+    height: 5px;
+    width: 100%;
+}
+
+#upload_progress {
+    width: 0;
+    height: 100%;
+    background-color: #77CFFF;
+}
+
+#books, #results {
+    display: table;
+    /* border-top: 1px solid #000; */
+    padding: 5px 0 0 0;
+    width: 100%;
+}
+
+.book {
+    display: table-row;
+}
+
+.book_left_box {
+    display: table-cell;
+    text-align: center;
+    min-width: 10%;
+    vertical-align: top;
+}
+
+.book_pop,
+.book_votes,
+.book_num_comments {
+    font-size: 3em;
+    font-weight: lighter;
+    color: #999;
+    margin: 20px 20px 20px 20px;
+    white-space: nowrap;
+}
+
+.book_pop > i,
+.book_votes > i,
+.book_num_comments > i {
+    font-size: 0.8em;
+}
+
+.book_pop > span,
+.book_votes > span,
+.book_num_comments > span {
+    font-size: 0.5em;
+    vertical-align: top;
+}
+
+.book_user_img_box {
+    display: inline-block;
+    width: 100%;
+    max-height: 100px;
+    overflow: hidden;
+    text-align: center;
+    vertical-align: top;
+}
+
+.book_user_img {
+    width: 100%;
+}
+
+.book_username {
+    color: #666;
+    text-align: right;
+    margin: 0 0 0 30px;
+}
+
+.book_username a {
+    font-weight: bolder;
+}
+
+.user_kudos {
+    font-weight: bolder;
+    color: #666;
+}
+
+.book_created {
+    color: #888;
+    margin: 0;
+}
+
+.book_main_box {
+    display: table-cell;
+    border-left: 1px solid #bbb;
+    border-top: 1px solid #bbb;
+}
+
+.book_title {
+    font-size: 2em;
+    font-weight: bolder;
+    cursor: pointer;
+    margin: 20px 0 5px 20px;
+}
+
+.book_description {
+    font-size: 1em;
+    margin: 10px 30px 10px 30px;
+}
+
+.book_imgs {
+    display: table;
+    margin: 0 0 5px 0;
+    width: 100%;
+}
+
+.book_img_box {
+    display: inline-block;
+    width: 20%;
+    max-height: 200px;
+    overflow: hidden;
+    vertical-align: top;
+    padding: 5px 0 0 5px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+img.book_img {
+    width: 100%;
+}
+
+.first_letter {
+    float: left;
+    color: #FF5252;
+    font-size: 4em;
+    font-family: serif, times, georgia;
+    height: 0.8em;
+    line-height: 1em;
+    margin: -5px 10px 0 -10px;
+}
+
+#more_books_button, #more_search_results_button {
+    font-size: 2em;
+    padding: 50px 50px 50px 0;
+    width: 100%;
+    text-align: right;
+}
+
+#results_box {
+    display: none;
+}
+
+#popup {
+    display: none;
+    background-color: rgba(0, 0, 0, 0.5);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+div.popup_cancel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 10%;
+    height: 100%;
+    border: none !important;
+    opacity: 0;
+}
+
+#logins_box {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #eee;
+}
+
+#notification_tray {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+}
+
+#class_menu {
+    display: table;
+    width: 100%;
+}
+
+.class_button_box {
+    display: table-cell;
+    background-color: #eee;
+    padding: 0 10px 0 10px;
+}
+
+#class_menu button {
+    width: 100%;
+    font-size: 1.2em;
+    font-weight: bolder;
+    color: #333;
+    padding: 10px 0 10px 0;
+}
+
+#class_menu button:hover {
+    color: #E04343;
+}
+
+#class_menu button span {
+    font-size: 3em;
+    font-family: serif, times, georgia;
+}
+
+.class_selected {
+    border-bottom: 10px solid #f00;
+}
+
+.class_selected button {
+    color: #000 !important;
+}
+
+.youtube_thumb_box {
+    width: 100%;
+    position: relative;
+}
+
+.youtube_thumb {
+    width: 100%;
+}
+
+.youtube_thumb_caption {
+    position: absolute;
+    color: #f00;
+    font-size: 2em;
+    left: 0;
+    bottom: 0;
+    margin: 10px;
+}
+
+#footer {
+    background-color: #000;
+    text-align: center;
+    margin-left: -10px;
+    margin-right: -10px;
+    margin-bottom: -10px;
+    padding: 200px 0 200px 0;
+}
+
+#footer #my_twitter {
+    font-size: 2em;
+    color: #fff;
+}
+
+#footer #terms,
+#footer #feedback {
+    color: #fff;
+    font-size: 0.8em;
+}
+
+#footer a:hover {
+    color: #7DD6FA !important;
+}
+
+#intro {
+    width: 100%;
+    display: table;
+    padding: 20px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+}
+
+#intro #welcome_box {
+    width: 40%;
+    display: table-cell;
+    text-align: center;
+    vertical-align: bottom;
+}
+
+#welcome {
+    font-size: 6pt;
+    font-weight: bolder;
+    font-family: serif, times, georgia;
+    color: #666;
+}
+
+#welcome:hover {
+    color: #70ACFF;
+}
+
+#intro_right {
+    width: 60%;
+    padding: 0 20px 0 20px;
+    display: table-cell;
+    vertical-align: bottom;
+    font-size: 1.4em;
+    text-align: justify;
+}
+
+#hiringbanner {
+    width: 100%;
+}

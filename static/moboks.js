@@ -16,7 +16,7 @@ var bok = function(x){
         date_format_alt: "h:mm A D MMM YYYY",
         page_size: 10,
         request_ahead: 20,
-        sort_type: "best",
+        sort_type: "recent",
         sort: {
             recent: "recent",
             best: "best"
@@ -271,6 +271,18 @@ var bok = function(x){
             })
         }
 
+        api.editcomment = function(id, data, done){
+            $.ajax({
+                url: "/comment/" + id + "/edit",
+                type: "post",
+                data: data,
+                success: function(re){
+                    if (re.num) done(null, re.num)
+                    else done(re)
+                }
+            })
+        }
+
         return api
     }())
 
@@ -487,6 +499,7 @@ var bok = function(x){
             var datap = "data-p='" + comment.p + "'"
             var has_replies = (comment.replies > 0 ? "has_comments" : "")
             var has_votes = (comment.votes > 1 ? "has_likes" : "")
+            var approved = (comment.approved ? "approved" : "")
             var user_img = (comment.user_img ? "<div class='boks_comment_user_img_box'><img class='boks_comment_img' src='" + comment.user_img + "'></div>" : "")
             var html = "<div class='boks_comment data' " + dataid + " " + datap + ">"
                 + "         <div class='boks_comment_text_box'>"
@@ -502,10 +515,14 @@ var bok = function(x){
                 + "             </div>"
                 + "             <div class='boks_comment_created'>" + Date.create(comment.created).long() + "</div>"
                 + "             <div class='boks_comment_modifed'>last activity " + Date.create(comment.modified).relative() + "</div>"
-                + "             <div class='boks_comment_menu'>"
+                + "             <div class='boks_comment_menu data'" + dataid + ">"
                 + "                 <button class='boks_reply boks_green_underline'>REPLY</button>"
                 + "                 <button class='boks_comment_reply " + has_replies + "'><i class='icon-comments-alt'></i>" + comment.replies + "</button>"
                 + "                 <button class='boks_comment_thumbs_up " + has_votes + "'><i class='icon-thumbs-up-alt'></i><span class='boks_comment_votes'>" + comment.votes + "</span></button>"
+                + "                 <button class='boks_comment_approved " + approved + "'><i class='icon-certificate'></i></button>"
+                + "                 <input class='boks_comment_p' placeholder='" + comment.p + "'>"
+                + "                 <input class='boks_comment_artists' placeholder='artists' value='" + (comment.artists ? comment.artists : "") + "'>"
+                + "                 <button class='boks_comment_save'><i class='icon-save'></i></button>"
                 + "             </div>"
                 + "             <div class='addthis_toolbox addthis_default_style addthis_32x32_style' "
                 + "                     addthis:url='http://bookses.com/read/" + o.bID + "?c=" + comment._id + "'>"
@@ -561,9 +578,18 @@ var bok = function(x){
             else if (comment.replies == 1) replies = "1 reply"
             else replies = comment.replies + " replies"
             var user_img = (comment.user_img ? "<div class='comment_user_img_box'><img class='comment_user_img' src='" + comment.user_img + "'></div>" : "")
+            var artists = ""
+            if (comment.artists){
+                artists += "<div class='comment_artists'>" + comment.artists + "</div>"
+            }
+            var approved = ""
+            if (comment.approved) approved = "<div class='approved'><i class='icon-certificate'></i></div>"
             var html = "<div class='short_comment_box " + is_edit + "'>"
                 + "         <div class='short_comment data' " + dataid + " " + datap +  ">"
                 + "             <div class='comment_info'>"
+                +                   approved
+                +                   "<div class='comment_p'>#" + comment.p + "</div>"
+                +                   artists
                 +                   user_img
                 + "                 <div class='comment_user'>" + comment.username + "</div>"
                 + "                 <div class='comment_votes red'>" + votes + "</div>"
@@ -1020,6 +1046,8 @@ var bok = function(x){
                         .on("click", ".boks_comment_content", bindings.click_comment_reply) // bad naming. should be comment_replies
                         .on("click", ".boks_comment_reply", bindings.click_comment_reply)
                         .on("click", ".boks_comment_thumbs_up", bindings.click_comment_like)
+                        .on("click", ".boks_comment_approved", bindings.approvecomment)
+                        .on("click", ".boks_comment_save", bindings.editcomment)
                         .on("click", ".boks_edit_p", bindings.click_edit_p)
                         .on("click", ".edit_p_cancel", bindings.click_edit_p_cancel)
                         .on("click", ".edit_p_post", bindings.click_edit_p_post)
@@ -1048,6 +1076,8 @@ var bok = function(x){
                 function(done){
                     views.format_poetry(k.book)
                     $(".boks_spinner").html("").hide()
+                    var p = $.url(window.location).param("p")
+                    if (p) $(".boks_text p.paragraph[data-p='" + p + "']").click()
                     var comment_id = $.url(window.location).param("c")
                     if (comment_id){
                         views.load_comment(comment_id, function(er){
@@ -1376,6 +1406,7 @@ var bok = function(x){
             bindings.load_top_comments(p, k.sort_type)
         }
 
+        // mk
         bindings.load_top_comments = function(p, sort_type){
             api.get_book_comments(o.bID, p, false, 0, sort_type, function(er, comments){
                 if (comments && comments.length){
@@ -1714,24 +1745,26 @@ var bok = function(x){
 
         }
 
+        // mk
         bindings.click_short_comment = function(){
             var that = $(this)
             var p = that.attr("data-p")
             var id = that.attr("data-id")
             var paragraph = $("#" + o.bID + " .boks_text p.paragraph").eq(p)
             $("html, body").animate({scrollTop:paragraph.offset().top - 40}, 100)
-            api.get_comment_parents(id, function(er, comments){
-                if (er){
-                    console.log(JSON.stringify(er, 0, 2))
-                } else if (comments){
-                    dom.content_right.prepend(templates.comment_parents(comments))
-                    users.load_user_kudos()
-                    try {addthis.toolbox(".addthis_toolbox")} catch (e){}
-                    dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
-                } else {
-                    console.log(JSON.stringify({error:"click short comment: can't find comment"}, 0, 2))
-                }
-            })
+            bindings.load_top_comments(p, k.sort_type)
+            // api.get_comment_parents(id, function(er, comments){
+            //     if (er){
+            //         console.log(JSON.stringify(er, 0, 2))
+            //     } else if (comments){
+            //         dom.content_right.prepend(templates.comment_parents(comments))
+            //         users.load_user_kudos()
+            //         try {addthis.toolbox(".addthis_toolbox")} catch (e){}
+            //         dom.content_right.prepend(templates.p_menu(p)).animate({scrollTop:0}, 100)
+            //     } else {
+            //         console.log(JSON.stringify({error:"click short comment: can't find comment"}, 0, 2))
+            //     }
+            // })
         }
 
         bindings.click_refresh_latest_comments = function(){
@@ -1808,6 +1841,45 @@ var bok = function(x){
             var page = parseInt(that.attr("data-page")) + 1
             that.attr("data-page", page)
             views.load_tag_comments(tag, page, function(er){})
+        }
+
+        bindings.approvecomment = function(){
+            var that = $(this)
+            try {
+                var id = that.closest(".data").attr("data-id")
+                var approved = that.hasClass("approved")
+                var data = {}
+                if (approved) data.approved = false
+                else data.approved = true
+                api.editcomment(id, data, function(er, num){
+                    if (er && er.loggedin == false) alert("You have to be logged in")
+                    else if (er) alert(JSON.stringify(er, 0, 2))
+                    else if (approved) that.removeClass("approved")
+                    else that.addClass("approved")
+                })
+            } catch (e){
+                alert("something went wrong. couldn't approve comment")
+            }
+        }
+
+        bindings.editcomment = function(){
+            var that = $(this)
+            try {
+                var parentbox = that.closest(".data")
+                var id = parentbox.attr("data-id")
+                var p = parentbox.find(".boks_comment_p").val().trim()
+                var artists = parentbox.find(".boks_comment_artists").val().trim()
+                var data = {}
+                if (p) data.p = p
+                if (artists) data.artists = artists
+                api.editcomment(id, data, function(er, num){
+                    if (er && er.loggedin == false) alert("You have to be logged in")
+                    else if (er) alert(JSON.stringify(er, 0, 2))
+                    else msg.info("comment updated")
+                })
+            } catch (e){
+                alert("something went wrong. couldn't approve comment")
+            }
         }
 
         return bindings

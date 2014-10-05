@@ -1,0 +1,11 @@
+var templates = (function(){
+    var templates = {}
+
+    templates.books = function(books){
+        var html = ""
+
+        return html
+    }
+
+    return templates
+}())

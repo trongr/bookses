@@ -34,6 +34,14 @@ button:hover {
     color: #70ACFF;
 }
 
+.green {
+    color: #0f0;
+}
+
+.red {
+    color: #f00;
+}
+
 .link {
     color: #70ACFF;
 }
@@ -207,6 +215,18 @@ button:hover {
 .book_created {
     color: #888;
     margin: 0;
+}
+
+/* mk */
+.bookpreview,
+.bookready {
+    font-size: 1em;
+    color: #f00;
+}
+
+.preview,
+.ready {
+    color: #0f0 !important;
 }
 
 .book_main_box {

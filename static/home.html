@@ -1,10 +1,21 @@
+<!--  -->
 <html>
 <head>
 
+    <meta name="viewport" content="width=device-width" initial-scale="1">
+
     <script src="/static/jquery-2.0.3.js"></script>
+    <script src="/static/purl.js"></script>
     <script src="/static/async.js"></script>
-    <script src="/static/moment.min.js"></script>
+    <!-- <script src="/static/moment.min.js"></script> -->
+    <script src="/static/sugar.min.js"></script>
     <link rel="stylesheet" href="/static/font-awesome/css/font-awesome.min.css"/>
+    <script src="/static/flowtype.js"></script>
+    <link rel="stylesheet" href="/static/logins.css"/>
+    <script src="/static/logins.js"></script>
+    <link rel="stylesheet" href="/static/notis.css"/>
+    <script src="/static/notis.js"></script>
+    <script src="/static/yt.js"></script>
     <link rel="stylesheet" href="/static/home.css"/>
     <script src="/static/home.js"></script>
 
@@ -12,109 +23,53 @@
 
 </head>
 <body>
+
     <div id="banner">
         <div id="banner_left">
-            <button id="more_menu"><i class="icon-th-list"></i></button>
-            <button id="logo">Bookses</button>
-            <span class="input_enter_submit">
-                <input id="search_bar" placeholder="search books">
-                <button id="search_button"><i class="icon-search"></i></button>
-            </span>
-            <button id="upload_button"><i class="icon-upload"></i></button>
+            <a id="logo" href="/">Bookses</a>
+            <!-- <span class="input_enter_submit"> -->
+            <!--     <input id="search_bar" placeholder="search books"> -->
+            <!--     <button id="search_button"><i class="icon-search"></i></button> -->
+            <!-- </span> -->
+            <button id="logins">LOGIN</button>
+            <!-- <span id="notification_menu"></span> -->
         </div>
         <div id="banner_right">
-            <div id="login_box">
-                <span class="input_enter_submit">
-                    <input id="username" placeholder="username">
-                    <input id="password" type="password" placeholder="password">
-                    <button id="login"><i class="icon-unlock"></i></button>
-                </span>
-                <button id="register"><i class="icon-key"></i></button>
-            </div>
-            <div id="logout_box">
-                <button id="logout"><i class="icon-lock"></i></button>
-            </div>
         </div>
     </div>
     <div class="clear_both"></div>
 
-    <div id="bookses_more_menu_box">
-        <div id="bookses_more_menu">
-            <div class="menu_item link_box">
-                <span class="menu_item_link"><a href="https://moot.it/bookses#!/qa" target="_blank"><i class="icon-question-sign"></i></a></span>
-                <span class="menu_item_head">feedback</span>
-                <span class="menu_item_text">Questions or comments? Talk to me <a href="https://moot.it/bookses#!/qa" target="_blank">here.</a></span>
-            </div>
-            <div class="menu_item link_box">
-                <span class="menu_item_link"><a href="https://moot.it/bookses#!/bugs" target="_blank"><i class="icon-bug"></i></a></span>
-                <span class="menu_item_head">bugs</span>
-                <span class="menu_item_text">The horrors!! <a href="https://moot.it/bookses#!/bugs" target="_blank">Tell mee!!!</a></span>
-            </div>
-            <div class="menu_item link_box">
-                <span class="menu_item_link"><a id="medkit" href="#"><i class="icon-medkit"></i></a></span>
-                <span class="menu_item_head">donate</span>
-                <span class="menu_item_text">Like Bookses? Help me keep it going.</span>
-            </div>
-            <div class="menu_item link_box">
-                <span class="menu_item_link"><a href="https://twitter.com/nahnturong" target="_blank"><i class="icon-twitter-sign"></i></a></span>
-                <span class="menu_item_head">twitter</span>
-                <span class="menu_item_text">I don't tweet a lot but you can <a href="https://twitter.com/nahnturong" target="_blank">add me.</a></span>
-            </div>
-        </div>
-    </div>
+    <div id="notification_tray"></div>
 
-    <script>$("#medkit").on("click", function(){alert("coming soon")})</script>
+    <!-- <div id="tagline_box"> -->
+    <!--     <a id="tagline" href="/art">Bookses: more fun than reading</a> -->
+    <!--     <span id="projectdesc">Bookses is a collaborative project that brings artists together to create and bring stories to life</span> -->
+    <!--     <a id="votestory" href="/r">Artists, vote on your new story here</a> -->
+    <!-- </div> -->
 
-    <div id="tagline_box">
-        <span id="tagline" class="pointer">Bookses: more fun than reading</span>
-    </div>
-
-    <div id="info_box">
-        <div id="info_box_content" class="link_box">
-            <div id="info_box_left"><a id="info_box_faq" href="https://moot.it/bookses#!/qa" target="_blank">FAQ</a></div>
-            <div id="info_box_right">
-                <b>What makes Bookses so fun?</b> <a href="/read/52907151d8529aa435000001" target="_blank">Grab a book and find out :)</a><br><br><br>
-                <b>Where can I find books to upload?</b> <a href="http://gutenberg.org/" target="_blank">Project Gutenberg</a> is a good place to find free ebooks.<br><br><br>
-                <b>What about pictures?</b> I recommend posting pictures you own or have permission to, e.g. those in public domain, otherwise their owners might complain and I'll have to remove them. You can always take a picture. Landscapes are good for setting the mood. Or you can doodle. Here's one I made: <div style="padding:20px;text-align:right"><img style="width:60%" src="/static/wudan.jpg"></div><br>
-                <b>Can I request a new feature?</b> <a href="https://moot.it/bookses#!/feature-requests" target="_blank">Yes!</a><br><br><br>
-                <b>Will there be a mobile version?</b> Absolutely.<br><br><br>
-                <b>Can you add <a href="http://en.wikipedia.org/wiki/LaTeX" target="_blank">LaTeX</a> support?</b> Hmm. Interesting idea.<br><br><br>
-                <b>Bookses is very similar to <a href="https://medium.com/" target="_blank">Medium,</a> you even have green side bars. What do you say to that?</b> Medium is Bookses's arch nemesis, so all our ideas came from them. . . . Just kidding. OMG That's a total coincidence, I swear! I think Bookses gives users a different reading experience.<br><br><br>
-                <b>Are these actual questions from users?</b> Sad to say, I wrote them myself. There aren't any users yet!<br><br><br>
-                <b>Are you a real person?</b> <a href="https://twitter.com/nahnturong" target="_blank">Yes.</a><br><br><br>
-                <b>Where do I go to ask more questions?</b> <a href="https://moot.it/bookses#!/qa" target="_blank">Here.</a><br><br><br>
-                <b>I love what you're doing and I wanna give you a bunch of money! When can I do that?</b> Soon.<br><br><br>
-                <b>But seriously, what's Bookses about?</b> It's about people sharing their imagination!<br><br><br>
-                <b>That's beautiful.</b> Thank you.
-            </div>
-        </div>
-    </div>
-
-    <div id="upload_progress_box"><div id="upload_progress"></div></div>
-    <div id="upload_page">
-        <div id="upload_page_left">
-            <div id="book_preview"></div>
-        </div>
-        <div id="upload_page_right">
-            <input id="upload_book_title" placeholder="title"><br>
-            <textarea id="upload_book_description" placeholder="description"></textarea><br>
-            <input id="local_book_upload" type="file"><br>
-            <label id="text_files_only">NOTE. Bookses only supports plain text files at the moment</label><br>
-            <div class="clear_both"></div>
-            <button id="post_upload_button"><i class="icon-upload"></i></button>
-            <button id="cancel_upload_button">cancel</button>
-            <div class="clear_both"></div>
-        </div>
-    </div>
+    <!-- <img id="hiringbanner" src="http://bookses.asset.s3.amazonaws.com/hiring.png"> -->
 
     <div id="books_box" class="books_list">
         <div id="books"></div>
-        <button id="more_books_button"><i class="icon-chevron-down"></i></button>
+        <button id="more_books_button">MORE</button>
     </div>
 
     <div id="results_box" class="books_list">
         <div id="results"></div>
-        <button id="more_results_button"><i class="icon-chevron-down"></i></button>
+        <button id="more_search_results_button">MORE</button>
+    </div>
+
+    <div id="popup"></div>
+    <div id="logins_box"></div>
+
+    <div id="footer">
+        <div id="footer_links">
+            <a id="my_facebook" href="https://facebook.com/bookses" target="_blank"><i class="icon-facebook"></i></a><&nbsp;>
+            <a id="my_twitter" href="https://twitter.com/booksesstudios" target="_blank"><i class="icon-twitter"></i></a>
+            <br><br>
+            <!-- <a id="feedback" href="http://bookses.com/read/52d0923d016f2e951d000014" target="_blank">Questions + Feedback</a><br><br> -->
+            <!-- <a id="terms">User content belong to their respective creators.</a><br><br> -->
+        </div>
     </div>
 
 </body>

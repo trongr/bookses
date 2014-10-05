@@ -18,6 +18,8 @@ var upload = (function(){
                 + "             <div id='upload_box_header'>Publish</div>"
                 + "             <div id='text_files_only'>NOTE. Bookses only supports plain text files at the moment. You can format and make minor edits after uploading.</div>"
                 + "             <input id='upload_book_title' placeholder='title'><br>"
+                + "             <input id='upload_book_author' placeholder='author'><br>"
+                + "             <input id='upload_book_readyon' placeholder='publish date'><br>"
                 + "             <textarea id='upload_book_description' placeholder='description'></textarea><br>"
                 + "             <input id='local_book_upload' type='file'><br>"
                 + "             <input id='is_poetry' type='checkbox'>Preserve line breaks, for poetry<br>"
@@ -42,15 +44,18 @@ var upload = (function(){
             if (k.box) k.box.hide()
         }
 
-        // mark
         bindings.click_post_upload_button = function(){
             var post_button = $(this).attr("disabled", true)
             users.is_logged_in(function(er, loggedin){
                 if (!loggedin) return alert("please log in")
 
                 var title = $("#upload_book_title").val().trim()
+                var author = $("#upload_book_author").val().trim()
+                // mk
+                var readyon = Date.parse($("#upload_book_readyon").val().trim())
+                if (!readyon) return msg.error("Invalid publish date")
                 var description = $("#upload_book_description").val().trim()
-                if (!title || !description){
+                if (!title || !description || !author){
                     post_button.attr("disabled", false)
                     return alert("title and description can't be empty")
                 }
@@ -66,6 +71,8 @@ var upload = (function(){
                 var data = new FormData()
                 data.append("file", file)
                 data.append("title", title)
+                data.append("author", author)
+                data.append("readyon", new Date(readyon))
                 data.append("description", description)
                 data.append("poetry", is_poetry)
 

@@ -86,12 +86,14 @@ var users = module.exports = (function(){
         async.waterfall([
             function(done){
                 validate.username(req.params.username, function(er){
-                    done(er)
+                    if (er) done({info:er})
+                    else done(null)
                 })
             },
             function(done){
                 validate.password(req.body.password, function(er){
-                    done(er)
+                    if (er) done({info:er})
+                    else done(null)
                 })
             },
             function(done){
@@ -306,11 +308,15 @@ var users = module.exports = (function(){
                 } else done(null, user)
             }
         ], function(er, user){
-            if (er){
-                console.log(JSON.stringify({error:"users.edit_user",body:req.body,er:er}, 0, 2))
-                res.send({error:"edit user"})
-            } else {
-                res.send({user:user})
+            try {
+                if (er){
+                    console.log(JSON.stringify({error:"users.edit_user",body:req.body,er:er}, 0, 2))
+                    res.send({error:"edit user"})
+                } else {
+                    res.send({user:user})
+                }
+            } catch (e){ // in case user disconnects before image processes
+                console.log({error:"edit user try catch"})
             }
         })
     }

@@ -1,0 +1,292 @@
+body {
+    position: relative;
+}
+
+p {
+    margin-top: -0.5em; /* cause we use white-space: pre-wrap below for boks_text, for poetry */
+    margin-bottom: -0.5em;
+    cursor: pointer;
+}
+
+.p_margin {
+    border-left: 5px solid #0f0 !important;
+}
+
+.boks_hide {
+    display: none;
+}
+
+.boks_green {
+    color: #0f0;
+}
+
+.boks_green_underline {
+    border-bottom: 5px solid #0f0;
+}
+
+.boks_red_underline {
+    border-bottom: 5px solid #f00;
+}
+
+.boks_reader {
+    width: 100%;
+    height: 100%;
+    background-color: #eee;
+}
+
+.boks_menu {
+    background-color: #eee;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.boks_menu button {
+    float: left;
+    clear: both;
+    font-size: 1em;
+    padding: 5px;
+}
+
+.boks_menu .boks_close {
+    font-size: 1.5em;
+    font-weight: bolder;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+}
+
+.boks_book_info {
+    width: 100%;
+}
+
+.boks_book_title_box {
+    text-align: center;
+    padding-top: 20px;
+}
+
+.boks_book_title {
+    font-size: 12pt;
+    font-weight: bolder;
+}
+
+.boks_book_created {
+    color: #666;
+    font-size: 1.2em;
+    margin: 1em;
+    text-align: center;
+}
+
+.boks_book_description {
+    font-size: 1.2em;
+    padding: 10px 100px 10px 100px;
+    white-space: pre-wrap;
+}
+
+.boks_content {
+    display: table;
+    width: 100%;
+}
+
+.boks_content_left {
+    display: table-cell;
+    width: 60%;
+    background-color: #ddd;
+}
+
+.boks_content_right {
+    display: table-cell;
+    width: 40%;
+}
+
+.boks_text {
+    padding: 20px 0 0 20px;
+    white-space: pre-wrap;
+    font-family: times, georgia, serif;
+}
+
+.boks_text p {
+    padding-left: 10px;
+}
+
+.boks_text p:hover {
+    background-color: #eee;
+}
+
+.boks_comments_box {
+    background-color: #eee;
+    margin-left: 15px;
+}
+
+.boks_content_right > .boks_comments_box {
+    box-shadow: 0 0 10px 5px #aaa;
+    margin-left: 0;
+}
+
+.boks_p_hover {
+    box-shadow: 0 0 20px 5px #999 !important;
+    z-index: 1 !important;
+    margin-left: -10px !important;
+    border-left: 5px solid #0f0 !important;
+}
+
+.boks_comments_box_hover {
+    z-index: 1 !important;
+}
+
+.boks_img {
+    width: 100%;
+    height: auto;
+}
+
+.boks_comment {
+    position: relative;
+    border-left: 5px solid #bbb;
+    border-top: 1px solid #bbb;
+}
+
+.boks_comment:hover {
+    border-left: 5px solid #0f0;
+    border-top: none;
+}
+
+.boks_comment_content {
+    cursor: pointer;
+}
+
+.boks_comment_content:hover {
+    background-color: #fff;
+}
+
+.boks_comment_img_box {
+    padding: 10px;
+}
+
+.boks_comment_img {
+    width: 100%;
+}
+
+.boks_comment_text {
+    padding: 15px 15px 15px 15px;
+    white-space: pre-wrap;
+}
+
+.boks_comment_menu {
+    clear: both;
+    float: right;
+    margin: 0 10px 0 10px;
+}
+
+.boks_comment_menu button {
+    font-size: 1em;
+    font-weight: lighter;
+    background: none;
+    font-family: helvetica, arial, sans;
+    margin: 10px 0 10px 0;
+}
+
+button.boks_comment_thumbs_up:hover {
+    color: #f00;
+}
+
+button.boks_comment_flag:hover {
+    color: #f0f;
+}
+
+.boks_comment_created {
+    float: right;
+    padding: 5px 20px 0 0;
+    color: #555;
+}
+
+.boks_comment_username {
+    float: left;
+    padding: 5px 30px 0 30px;
+    font-size: 1em;
+    font-weight: bolder;
+    color: #555;
+}
+
+.boks_new_comment_box {
+    display: none;
+    width: 100%;
+    position: relative;
+    border-bottom: 1px solid #bbb;
+}
+
+.boks_new_comment_img_box {
+    width: 100%;
+}
+
+img.boks_new_comment_img {
+    display: none;
+    width: 100%;
+}
+
+.boks_new_comment_textarea_box {
+    margin-left: 15px;
+}
+
+.boks_new_comment_textarea {
+    font-family: helvetica, arial, sans;
+    font-size: 1em;
+    width: 100%;
+    height: 6em;
+    border: none;
+    padding-left: 15px;
+    resize: none;
+    margin-bottom: 3px;
+    background-color: #eee;
+}
+
+.boks_new_comment_textarea:focus {
+    background-color: #fff;
+}
+
+.boks_new_comment_menu {
+    float: right;
+    padding: 5px;
+    vertical-align: middle;
+}
+
+.boks_new_comment_picture_input {
+    display: none;
+}
+
+.boks_new_comment_picture_button {
+    font-size: 1em;
+}
+
+.boks_new_comment_post {
+    padding: 10px;
+    font-size: 1em;
+    border-radius: 3px;
+    border: 1px solid #666;
+}
+
+.boks_new_comment_post:hover {
+    border: 1px solid #0f0;
+}
+
+.boks_more_comments_button {
+    width: 100%;
+    font-size: 2em;
+    padding: 20px;
+    color: #5BFC60;
+}
+
+.boks_more_comments_button:hover {
+    color: #0f0;
+}
+
+.boks_comments_home_button {
+    width: 100%;
+    font-size: 2em;
+    padding: 20px;
+    color: #FF3D3D;
+}
+
+.boks_comments_home_button:hover {
+    color: #f00;
+}

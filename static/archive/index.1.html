@@ -1,0 +1,119 @@
+<!--  -->
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
+    <script src="/static/jquery-2.0.3.js"></script>
+    <script src="/static/purl.js"></script>
+    <script src="/static/async.js"></script>
+    <script src="/static/sugar.min.js"></script>
+    <link href="/static/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <script src="/static/msg.js"></script>
+    <link href="/static/msg.css" rel="stylesheet"/>
+    <script src="/static/api.js"></script>
+    <script src="/static/templates.js"></script>
+    <link href="/static/templates.css" rel="stylesheet"/>
+    <link href="/static/index.css" rel="stylesheet"/>
+    <script src="/static/index.js"></script>
+
+    <title>Bookses</title>
+
+</head>
+<body>
+
+    <div id="headerbox">
+        <div id="headerimg">
+            <img src="http://bookses.asset.s3.amazonaws.com/bookses.bg.png">
+        </div>
+        <div id="header">
+            <div id="headertext">
+                <span id="bookses"><a href="/">Bookses</a></span><br>
+                <span id="tagline"><a href="/">More Fun than Reading</a></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="main">
+        <div id="info">
+            Bookses is a collaborative art project where artists take
+            turns improving each other's work as well as classic
+            illustrations. Every week we take the story most requested
+            by you and illustrate it from start to finish. Every
+            single page. <a class="linkalt" href="/r">Tell us what you
+            like to read</a> and we'll bring it to life!
+        </div>
+
+        <!-- <div id="request"> -->
+        <!--     <div id="requestinner"> -->
+        <!--         <textarea id="text" placeholder="What's your favorite story?"></textarea><br> -->
+        <!--         <button id="post">request</button> -->
+        <!--     </div> -->
+        <!-- </div> -->
+
+        <div id="recombox"><a id="recommend" class="greenbutton" href="/r">Request a story</a></div>
+
+        <!-- <div id="votes"></div> -->
+
+        <div id="books"></div>
+        <div id="pagin">
+            <a id="first" class="btn"><i class="fa fa-fast-backward"></i></a>
+            <a id="prev" class="btn"><i class="fa fa-long-arrow-left"></i></a>
+            <a id="page" class="btn">1</a>
+            <a id="next" class="btn"><i class="fa fa-long-arrow-right"></i></a>
+            <a id="last" class="btn"><i class="fa fa-fast-forward"></i></a>
+        </div>
+
+        <div id="infonote">If you're an author looking to have your
+        story illustrated, <a class="linkalt"
+        href="mailto:bookses.contact@gmail.com">drop us a line.</a> If
+        you're an artist and you'd like to contribute, <a class="link"
+        href="/art">check out our collaboration platform.</a>
+        Illustrations licensed under Creative Commons
+        Attribution-NonCommercial-ShareAlike.</div>
+
+    </div>
+
+    <div id="footer">
+        <div>
+            <span class="icon"><a href="https://www.facebook.com/bookses" target="_blank"><i class="fa fa-facebook"></i></a></span>
+            <span class="text"><a href="https://www.facebook.com/bookses" target="_blank">Like Bookses on facebook</a></span>
+        </div>
+        <div>
+            <span class="icon"><a href="https://twitter.com/booksesstudios" target="_blank"><i class="fa fa-twitter"></i></a></span>
+            <span class="text"><a href="https://twitter.com/booksesstudios" target="_blank">Follow us on twitter</a></span>
+        </div>
+        <div>
+            <span class="icon"><a href="mailto:bookses.contact@gmail.com"><i class="fa fa-envelope-o"></i></a></span>
+            <span class="text"><a href="mailto:bookses.contact@gmail.com">Get in touch</a></span>
+        </div>
+        <div id="newslabel">
+            <span class="icon">Bookses Newsletter</span>
+            <span class="text"></span>
+        </div>
+        <div>
+            <div id="newsleft">
+                <input id="newsemail" placeholder="email">
+            </div>
+            <div id="newsright">
+                <button id="newssubscribe" class="greenbutton">subscribe</button>
+            </div>
+        </div>
+        <!-- todo make an ad for these two -->
+        <!-- <div> -->
+        <!--     <span class="icon"><a href="http://eepurl.com/URRQT" target="_blank"><i class="fa fa-paper-plane"></i></a></span> -->
+        <!--     <span class="text"><a href="http://eepurl.com/URRQT" target="_blank">e-zine</a></span> -->
+        <!-- </div> -->
+        <!-- <div> -->
+        <!--     <span class="icon"><a href="/magazine"><i class="fa fa-paper-plane"></i></a></span> -->
+        <!--     <span class="text"><a href="/magazine">monthly magazine</a></span> -->
+        <!-- </div> -->
+        <!-- <div> -->
+        <!--     <span class="icon"><a href="/faq">?</a></span> -->
+        <!--     <span class="text"><a href="/faq">faq</a></span> -->
+        <!-- </div> -->
+    </div>
+
+</body>
+</html>

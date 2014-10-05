@@ -1,0 +1,9 @@
+var css = (function(){
+    var css = {}
+
+    css.fittext = function(parent, child){
+
+    }
+
+    return css
+}())

@@ -7,6 +7,8 @@ var app = http.createServer(server)
 var books = require("./noodles/books.js")
 var users = require("./noodles/users.js")
 var jobs = require("./noodles/jobs.js")
+var vote = require("./noodles/vote.js")
+var sub = require("./noodles/sub.js")
 
 var k = {
     max_req_size: 10485760
@@ -42,7 +44,10 @@ server.configure(function(){
         store: new MongoStore({
             db: new mongo.Db(process.env.DB || "bookses", new mongo.Server('localhost', 27017, {auto_reconnect:true}))
         }),
-        secret:"the key to productivity is to do the things that have the most impact: don't worry about the little stuff"
+        secret:"the key to productivity is to do the things that have the most impact: don't worry about the little stuff",
+        cookie: {
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        }
     }))
 
     server.all('*', function(req, res, next) {
@@ -71,12 +76,17 @@ server.configure('production', function(){
     server.use(express.errorHandler())
 })
 
-server.get("/", function(req, res){res.render("mobile.html")})
-server.get("/read/:id", function(req, res){res.render("mobook.html")})
-server.get("/old", function(req, res){res.render("home.html")})
-server.get("/old/read/:id", function(req, res){res.render("book.html")})
+server.get("/", function(req, res){res.render("index.html")})
+server.get("/b", function(req, res){res.render("b.html")})
+server.get("/r", function(req, res){res.render("r.html")})
+
+server.get("/art", function(req, res){res.render("home.html")})
+server.get("/read/:id", function(req, res){res.render("read.html")})
+
+server.get("/mobook/:id", function(req, res){res.render("mobook.html")})
 server.get("/profile", function(req, res){res.render("profile.html")})
 
+server.get("/test/:id", function(req, res){res.render("test.html")})
 server.get("/health", function(req, res){res.send({a:1})})
 server.post("/bug", function(req, res){
     console.log(JSON.stringify(req.body, 0, 2))
@@ -88,8 +98,10 @@ server.get("/books", books.get_all_books_validate, books.get_all_books)
 server.get("/books/search", books.search_validate, books.search)
 server.get("/book/:id", books.get_book_by_id_validate, books.get_book_by_id)
 server.post("/book/:id/like", users.authenticate, books.like_book_validate, books.like_book)
+server.post("/book/:id/edit", users.authenticate, books.editbookvalidate, books.editbook)
 
 server.get("/book/:id/paragraphs", books.get_paragraphs_validate, books.get_paragraphs)
+server.get("/book/:id/illos", books.getillosvalidate, books.getillos)
 server.get("/book/:id/edits", books.get_book_edits_validate, books.get_book_edits)
 
 // authenticate_anonymous lets anonymous users through as well as logged in users
@@ -101,6 +113,9 @@ server.get("/book/:id/comments", books.get_book_comments_validate, books.get_boo
 server.get("/book/:id/latest_comments", books.get_book_latest_comments_validate, books.get_book_latest_comments)
 server.get("/comment/:id/comments", books.get_comment_comments_validate, books.get_comment_comments)
 server.post("/comment/:id/upvote", users.authenticate_anonymous, books.upvote_comment_validate, books.upvote_comment)
+server.post("/comment/:id/lock", users.authenticate_anonymous, books.lockcommentvalidate, books.lockcomment)
+// server.post("/comment/:id/approve", users.authenticate, books.approvecommentvalidate, books.approvecomment)
+server.post("/comment/:id/edit", users.authenticate, books.editcommentvalidate, books.editcomment)
 
 server.post("/user/:username/register", users.create_user_validate, users.create_user)
 server.post("/user/:username/login", users.login_validate, users.login)
@@ -116,6 +131,13 @@ server.post("/comment/:id/clear_notis", users.authenticate, books.clear_comment_
 
 server.get("/book/:id/tags", books.get_book_tags_validate, books.get_book_tags)
 server.get("/book/:id/tag_comments", books.get_book_tag_comments_validate, books.get_book_tag_comments)
+
+server.post("/vote", users.authenticate_anonymous, vote.createvotevalidate, vote.createvote)
+server.get("/votes", users.authenticate_anonymous, vote.getvotesvalidate, vote.getvotes)
+server.post("/vote/:id/upvote", users.authenticate_anonymous, vote.upvotevalidate, vote.upvote)
+server.post("/vote/:id/edit", users.authenticate, vote.editvotevalidate, vote.editvote)
+
+server.post("/sub", sub.subscribevalidate, sub.subscribe)
 
 var port = process.env.PORT || 8080
 app.listen(port, "127.0.0.1", function(){

@@ -1,0 +1,104 @@
+<!--  -->
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width" initial-scale="1">
+
+    <script src="/static/jquery-2.0.3.js"></script>
+    <script src="/static/purl.js"></script>
+    <script src="/static/async.js"></script>
+    <!-- <script src="/static/moment.min.js"></script> -->
+    <script src="/static/sugar.min.js"></script>
+    <link rel="stylesheet" href="/static/font-awesome/css/font-awesome.min.css"/>
+    <script src="/static/flowtype.js"></script>
+    <link rel="stylesheet" href="/static/logins.css"/>
+    <script src="/static/logins.js"></script>
+    <link rel="stylesheet" href="/static/notis.css"/>
+    <script src="/static/notis.js"></script>
+    <link rel="stylesheet" href="/static/upload.css"/>
+    <script src="/static/upload.js"></script>
+    <script src="/static/yt.js"></script>
+    <link rel="stylesheet" href="/static/msg.css"/>
+    <script src="/static/msg.js"></script>
+    <link rel="stylesheet" href="/static/superadminpublisher.css"/>
+    <script src="/static/superadminpublisher.js"></script>
+
+    <title>Bookses</title>
+
+</head>
+<body>
+
+    <!-- <div id="click_colors"><span>If you're on mobile please switch to landscape</span></div> -->
+    <div id="banner">
+        <div id="banner_left">
+            <a id="logo" href="/">Bookses</a>
+            <span class="input_enter_submit">
+                <input id="search_bar" placeholder="search books">
+                <button id="search_button"><i class="icon-search"></i></button>
+            </span>
+            <button id="upload_button">PUBLISH</button>
+            <button id="logins">LOGIN</button>
+            <span id="notification_menu"></span>
+        </div>
+        <div id="banner_right">
+        </div>
+    </div>
+    <div class="clear_both"></div>
+
+    <div id="notification_tray"></div>
+
+    <div id="intro">
+        <div id="welcome_box">
+            <a id="welcome" href="/static/superadminpublisher.html">BOOKSES</a><br>
+            <a id="tagline" href="/static/superadminpublisher.html">more fun than reading</a>
+        </div>
+        <div id="intro_right">
+            Imagine every book you ever wanted to read, beautifully
+            illustrated, fully annotated with insightful commentary
+            and audio, inspiring music and videos by passionate book
+            lovers like yourself. If you like that picture, you're in
+            the right place! Find out more in my
+            blog <a href="http://bookses.com/read/52dafd39616812b003000001">The
+            Bookses Chronicles,</a> or dive right in
+            and <a id="random_book">start reading!</a>
+        </div>
+    </div>
+
+    <!-- <div id="tagline_box"> -->
+    <!--     <a id="tagline" href="/">Bookses: more fun than reading</a> -->
+    <!-- </div> -->
+
+    <div id="class_menu">
+        <div class="class_button_box class_selected"><button id="class_all" data-class="all"><span>O</span><br>ALL</button></div>
+        <div class="class_button_box"><button id="classclassic" data-class="classic"><span>I</span><br>CLASSICS</button></div>
+        <div class="class_button_box"><button id="class_published" data-class="published"><span>II</span><br>PUBLISHED</button></div>
+        <div class="class_button_box"><button id="class_indie" data-class="indie"><span>III</span><br>INDIE</button></div>
+        <div class="class_button_box"><button id="class_amateur" data-class="amateur"><span>IV</span><br>AMATEUR</button></div>
+    </div>
+
+    <div id="upload_progress_box"><div id="upload_progress"></div></div>
+
+    <div id="books_box" class="books_list">
+        <div id="books"></div>
+        <button id="more_books_button">MORE</button>
+    </div>
+
+    <div id="results_box" class="books_list">
+        <div id="results"></div>
+        <button id="more_search_results_button">MORE</button>
+    </div>
+
+    <div id="popup"></div>
+    <div id="logins_box"></div>
+
+    <div id="footer">
+        <div id="footer_links">
+            <a id="my_twitter" href="https://twitter.com/nahnturong" target="_blank"><i class="icon-twitter"></i></a>
+            <br><br>
+            <a id="feedback" href="http://bookses.com/read/52d0923d016f2e951d000014" target="_blank">Questions + Feedback</a><br><br>
+            <a id="terms">User content belong to their respective creators.</a><br><br>
+        </div>
+    </div>
+
+</body>
+</html>

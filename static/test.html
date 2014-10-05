@@ -1,0 +1,152 @@
+<!--  -->
+<!DOCTYPE html>
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+
+    <script src="/static/jquery-2.0.3.js"></script>
+    <script src="/static/purl.js"></script>
+    <script src="/static/async.js"></script>
+    <script src="/static/sugar.min.js"></script>
+    <link href="/static/font-awesome-4.1.0/css/font-awesome.min.css" rel="stylesheet"/>
+    <script src="/static/msg.js"></script>
+    <link href="/static/msg.css" rel="stylesheet"/>
+    <script src="/static/api.js"></script>
+    <script src="/static/templates.js"></script>
+    <link href="/static/templates.css" rel="stylesheet"/>
+    <link href="/static/index.css" rel="stylesheet"/>
+    <script src="/static/index.js"></script>
+
+    <title>Bookses</title>
+
+</head>
+<body>
+
+    <div id="headerbox">
+        <div id="headerimg">
+            <img src="http://bookses.asset.s3.amazonaws.com/bookses.bg.png">
+        </div>
+        <div id="header">
+            <div id="headertext">
+                <span id="bookses"><a href="/">Bookses Studios</a></span><br>
+                <!-- <span id="tagline"><a href="/">The Artist Orchestra</a></span> -->
+            </div>
+        </div>
+    </div>
+
+    <div id="addthisouter">
+        <div id="addthisbox">
+            <div class="addthis_toolbox addthis_default_style addthis_32x32_style">
+                <a class="addthis_button_facebook"></a>
+                <a class="addthis_button_twitter"></a>
+                <a class="addthis_button_pinterest_share"></a>
+                <a class="addthis_button_google_plusone_share"></a>
+                <a class="addthis_button_tumblr"></a>
+                <a class="addthis_button_compact"></a>
+                <!-- <a class="addthis_counter"></a> -->
+                <!-- <a class="addthis_counter addthis_bubble_style"></a> -->
+            </div>
+        </div>
+    </div>
+
+    <div id="main">
+        <div id="info">
+            <!-- <span>Bookses</span> is a collaborative art project where -->
+            <!-- <b><i>artists take turns improving each other's -->
+            <!-- work.</i></b> Every week we'll take the story most voted -->
+            <!-- by you and illustrate it from start to finish. Every -->
+            <!-- single page. <a class="link" href="/r">Tell us what you -->
+            <!-- like to read</a> and we'll bring it to life! -->
+            <!-- <span>Bookses</span> is an art studio and weekly publisher -->
+            <!-- of illustrated stories. Every week we'll take the story -->
+            <!-- most voted by you and illustrate it from start to -->
+            <!-- finish. Every single page. <a class="link" href="/r">Tell -->
+            <!-- us what you like to read</a> and we'll bring it to life! -->
+            <span>Bookses Studios</span> is the only art collective
+            in the world whose artists take turns improving each
+            other's work. Our unique collaborative process allows our
+            artists to complement and combine their creativity,
+            creating artworks that no single artist can produce on
+            their own. We're not just artists. We're an orchestra.
+        </div>
+
+        <!-- <div id="request"> -->
+        <!--     <div id="requestinner"> -->
+        <!--         <textarea id="text" placeholder="What's your favorite story?"></textarea><br> -->
+        <!--         <button id="post">Request</button> -->
+        <!--     </div> -->
+        <!-- </div> -->
+        <!-- <div id="votes"></div> -->
+        <!-- <div id="morevotes"><a class="link" href="/r">see the full list</a></div> -->
+
+        <div id="books"></div>
+        <div id="pagin">
+            <a id="first" class="btn"><i class="fa fa-fast-backward"></i></a>
+            <a id="prev" class="btn"><i class="fa fa-long-arrow-left"></i></a>
+            <a id="page" class="btn">1</a>
+            <a id="next" class="btn"><i class="fa fa-long-arrow-right"></i></a>
+            <a id="last" class="btn"><i class="fa fa-fast-forward"></i></a>
+        </div>
+
+    </div>
+
+    <div id="footer">
+        <div>
+            <span class="icon"><a class="linkalt" href="mailto:bookses.contact@gmail.com"><i class="fa fa-lightbulb-o"></i></a></span>
+            <span class="text"><a class="linkalt" href="mailto:bookses.contact@gmail.com">Hire Bookses Studios</a></span>
+        </div>
+        <div>
+            <span class="icon"><a href="https://www.facebook.com/bookses" target="_blank"><i class="fa fa-facebook"></i></a></span>
+            <span class="text"><a href="https://www.facebook.com/bookses" target="_blank">Like Bookses on facebook</a></span>
+        </div>
+        <div>
+            <span class="icon"><a href="https://twitter.com/booksesstudios" target="_blank"><i class="fa fa-twitter"></i></a></span>
+            <span class="text"><a href="https://twitter.com/booksesstudios" target="_blank">Follow us on twitter</a></span>
+        </div>
+        <div>
+            <span class="icon"><a href="mailto:bookses.contact@gmail.com"><i class="fa fa-envelope-o"></i></a></span>
+            <span class="text"><a href="mailto:bookses.contact@gmail.com">Get in touch</a></span>
+        </div>
+        <div id="newslabel">
+            <span class="icon">Bookses Newsletter</span>
+            <span class="text"></span>
+        </div>
+        <div>
+            <div id="newsleft">
+                <input id="newsemail" placeholder="email">
+            </div>
+            <div id="newsright">
+                <button id="newssubscribe" class="greenbutton">subscribe</button>
+            </div>
+        </div>
+        <!-- todo make an ad for these two -->
+        <!-- <div> -->
+        <!--     <span class="icon"><a href="http://eepurl.com/URRQT" target="_blank"><i class="fa fa-paper-plane"></i></a></span> -->
+        <!--     <span class="text"><a href="http://eepurl.com/URRQT" target="_blank">e-zine</a></span> -->
+        <!-- </div> -->
+        <!-- <div> -->
+        <!--     <span class="icon"><a href="/magazine"><i class="fa fa-paper-plane"></i></a></span> -->
+        <!--     <span class="text"><a href="/magazine">monthly magazine</a></span> -->
+        <!-- </div> -->
+        <!-- <div> -->
+        <!--     <span class="icon"><a href="/faq">?</a></span> -->
+        <!--     <span class="text"><a href="/faq">faq</a></span> -->
+        <!-- </div> -->
+
+    </div>
+
+    <!-- <div id="infonote"> -->
+        <!-- If you're an artist and you'd like to contribute, <a class="link" -->
+        <!-- href="/art">check out our collaborative platform.</a> -->
+        <!-- Illustrations licensed under Creative Commons -->
+        <!-- Attribution-NonCommercial-ShareAlike. -->
+    <!-- </div> -->
+
+    <script>var addthis_config = {
+        <!-- data_track_addressbar: true, -->
+    };</script>
+    <script src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-529c141a295ddb7e"></script>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+var api = (function(){
+    var api = {}
+
+    api.getbooks = function(opts, done){
+        $.ajax({
+            url: "/books",
+            type: "get",
+            data: opts,
+            success: function(re){
+                if (re.books) done(null, re.books)
+                else done({re:re})
+            }
+        })
+    }
+
+    return api
+}())

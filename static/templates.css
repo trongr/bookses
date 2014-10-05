@@ -1,0 +1,301 @@
+hr {
+    height: 1px;
+    border: none;
+    background-color: #ccc;
+}
+
+.btn {
+    cursor: pointer;
+}
+
+.link {
+    color: #70ACFF;
+    cursor: pointer;
+}
+
+.link:hover {
+    color: #2E86FF;
+}
+
+.linkalt {
+    color: #37B526;
+}
+
+.linkalt:hover {
+    color: #1C8C0D;
+}
+
+.greenbutton {
+    color: #fff !important;
+    background-color: #6ED660;
+}
+
+.greenbutton:hover {
+    background-color: #37B526;
+}
+
+.disabled {
+    color: #999;
+}
+
+.firstletter {
+    float: left;
+    color: #FF5252;
+    font-size: 4em;
+    font-family: serif, times, georgia;
+    height: 0.8em;
+    line-height: 1em;
+    margin: -5px 10px 0 -10px;
+}
+
+.book {
+    margin: 100px 0 0 0;
+}
+
+.book .published,
+.book .wip {
+    display: block;
+    margin: 10px 0 0 0;
+    color: #666;
+    font-size: 1.2em;
+}
+
+.book .wip span {
+    color: #0f0;
+}
+
+.book .imgs {
+    margin: 10px 0 0 0;
+    white-space: nowrap;
+    overflow: hidden;
+    height: 200px;
+}
+
+#imgs .thumb,
+.book .imgs .img {
+    display: inline-block;
+    width: 200px;
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+}
+
+#imgs .thumb img,
+.book .imgs .img img {
+    position: absolute;
+    left: -100%;
+    right: -100%;
+    top: -100%;
+    bottom: -100%;
+    margin: auto;
+    min-height: 100%;
+    min-width: 100%;
+}
+
+#imgs .comment {
+    display: inline-block;
+    width: 200px;
+    height: 200px;
+    position: relative;
+    overflow: hidden;
+    text-align: left;
+    vertical-align: top;
+}
+
+#imgs .comment a {
+    display: block;
+    padding: 10px;
+}
+
+.book .title {
+    font-size: 2em;
+}
+
+.book .description {
+    margin: 25px 0 0 0;
+    font-weight: lighter;
+    font-size: 1em;
+}
+
+#book .illos {
+    margin: 50px 0 50px 0;
+    width: 100%;
+    text-align: center;
+}
+
+#book .illos .artists {
+    font-family: helvetica, arial, sans;
+    text-align: right;
+    color: #666;
+    margin: 10px 0 0 0;
+}
+
+#book .illos .improvethis {
+    display: block;
+    font-family: helvetica, arial, sans;
+    text-align: right;
+}
+
+#book .illos img {
+    max-height: 360px;
+    width: auto;
+    max-width: 100%;
+}
+
+.vote {
+    display: table-row;
+    font-family: georgia, serif, times;
+}
+
+.votemenu {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+    padding: 20px;
+}
+
+.votepos {
+    display: table-cell;
+    vertical-align: top;
+    text-align: center;
+    padding: 20px;
+    color: #FF5252;
+}
+
+.votetext {
+    display: table-cell;
+    font-size: 1em;
+    font-weight: lighter;
+    color: #333;
+    vertical-align: top;
+    padding: 20px;
+    width: 100%;
+}
+
+.votemenu button {
+    font-size: 1.3em;
+    font-family: helvetica, arial, sans;
+    border: none;
+    background-color: #fff;
+    color: #4CC441;
+    text-align: left;
+}
+
+.votemenu button:hover {
+    color: #28961E;
+}
+
+@media (max-width: 500px){
+
+    .book {
+        margin: 25px 0 0 0;
+    }
+
+    .book .title {
+
+    }
+
+    .book .imgs {
+        margin: 10px 0 0 0;
+    }
+
+    .book .description {
+        margin: 10px 0 0 0;
+    }
+
+    #book .illos {
+        margin: 20px 0 20px 0;
+    }
+
+    #book .illos .artists {
+        margin: 0;
+    }
+
+    .votepos,
+    .votemenu {
+        padding: 5px;
+    }
+
+    .votemenu button {
+
+    }
+
+    .votetext {
+        padding: 5px
+    }
+}
+
+@media (min-width: 500px) and (max-width: 750px){
+
+    .book {
+        margin: 50px 0 0 0;
+    }
+
+    .book .title {
+
+    }
+
+    .book .imgs {
+        margin: 15px 0 0 0;
+    }
+
+    .book .description {
+        margin: 15px 0 0 0;
+    }
+
+    #book .illos {
+        margin: 30px 0 30px 0;
+    }
+
+    .votepos,
+    .votemenu {
+        padding: 10px;
+    }
+
+    .votemenu button {
+
+    }
+
+    .votetext {
+        padding: 10px;
+    }
+
+}
+
+@media (min-width: 750px) and (max-width: 1000px){
+
+    .book {
+        margin: 100px 0 0 0;
+    }
+
+    .book .title {
+
+    }
+
+    .book .imgs {
+        margin: 20px 0 0 0;
+    }
+
+    .book .description {
+        margin: 20px 0 0 0;
+    }
+
+    #book .illos {
+        margin: 40px 0 40px 0;
+    }
+
+    .votepos,
+    .votemenu {
+        padding: 15px;
+    }
+
+    .votemenu button {
+
+    }
+
+    .votetext {
+        padding: 15px;
+    }
+
+}
+
